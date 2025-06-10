@@ -22,7 +22,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Vendors', href: '/vendors', icon: Users, color: 'from-green-500 to-teal-600' },
     { name: 'Tax Management', href: '/tax-management', icon: Calculator, color: 'from-orange-500 to-red-600' },
     { name: 'Payments', href: '/payments', icon: CreditCard, color: 'from-emerald-500 to-cyan-600' },

@@ -27,7 +27,7 @@ const Login: React.FC = () => {
     // Simulate login process
     setTimeout(() => {
       setIsLoading(false);
-      navigate('/');
+      navigate('/dashboard');
     }, 2000);
   };
 
