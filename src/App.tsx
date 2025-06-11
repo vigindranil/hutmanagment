@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
+import Survey from './pages/Survey';
 import Dashboard from './pages/Dashboard';
 import Vendors from './pages/Vendors';
 import TaxManagement from './pages/TaxManagement';
@@ -15,9 +16,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/survey" element={
+            <Layout>
+              <Survey />
+            </Layout>
+          } />
         <Route path="/dashboard" element={
           <Layout>
             <Dashboard />

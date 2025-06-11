@@ -10,7 +10,8 @@ import {
   Settings,
   Menu,
   X,
-  Building2
+  Building2,
+  ClipboardList
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -23,6 +24,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+    { name: 'Survey', href: '/survey', icon: ClipboardList, color: 'from-teal-500 to-cyan-600' },
     { name: 'Vendors', href: '/vendors', icon: Users, color: 'from-green-500 to-teal-600' },
     { name: 'Tax Management', href: '/tax-management', icon: Calculator, color: 'from-orange-500 to-red-600' },
     { name: 'Payments', href: '/payments', icon: CreditCard, color: 'from-emerald-500 to-cyan-600' },
