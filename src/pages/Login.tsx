@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Building2, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
+import {
+  Building2,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
   ArrowLeft,
   Shield,
   Users,
   BarChart3,
   CheckCircle
 } from 'lucide-react';
+import { BASE_API_URL } from "../constants";
+import Cookies from 'js-cookie';
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,13 +25,48 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate login process
-    setTimeout(() => {
+
+
+    const myHeaders = new Headers();
+    myHeaders.append("accept", "*/*");
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      "username": email,
+      "password": password
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow" as RequestRedirect,
+    };
+
+    try {
+      const response = await fetch(BASE_API_URL + "auth/authentication", requestOptions);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.status == 0) {
+        Cookies.set('token', result?.data?.access_token);
+        navigate('/dashboard');
+      } else {
+        alert("Login failed. Please check your credentials and try again.");
+      }
+      console.log("Token Response:", result);
       setIsLoading(false);
-      navigate('/dashboard');
-    }, 2000);
+    }
+      catch (error) {
+      console.error("Login error:", error);
+      setIsLoading(false);
+      alert("Login failed. Please check your credentials and try again.");
+    }
   };
+
 
   const features = [
     {
@@ -63,7 +100,7 @@ const Login: React.FC = () => {
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
               <span>Back to Home</span>
             </Link>
-            
+
             <div className="flex items-center space-x-3 mb-6">
               <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
                 <Building2 className="w-8 h-8 text-white" />
@@ -75,7 +112,7 @@ const Login: React.FC = () => {
                 <p className="text-sm text-gray-500 font-medium">Jalpaiguri</p>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
               <p className="text-gray-600">Sign in to access the Vendor Tax Management System</p>
@@ -86,23 +123,23 @@ const Login: React.FC = () => {
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Email Address
+                <label htmlFor="userId" className="block text-sm font-semibold text-gray-700 mb-2">
+                  User Id
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Mail className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
+                    id="userId"
+                    name="userId"
+                    type="text"
+                    autoComplete="off"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(String(e.target.value))}
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200"
-                    placeholder="admin@zilaparishad.gov.in"
+                    placeholder="Enter your User Id"
                   />
                 </div>
               </div>
@@ -176,15 +213,6 @@ const Login: React.FC = () => {
               )}
             </button>
           </form>
-
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
-            <h3 className="text-sm font-semibold text-blue-900 mb-2">Demo Credentials</h3>
-            <div className="text-sm text-blue-700 space-y-1">
-              <p><strong>Email:</strong> admin@zilaparishad.gov.in</p>
-              <p><strong>Password:</strong> admin123</p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -193,7 +221,7 @@ const Login: React.FC = () => {
         {/* Background decorations */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -translate-y-48 translate-x-48"></div>
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/10 rounded-full translate-y-36 -translate-x-36"></div>
-        
+
         <div className="relative flex flex-col justify-center px-12 xl:px-16 text-white">
           <div className="mb-12">
             <h2 className="text-4xl font-bold mb-4">

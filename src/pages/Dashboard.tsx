@@ -1,8 +1,8 @@
-import React from 'react';
-import { 
-  Users, 
-  IndianRupee, 
-  AlertTriangle, 
+import React, { useEffect, useState } from 'react';
+import {
+  Users,
+  IndianRupee,
+  AlertTriangle,
   TrendingUp,
   MapPin,
   Calendar,
@@ -14,42 +14,13 @@ import {
 import StatsCard from '../components/StatsCard';
 import RecentActivity from '../components/RecentActivity';
 import QuickActions from '../components/QuickActions';
+import Cookies from 'js-cookie';
+import { BASE_API_URL } from '../constants';
+
 
 const Dashboard: React.FC = () => {
-  const stats = [
-    {
-      title: 'Total Vendors',
-      value: '1,247',
-      change: '+12%',
-      changeType: 'positive' as const,
-      icon: Users,
-      color: 'blue' as const
-    },
-    {
-      title: 'Monthly Collection',
-      value: '₹2,84,650',
-      change: '+8.5%',
-      changeType: 'positive' as const,
-      icon: IndianRupee,
-      color: 'green' as const
-    },
-    {
-      title: 'Active Defaulters',
-      value: '89',
-      change: '-15%',
-      changeType: 'negative' as const,
-      icon: AlertTriangle,
-      color: 'red' as const
-    },
-    {
-      title: 'Collection Rate',
-      value: '92.8%',
-      change: '+3.2%',
-      changeType: 'positive' as const,
-      icon: TrendingUp,
-      color: 'purple' as const
-    }
-  ];
+  const [stats, setStats] = useState<any>(null);
+
 
   const recentActivities = [
     {
@@ -82,6 +53,61 @@ const Dashboard: React.FC = () => {
     }
   ];
 
+  const dashboardApiCall = async () => {
+    const myHeaders = new Headers();
+    myHeaders.append("accept", "*/*");
+    const token = Cookies.get('token');
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders
+    };
+
+    fetch(BASE_API_URL + "user/getAdminDashboardDetails?UserID=2", requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        setStats([
+          {
+            title: 'Total Vendors',
+            value: result?.data?.total_survey ? result?.data?.total_survey.toString() : "0",
+            change: '+12%',
+            changeType: 'positive' as const,
+            icon: Users,
+            color: 'blue' as const
+          },
+          {
+            title: 'Total Payment',
+            value: result?.data?.total_payment ? result?.data?.total_payment.toString() : "0",
+            change: '0%',
+            changeType: 'neutral' as const,
+            icon: IndianRupee,
+            color: 'green' as const
+          },
+          {
+            title: 'Pending Approvals',
+            value: result?.data?.total_approval_pending ? result?.data?.total_approval_pending.toString() : "0",
+            change: '-15%',
+            changeType: 'negative' as const,
+            icon: AlertTriangle,
+            color: 'red' as const
+          },
+          {
+            title: 'Approved Applications',
+            value: result?.data?.total_approval ? result?.data?.total_approval.toString() : "0",
+            change: '+3.2%',
+            changeType: 'positive' as const,
+            icon: TrendingUp,
+            color: 'purple' as const
+          }
+        ])
+      })
+      .catch((error) => console.error(error));
+  }
+  useEffect(() => {
+    dashboardApiCall();
+  }, [])
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -100,14 +126,24 @@ const Dashboard: React.FC = () => {
         <div className="mt-4 sm:mt-0 flex items-center space-x-3">
           <div className="flex items-center space-x-2 text-sm text-gray-500 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-white/20">
             <Calendar className="w-4 h-4 text-blue-500" />
-            <span className="font-medium">Last updated: {new Date().toLocaleDateString()}</span>
+            <span className="font-medium">
+              Last updated: {
+                (() => {
+                  const d = new Date();
+                  const day = String(d.getDate()).padStart(2, '0');
+                  const month = String(d.getMonth() + 1).padStart(2, '0');
+                  const year = d.getFullYear();
+                  return `${day}/${month}/${year}`;
+                })()
+              }
+            </span>
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
+        {stats?.map((stat: any, index: number) => (
           <StatsCard key={index} {...stat} />
         ))}
       </div>
@@ -119,7 +155,7 @@ const Dashboard: React.FC = () => {
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full -translate-y-16 translate-x-16"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full translate-y-12 -translate-x-12"></div>
-          
+
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-3">
@@ -136,7 +172,7 @@ const Dashboard: React.FC = () => {
                 <option>This month</option>
               </select>
             </div>
-            
+
             {/* Mock chart area */}
             <div className="h-64 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl flex items-center justify-center border border-blue-100 shadow-inner">
               <div className="text-center">
@@ -155,7 +191,7 @@ const Dashboard: React.FC = () => {
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full -translate-y-10 translate-x-10"></div>
-            
+
             <div className="relative z-10">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg">
