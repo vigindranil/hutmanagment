@@ -15,7 +15,8 @@ import StatsCard from '../components/StatsCard';
 import RecentActivity from '../components/RecentActivity';
 import QuickActions from '../components/QuickActions';
 import Cookies from 'js-cookie';
-import { BASE_API_URL } from '../constants';
+import { decodeJwtToken } from '../utils/decodeToken';
+import { commonApi } from '../commonAPI';
 
 
 const Dashboard: React.FC = () => {
@@ -54,55 +55,43 @@ const Dashboard: React.FC = () => {
   ];
 
   const dashboardApiCall = async () => {
-    const myHeaders = new Headers();
-    myHeaders.append("accept", "*/*");
-    const token = Cookies.get('token');
-    myHeaders.append("Authorization", `Bearer ${token}`);
+    const userDetails = decodeJwtToken();
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders
-    };
-
-    fetch(BASE_API_URL + "user/getAdminDashboardDetails?UserID=2", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        setStats([
-          {
-            title: 'Total Vendors',
-            value: result?.data?.total_survey ? result?.data?.total_survey.toString() : "0",
-            change: '+12%',
-            changeType: 'positive' as const,
-            icon: Users,
-            color: 'blue' as const
-          },
-          {
-            title: 'Total Payment',
-            value: result?.data?.total_payment ? result?.data?.total_payment.toString() : "0",
-            change: '0%',
-            changeType: 'neutral' as const,
-            icon: IndianRupee,
-            color: 'green' as const
-          },
-          {
-            title: 'Pending Approvals',
-            value: result?.data?.total_approval_pending ? result?.data?.total_approval_pending.toString() : "0",
-            change: '-15%',
-            changeType: 'negative' as const,
-            icon: AlertTriangle,
-            color: 'red' as const
-          },
-          {
-            title: 'Approved Applications',
-            value: result?.data?.total_approval ? result?.data?.total_approval.toString() : "0",
-            change: '+3.2%',
-            changeType: 'positive' as const,
-            icon: TrendingUp,
-            color: 'purple' as const
-          }
-        ])
-      })
-      .catch((error) => console.error(error));
+    const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
+    setStats([
+      {
+        title: 'Total Vendors',
+        value: result?.data?.total_survey ? result?.data?.total_survey.toString() : "0",
+        change: '+12%',
+        changeType: 'positive' as const,
+        icon: Users,
+        color: 'blue' as const
+      },
+      {
+        title: 'Total Payment',
+        value: result?.data?.total_payment ? result?.data?.total_payment.toString() : "0",
+        change: '0%',
+        changeType: 'neutral' as const,
+        icon: IndianRupee,
+        color: 'green' as const
+      },
+      {
+        title: 'Pending Approvals',
+        value: result?.data?.total_approval_pending ? result?.data?.total_approval_pending.toString() : "0",
+        change: '-15%',
+        changeType: 'negative' as const,
+        icon: AlertTriangle,
+        color: 'red' as const
+      },
+      {
+        title: 'Approved Applications',
+        value: result?.data?.total_approval ? result?.data?.total_approval.toString() : "0",
+        change: '+3.2%',
+        changeType: 'positive' as const,
+        icon: TrendingUp,
+        color: 'purple' as const
+      }
+    ])
   }
   useEffect(() => {
     dashboardApiCall();

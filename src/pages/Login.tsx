@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
+import { 
   Building2,
   Mail,
   Lock,
@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { BASE_API_URL } from "../constants";
 import Cookies from 'js-cookie';
+import Swal from 'sweetalert2';
+
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -55,8 +57,14 @@ const Login: React.FC = () => {
         Cookies.set('token', result?.data?.access_token);
         navigate('/dashboard');
       } else {
-        alert("Login failed. Please check your credentials and try again.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: result?.message || 'Please check your credentials and try again.',
+          confirmButtonColor: '#d33'
+        });
       }
+      
       console.log("Token Response:", result);
       setIsLoading(false);
     }

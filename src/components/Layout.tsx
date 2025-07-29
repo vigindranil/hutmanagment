@@ -14,6 +14,7 @@ import {
   ClipboardList
 } from 'lucide-react';
 import Cookies from 'js-cookie';
+import { decodeJwtToken } from '../utils/decodeToken';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -25,8 +26,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Dropdown logic moved here
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [userDetails, setUserDetails] = useState(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -42,9 +45,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
     }
+    const data = decodeJwtToken();
+    setUserDetails(data);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+
   }, [dropdownOpen]);
 
   function handleLogout() {
@@ -151,11 +158,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   aria-expanded={dropdownOpen}
                 >
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-gray-900">Admin User</p>
-                    <p className="text-xs text-gray-500">Tax Collection Officer</p>
+                    <p className="text-sm font-semibold text-gray-900">{userDetails?.UserFullName}</p>
+                    <p className="text-xs text-gray-500">{userDetails?.UserType}</p>
                   </div>
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-sm font-bold text-white">A</span>
+                    <span className="text-sm font-bold text-white">{userDetails?.UserFullName?.[0]}</span>
                   </div>
                   <svg
                     className={`w-4 h-4 ml-1 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
