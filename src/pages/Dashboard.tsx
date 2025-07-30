@@ -9,8 +9,10 @@ import {
   Building,
   CreditCard,
   Sparkles,
-  BarChart3
+  BarChart3,
+  Home
 } from 'lucide-react';
+import { FaIdCard } from "react-icons/fa";
 import StatsCard from '../components/StatsCard';
 import RecentActivity from '../components/RecentActivity';
 import QuickActions from '../components/QuickActions';
@@ -61,34 +63,50 @@ const Dashboard: React.FC = () => {
     setStats([
       {
         title: 'Total Vendors',
-        value: result?.data?.total_survey ? result?.data?.total_survey.toString() : "0",
-        change: '+12%',
+        value: result?.data?.total_survey ? result?.data?.total_survey?.toString() : "0",
+        // change: '+12%',
         changeType: 'positive' as const,
         icon: Users,
         color: 'blue' as const
       },
       {
         title: 'Total Payment',
-        value: result?.data?.total_payment ? result?.data?.total_payment.toString() : "0",
-        change: '0%',
+        value: result?.data?.total_payment ? result?.data?.total_payment?.toString() : "0",
+        // change: '0%',
         changeType: 'neutral' as const,
         icon: IndianRupee,
         color: 'green' as const
       },
       {
         title: 'Pending Approvals',
-        value: result?.data?.total_approval_pending ? result?.data?.total_approval_pending.toString() : "0",
-        change: '-15%',
+        value: result?.data?.total_approval_pending ? result?.data?.total_approval_pending?.toString() : "0",
+        // change: '-15%',
         changeType: 'negative' as const,
         icon: AlertTriangle,
         color: 'red' as const
       },
       {
         title: 'Approved Applications',
-        value: result?.data?.total_approval ? result?.data?.total_approval.toString() : "0",
-        change: '+3.2%',
+        value: result?.data?.total_approval ? result?.data?.total_approval?.toString() : "0",
+        // change: '+3.2%',
         changeType: 'positive' as const,
         icon: TrendingUp,
+        color: 'purple' as const
+      },
+      {
+        title: 'License Holder',
+        value: result?.data?.total_license_holder ? result?.data?.total_license_holder?.toString() : "0",
+        // change: '+3.2%',
+        changeType: 'positive' as const,
+        icon: FaIdCard,
+        color: 'purple' as const
+      },
+      {
+        title: 'Rent Holder',
+        value: result?.data?.total_rent_holder ? result?.data?.total_rent_holder?.toString() : "0",
+        // change: '+3.2%',
+        changeType: 'positive' as const,
+        icon: Home,
         color: 'purple' as const
       }
     ])

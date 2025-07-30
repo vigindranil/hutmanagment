@@ -18,15 +18,26 @@ import { decodeJwtToken } from '../utils/decodeToken';
 
 interface LayoutProps {
   children: React.ReactNode;
+  UserFullName: string;
+  UserType: string;
+}
+
+interface UserDetails {
+  UserFullName: string;
+  UserType: string;
+  UserTypeID: number;
+  // Add other properties if needed
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
+  
+
   // Dropdown logic moved here
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [userDetails, setUserDetails] = useState(null);
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -62,14 +73,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
-    { name: 'Survey', href: '/survey', icon: ClipboardList, color: 'from-teal-500 to-cyan-600' },
-    { name: 'Vendors', href: '/vendors', icon: Users, color: 'from-green-500 to-teal-600' },
-    { name: 'Tax Management', href: '/tax-management', icon: Calculator, color: 'from-orange-500 to-red-600' },
-    { name: 'Payments', href: '/payments', icon: CreditCard, color: 'from-emerald-500 to-cyan-600' },
-    { name: 'Defaulters', href: '/defaulters', icon: AlertTriangle, color: 'from-red-500 to-pink-600' },
-    { name: 'Reports', href: '/reports', icon: FileText, color: 'from-purple-500 to-indigo-600' },
-    { name: 'Settings', href: '/settings', icon: Settings, color: 'from-gray-500 to-slate-600' },
+    { name: 'Dashboard', user_type_id: 100, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+    { name: 'UserDashboard', user_type_id: 1, href: '/user-dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+    { name: 'Survey', user_type_id: 100, href: '/survey', icon: ClipboardList, color: 'from-teal-500 to-cyan-600' },
+    // { name: 'Vendors', href: '/vendors', icon: Users, color: 'from-green-500 to-teal-600' },
+    // { name: 'Tax Management', href: '/tax-management', icon: Calculator, color: 'from-orange-500 to-red-600' },
+    { name: 'Payments', user_type_id: 100, href: '/payments', icon: CreditCard, color: 'from-emerald-500 to-cyan-600' },
+    // { name: 'Defaulters', href: '/defaulters', icon: AlertTriangle, color: 'from-red-500 to-pink-600' },
+    { name: 'Reports', user_type_id: 100, href: '/reports', icon: FileText, color: 'from-purple-500 to-indigo-600' },
+    // { name: 'Settings', href: '/settings', icon: Settings, color: 'from-gray-500 to-slate-600' },
   ];
 
   const isActivePath = (path: string) => {
@@ -116,7 +128,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 const Icon = item.icon;
                 const active = isActivePath(item.href);
                 return (
-                  <li key={item.name}>
+                  item?.user_type_id == userDetails?.UserTypeID && <li key={item.name}>
                     <Link
                       to={item.href}
                       className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${active

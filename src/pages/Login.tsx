@@ -15,6 +15,7 @@ import {
 import { BASE_API_URL } from "../constants";
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
+import { jwtDecode } from 'jwt-decode';
 
 
 const Login: React.FC = () => {
@@ -55,7 +56,15 @@ const Login: React.FC = () => {
       const result = await response.json();
       if (result.status == 0) {
         Cookies.set('token', result?.data?.access_token);
-        navigate('/dashboard');
+        const decoded_data = jwtDecode<any>(result?.data?.access_token || "");
+        const user_details = JSON.parse(decoded_data?.userDetails);
+
+        if (user_details?.UserTypeID == 100){ // for admin
+          navigate('/dashboard');
+        } else if(user_details?.UserTypeID == 1) { // for user
+          navigate('/user-dashboard');
+        }
+
       } else {
         Swal.fire({
           icon: 'error',

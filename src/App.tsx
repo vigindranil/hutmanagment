@@ -10,6 +10,7 @@ import Payments from './pages/Payments';
 import Defaulters from './pages/Defaulters';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
+import UserDashboard from './pages/UserDashboard';
 
 function App() {
   return (
@@ -55,6 +56,11 @@ function App() {
         <Route path="/settings" element={
           <Layout>
             <Settings />
+          </Layout>
+        } />
+        <Route path="/user-dashboard" element={
+          <Layout>
+            <UserDashboard />
           </Layout>
         } />
       </Routes>

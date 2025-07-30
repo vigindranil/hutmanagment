@@ -6,7 +6,7 @@ interface StatsCardProps {
   value: string;
   change: string;
   changeType: 'positive' | 'negative' | 'neutral';
-  icon: LucideIcon;
+  icon: typeof LucideIcon;
   color: 'blue' | 'green' | 'red' | 'purple' | 'orange';
 }
 
@@ -62,8 +62,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
   return (
     <div className={`relative bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl ${colorConfig.shadow} border border-white/20 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 group overflow-hidden`}>
       {/* Background gradient overlay */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${colorConfig.bg} opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>
-      
+      <div className={`absolute inset-0 bg-gradient-to-br ${colorConfig.bg} opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>      
       <div className="relative z-10 flex items-center justify-between">
         <div className="flex-1">
           <p className="text-sm font-semibold text-gray-600 mb-1">{title}</p>
@@ -72,7 +71,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
             <span className={`text-sm font-semibold px-2 py-1 rounded-full ${changeColorClass}`}>
               {change}
             </span>
-            <span className="text-sm text-gray-500 ml-2">from last month</span>
+            {/* <span className="text-sm text-gray-500 ml-2">from last month</span> */}
           </div>
         </div>
         <div className={`p-4 rounded-2xl bg-gradient-to-br ${colorConfig.gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
