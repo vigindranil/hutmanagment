@@ -6,8 +6,6 @@ import {
   TrendingUp,
   MapPin,
   Calendar,
-  Building,
-  CreditCard,
   Sparkles,
   BarChart3,
   Home
@@ -16,7 +14,6 @@ import { FaIdCard } from "react-icons/fa";
 import StatsCard from '../components/StatsCard';
 import RecentActivity from '../components/RecentActivity';
 import QuickActions from '../components/QuickActions';
-import Cookies from 'js-cookie';
 import { decodeJwtToken } from '../utils/decodeToken';
 import { commonApi } from '../commonAPI';
 

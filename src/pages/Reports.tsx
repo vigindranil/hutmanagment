@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { BASE_API_URL } from "../constants";
+import { decodeJwtToken } from "../utils/decodeToken";
+import { commonApi } from "../commonAPI";
 
 interface SurveyReport {
   // survey_id: string;
@@ -17,45 +17,39 @@ interface SurveyReport {
 
 const Reports: React.FC = () => {
   const [surveyData, setSurveyData] = useState<SurveyReport[]>([]);
+  const [applicationStatus, setApplicationStatus] = useState<any>(1);
+  const [fromDate, setFromDate] = useState<any>(null);
+  const [toDate, setToDate] = useState<any>(null);
+
+  const handleSearch = () => {
+    fetchSurveyData();
+  };
+
+  const fetchSurveyData = async () => {
+
+    try {
+      const userDetails = decodeJwtToken();
+      const body = {
+        from_date: fromDate,
+        to_date: toDate,
+        application_status_id: applicationStatus,
+        user_id: userDetails?.UserID
+      }
+      const result = await commonApi(`user/getSurveyDetailsReport`, body);
+
+      console.log("Survey Report API Result:", result);
+
+      if (result?.status === 0 && Array.isArray(result?.data)) {
+        setSurveyData(result.data);
+      } else {
+        console.error("API Error:", result?.message || "Unexpected API response");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchSurveyData = async () => {
-      const token = Cookies.get("token");
-
-      const myHeaders = new Headers();
-      myHeaders.append("accept", "*/*");
-      myHeaders.append("Authorization", `Bearer ${token}`);
-      myHeaders.append("Content-Type", "application/json");
-
-      const raw = JSON.stringify({
-        from_date: "01-01-2024",
-        to_date: "30-07-2025",
-        application_status_id: 1,
-        user_id: 7
-      });
-
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow" as RequestRedirect
-      };
-
-      try {
-        const response = await fetch( BASE_API_URL + "user/getSurveyDetailsReport",requestOptions);
-        const result = await response.json();
-        console.log("Survey Report API Result:", result);
-
-        if (result?.status === 0 && Array.isArray(result?.data)) {
-          setSurveyData(result.data);
-        } else {
-          console.error("API Error:", result?.message || "Unexpected API response");
-        }
-      } catch (error) {
-        console.error("Fetch error:", error);
-      }
-    };
-
     fetchSurveyData();
   }, []);
 
@@ -72,8 +66,11 @@ const Reports: React.FC = () => {
             <select
               id="applicationStatus"
               className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              // value={} onChange={}
+              value={applicationStatus}
+              onChange={(value) => setApplicationStatus(value)}
+              defaultValue=""
             >
+              <option value="disabled">Select The Status</option>
               <option value={1}>New</option>
               <option value={2}>Existing</option>
               <option value={3}>Transfer</option>
@@ -88,7 +85,8 @@ const Reports: React.FC = () => {
               type="date"
               id="fromDate"
               className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              // value={} onChange={}
+              value={fromDate}
+              onChange={(e) => setFromDate(e?.target?.value)}
             />
           </div>
           <div>
@@ -99,9 +97,19 @@ const Reports: React.FC = () => {
               type="date"
               id="toDate"
               className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              // value={} onChange={}
+              value={toDate}
+              onChange={(e) => setToDate(e?.target?.value)}
             />
           </div>
+        <div className="flex items-end">
+          <button
+            type="button"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-md shadow transition-colors duration-150"
+            onClick={handleSearch}
+          >
+            Search
+          </button>
+        </div>
         </form>
       </div>
       <div className="overflow-x-auto">
