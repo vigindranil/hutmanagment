@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { decodeJwtToken } from "../utils/decodeToken";
 import { commonApi } from "../commonAPI";
+import moment from "moment";
 
 interface SurveyReport {
   // survey_id: string;
@@ -30,9 +31,9 @@ const Reports: React.FC = () => {
     try {
       const userDetails = decodeJwtToken();
       const body = {
-        from_date: fromDate,
-        to_date: toDate,
-        application_status_id: applicationStatus,
+        from_date: fromDate ? moment(fromDate).format("DD-MM-YYYY") : null,
+        to_date: toDate ? moment(toDate).format("DD-MM-YYYY") : null,
+        application_status_id: parseInt(applicationStatus),
         user_id: userDetails?.UserID
       }
       const result = await commonApi(`user/getSurveyDetailsReport`, body);
@@ -42,7 +43,7 @@ const Reports: React.FC = () => {
       if (result?.status === 0 && Array.isArray(result?.data)) {
         setSurveyData(result.data);
       } else {
-        console.error("API Error:", result?.message || "Unexpected API response");
+        setSurveyData([]);
       }
     } catch (error) {
       console.error("Fetch error:", error);
@@ -67,10 +68,8 @@ const Reports: React.FC = () => {
               id="applicationStatus"
               className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={applicationStatus}
-              onChange={(value) => setApplicationStatus(value)}
-              defaultValue=""
+              onChange={e => setApplicationStatus(e?.target?.value)}
             >
-              <option value="disabled">Select The Status</option>
               <option value={1}>New</option>
               <option value={2}>Existing</option>
               <option value={3}>Transfer</option>
@@ -132,14 +131,14 @@ const Reports: React.FC = () => {
               surveyData.map((row, idx) => (
                 <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                   {/* <td className="px-4 py-2 border">{row.survey_id}</td> */}
-                  <td className="px-4 py-2 border">{row.survey_date}</td>
-                  <td className="px-4 py-2 border">{row.application_number}</td>
-                  <td className="px-4 py-2 border">{row.haat_id}</td>
-                  <td className="px-4 py-2 border">{row.haat_name}</td>
-                  <td className="px-4 py-2 border">{row.shop_owner_name}</td>
-                  <td className="px-4 py-2 border">{row.mobile_number}</td>
-                  <td className="px-4 py-2 border">{row.survey_status}</td>
-                  <td className="px-4 py-2 border">{row.license_type}</td>
+                  <td className="px-4 py-2 border">{row?.survey_date}</td>
+                  <td className="px-4 py-2 border">{row?.application_number}</td>
+                  <td className="px-4 py-2 border">{row?.haat_id}</td>
+                  <td className="px-4 py-2 border">{row?.haat_name}</td>
+                  <td className="px-4 py-2 border">{row?.shop_owner_name}</td>
+                  <td className="px-4 py-2 border">{row?.mobile_number}</td>
+                  <td className="px-4 py-2 border">{row?.survey_status}</td>
+                  <td className="px-4 py-2 border">{row?.license_type}</td>
                 </tr>
               ))
             ) : (
