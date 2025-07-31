@@ -103,6 +103,8 @@ const Login: React.FC = () => {
     }
   ];
 
+  const [loginType, setLoginType] = React.useState<'user' | 'admin'>('user');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex">
       {/* Left Panel - Login Form */}
@@ -136,12 +138,38 @@ const Login: React.FC = () => {
             </div>
           </div>
 
+          {/* Login Type Switch */}
+          <div className="flex justify-center mb-6">
+            <button
+              type="button"
+              onClick={() => setLoginType('user')}
+              className={`px-4 py-2 rounded-l-xl border border-blue-600 font-semibold transition-colors ${
+                loginType === 'user'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              User Login
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoginType('admin')}
+              className={`px-4 py-2 rounded-r-xl border border-blue-600 font-semibold transition-colors ${
+                loginType === 'admin'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              Admin Login
+            </button>
+          </div>
+
           {/* Login Form */}
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-4">
               <div>
                 <label htmlFor="userId" className="block text-sm font-semibold text-gray-700 mb-2">
-                  User Id
+                  {loginType === 'admin' ? 'Admin Id' : 'User Id'}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -156,7 +184,7 @@ const Login: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(String(e.target.value))}
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200"
-                    placeholder="Enter your User Id"
+                    placeholder={loginType === 'admin' ? 'Enter your Admin Id' : 'Enter your User Id'}
                   />
                 </div>
               </div>
@@ -226,7 +254,7 @@ const Login: React.FC = () => {
                   <span>Signing in...</span>
                 </div>
               ) : (
-                'Sign in to Dashboard'
+                loginType === 'admin' ? 'Sign in as Admin' : 'Sign in as User '
               )}
             </button>
           </form>
