@@ -2,12 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
-  Users,
-  Calculator,
+  // Users,
+  // Calculator,
   CreditCard,
-  AlertTriangle,
+  // AlertTriangle,
   FileText,
-  Settings,
+  // Settings,
   Menu,
   X,
   Building2,
@@ -18,8 +18,8 @@ import { decodeJwtToken } from '../utils/decodeToken';
 
 interface LayoutProps {
   children: React.ReactNode;
-  UserFullName: string;
-  UserType: string;
+  UserFullName?: string;
+  UserType?: string;
 }
 
 interface UserDetails {
@@ -29,7 +29,7 @@ interface UserDetails {
   // Add other properties if needed
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullName, UserType: propUserType }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -170,11 +170,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   aria-expanded={dropdownOpen}
                 >
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-gray-900">{userDetails?.UserFullName}</p>
-                    <p className="text-xs text-gray-500">{userDetails?.UserType}</p>
+                    <p className="text-sm font-semibold text-gray-900">{propUserFullName || userDetails?.UserFullName}</p>
+                    <p className="text-xs text-gray-500">{propUserType || userDetails?.UserType}</p>
                   </div>
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-sm font-bold text-white">{userDetails?.UserFullName?.[0]}</span>
+                    <span className="text-sm font-bold text-white">{(propUserFullName || userDetails?.UserFullName)?.[0]}</span>
                   </div>
                   <svg
                     className={`w-4 h-4 ml-1 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}

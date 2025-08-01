@@ -23,6 +23,7 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loginType, setLoginType] = useState<'user' | 'admin'>('user');
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -59,10 +60,17 @@ const Login: React.FC = () => {
         const decoded_data = jwtDecode<any>(result?.data?.access_token || "");
         const user_details = JSON.parse(decoded_data?.userDetails);
 
-        if (user_details?.UserTypeID == 100){ // for admin
+        if (loginType === 'admin' && user_details?.UserTypeID == 100){ // for admin
           navigate('/dashboard');
-        } else if(user_details?.UserTypeID == 1) { // for user
+        } else if(loginType === 'user' && user_details?.UserTypeID == 1) { // for user
           navigate('/user-dashboard');
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Failed',
+            text: 'Invalid login type or credentials',
+            confirmButtonColor: '#d33'
+          });
         }
 
       } else {
@@ -102,8 +110,6 @@ const Login: React.FC = () => {
       description: 'Bank-grade security and data protection'
     }
   ];
-
-  const [loginType, setLoginType] = React.useState<'user' | 'admin'>('user');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex">

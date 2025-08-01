@@ -228,64 +228,66 @@ const UserDashboard: React.FC = () => {
               </button>
             </div>
             {selectedDetails ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[5px] gap-y-[2px] text-base">
-                <div>
-                  {/* <p><span className="font-semibold text-gray-700">Survey ID:</span> {selectedDetails?.survey_id}</p> */}
-                  {/* <p><span className="font-semibold text-gray-700">License Type:</span> {selectedDetails?.license_type}</p> */}
-                  {/* <p><span className="font-semibold text-gray-700">Application Status:</span> {selectedDetails?.application_status}</p> */}
-                  {/* <p><span className="font-semibold text-gray-700">Applicant Type:</span> {selectedDetails?.applicant_type}</p> */}
-                  {/* <p><span className="font-semibold text-gray-700">Usage Type:</span> {selectedDetails?.usage_type}</p> */}
-                  <p><span className="font-semibold text-gray-700">Name:</span> {selectedDetails?.name}</p>
-                  <p><span className="font-semibold text-gray-700">Guardian:</span> {selectedDetails?.guardian_name}</p>
-                  <p><span className="font-semibold text-gray-700">Address:</span> {selectedDetails?.address}</p>
-                  <p><span className="font-semibold text-gray-700">Mobile:</span> {selectedDetails?.mobile}</p>
-                  <p><span className="font-semibold text-gray-700">Citizenship:</span> {selectedDetails?.citizenship}</p>
-                  <p><span className="font-semibold text-gray-700">PIN Code:</span> {selectedDetails?.pin_code}</p>
-                  <p><span className="font-semibold text-gray-700">Is Within Family:</span> {selectedDetails?.is_within_family ? "Yes" : "No"}</p>
-                  <p><span className="font-semibold text-gray-700">Transfer Relationship:</span> {selectedDetails?.transfer_relationship}</p>
-                  <p><span className="font-semibold text-gray-700">Document Type:</span> {selectedDetails?.document_type}</p>
-                  <p><span className="font-semibold text-gray-700">Document Image:</span> {selectedDetails?.document_image}</p>
-                  <p><span className="font-semibold text-gray-700">PAN:</span> {selectedDetails?.pan}</p>
-                  <p><span className="font-semibold text-gray-700">PAN Image:</span> {selectedDetails?.pan_image}</p>
-                  <p><span className="font-semibold text-gray-700">Previous License No:</span> {selectedDetails?.previous_license_no}</p>
-                  <p><span className="font-semibold text-gray-700">License Expiry:</span> {selectedDetails?.license_expiry_date}</p>
-                  <p><span className="font-semibold text-gray-700">Property Tax Payment To Year:</span> {selectedDetails?.property_tax_payment_to_year}</p>
-                  <p><span className="font-semibold text-gray-700">Land Transfer Explanation:</span> {selectedDetails?.land_transfer_explanation}</p>
-                  <p><span className="font-semibold text-gray-700">Occupy:</span> {selectedDetails?.occupy ? "Yes" : "No"}</p>
-                  <p><span className="font-semibold text-gray-700">Occupy From Year:</span> {selectedDetails?.occupy_from_year}</p>
-                  <p><span className="font-semibold text-gray-700">Present Occupier Name:</span> {selectedDetails?.present_occupier_name}</p>
-                  <p><span className="font-semibold text-gray-700">Occupier Guardian Name:</span> {selectedDetails?.occupier_guardian_name}</p>
-                  <p><span className="font-semibold text-gray-700">Residential Certificate Attached:</span> {selectedDetails?.residential_certificate_attached}</p>
-                </div>
-                <div>
-                  
-                  <p><span className="font-semibold text-gray-700">Trade License Attached:</span> {selectedDetails?.trade_license_attached}</p>
-                  <p><span className="font-semibold text-gray-700">Affidavit Attached:</span> {selectedDetails?.affidavit_attached}</p>
-                  <p><span className="font-semibold text-gray-700">ADSR Name:</span> {selectedDetails?.adsr_name}</p>
-                  <p><span className="font-semibold text-gray-700">Warision Certificate Attached:</span> {selectedDetails?.warision_certificate_attached}</p>
-                  <p><span className="font-semibold text-gray-700">Death Certificate Attached:</span> {selectedDetails?.death_certificate_attached}</p>
-                  <p><span className="font-semibold text-gray-700">NOC Legal Heirs Attached:</span> {selectedDetails?.noc_legal_heirs_attached}</p>
-                  <p><span className="font-semibold text-gray-700">Is Same Owner:</span> {selectedDetails?.is_same_owner ? "Yes" : "No"}</p>
-                  <p><span className="font-semibold text-gray-700">Rented To Whom:</span> {selectedDetails?.rented_to_whom}</p>
-                  {/* <p><span className="font-semibold text-gray-700">District ID:</span> {selectedDetails?.district_id}</p> */}
-                  {/* <p><span className="font-semibold text-gray-700">Police Station ID:</span> {selectedDetails?.police_station_id}</p> */}
-                  {/* <p><span className="font-semibold text-gray-700">Hat ID:</span> {selectedDetails?.hat_id}</p> */}
-                  {/* <p><span className="font-semibold text-gray-700">Mouza ID:</span> {selectedDetails?.mouza_id}</p> */}
-                  <p><span className="font-semibold text-gray-700">Stall No:</span> {selectedDetails?.stall_no}</p>
-                  <p><span className="font-semibold text-gray-700">Holding No:</span> {selectedDetails?.holding_no}</p>
-                  <p><span className="font-semibold text-gray-700">JL No:</span> {selectedDetails?.jl_no}</p>
-                  <p><span className="font-semibold text-gray-700">Khatian No:</span> {selectedDetails?.khatian_no}</p>
-                  <p><span className="font-semibold text-gray-700">Plot No:</span> {selectedDetails?.plot_no}</p>
-                  <p><span className="font-semibold text-gray-700">Area DOM:</span> {selectedDetails?.area_dom_sqft} sqft</p>
-                  <p><span className="font-semibold text-gray-700">Area COM:</span> {selectedDetails?.area_com_sqft} sqft</p>
-                  <p><span className="font-semibold text-gray-700">Direction:</span> {selectedDetails?.direction}</p>
-                  <p><span className="font-semibold text-gray-700">Latitude:</span> {selectedDetails?.latitude}</p>
-                  <p><span className="font-semibold text-gray-700">Longitude:</span> {selectedDetails?.longitude}</p>
-                  <p><span className="font-semibold text-gray-700">Sketch Map Attached:</span> {selectedDetails?.sketch_map_attached}</p>
-                  <p><span className="font-semibold text-gray-700">Stall Image 1:</span> {selectedDetails?.stall_image1}</p>
-                  <p><span className="font-semibold text-gray-700">Stall Image 2:</span> {selectedDetails?.stall_image2}</p>
-                  {/* <p><span className="font-semibold text-gray-700">User ID:</span> {selectedDetails?.user_id}</p> */}
-                </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
+                  <tbody>
+                    {[
+                      { label: "Name", value: selectedDetails?.name },
+                      { label: "Guardian", value: selectedDetails?.guardian_name },
+                      { label: "Address", value: selectedDetails?.address },
+                      { label: "Mobile", value: selectedDetails?.mobile },
+                      { label: "Citizenship", value: selectedDetails?.citizenship },
+                      { label: "PIN Code", value: selectedDetails?.pin_code },
+                      { label: "Is Within Family", value: selectedDetails?.is_within_family ? "Yes" : "No" },
+                      { label: "Transfer Relationship", value: selectedDetails?.transfer_relationship },
+                      { label: "Document Type", value: selectedDetails?.document_type },
+                      { label: "Document Image", value: selectedDetails?.document_image },
+                      { label: "PAN", value: selectedDetails?.pan },
+                      { label: "PAN Image", value: selectedDetails?.pan_image },
+                      { label: "Previous License No", value: selectedDetails?.previous_license_no },
+                      { label: "License Expiry", value: selectedDetails?.license_expiry_date },
+                      { label: "Property Tax Payment To Year", value: selectedDetails?.property_tax_payment_to_year },
+                      { label: "Land Transfer Explanation", value: selectedDetails?.land_transfer_explanation },
+                      { label: "Occupy", value: selectedDetails?.occupy ? "Yes" : "No" },
+                      { label: "Occupy From Year", value: selectedDetails?.occupy_from_year },
+                      { label: "Present Occupier Name", value: selectedDetails?.present_occupier_name },
+                      { label: "Occupier Guardian Name", value: selectedDetails?.occupier_guardian_name },
+                      { label: "Residential Certificate Attached", value: selectedDetails?.residential_certificate_attached },
+                      { label: "Trade License Attached", value: selectedDetails?.trade_license_attached },
+                      { label: "Affidavit Attached", value: selectedDetails?.affidavit_attached },
+                      { label: "ADSR Name", value: selectedDetails?.adsr_name },
+                      { label: "Warision Certificate Attached", value: selectedDetails?.warision_certificate_attached },
+                      { label: "Death Certificate Attached", value: selectedDetails?.death_certificate_attached },
+                      { label: "NOC Legal Heirs Attached", value: selectedDetails?.noc_legal_heirs_attached },
+                      { label: "Is Same Owner", value: selectedDetails?.is_same_owner ? "Yes" : "No" },
+                      { label: "Rented To Whom", value: selectedDetails?.rented_to_whom },
+                      { label: "Stall No", value: selectedDetails?.stall_no },
+                      { label: "Holding No", value: selectedDetails?.holding_no },
+                      { label: "JL No", value: selectedDetails?.jl_no },
+                      { label: "Khatian No", value: selectedDetails?.khatian_no },
+                      { label: "Plot No", value: selectedDetails?.plot_no },
+                      { label: "Area DOM", value: selectedDetails?.area_dom_sqft ? `${selectedDetails?.area_dom_sqft} sqft` : "" },
+                      { label: "Area COM", value: selectedDetails?.area_com_sqft ? `${selectedDetails?.area_com_sqft} sqft` : "" },
+                      { label: "Direction", value: selectedDetails?.direction },
+                      { label: "Latitude", value: selectedDetails?.latitude },
+                      { label: "Longitude", value: selectedDetails?.longitude },
+                      { label: "Sketch Map Attached", value: selectedDetails?.sketch_map_attached },
+                      { label: "Stall Image 1", value: selectedDetails?.stall_image1 },
+                      { label: "Stall Image 2", value: selectedDetails?.stall_image2 },
+                    ].map((item, idx) => (
+                      <tr key={idx} className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                        <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item.label}</td>
+                        <td className="px-4 py-2 border-b text-gray-900">
+                          {item.label.toLowerCase().includes("image") && item.value ? (
+                            <a href={String(item.value)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a>
+                          ) : (
+                            item.value || <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             ) : (
               <p className="text-center text-lg text-red-500 py-8">No data found.</p>
