@@ -74,14 +74,13 @@ const Vendors: React.FC = () => {
     }
   ];
 
-  const filteredVendors = vendors.filter(vendor => {
-    const matchesSearch = vendor.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         vendor.ownerName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === 'all' || vendor.type.toLowerCase() === filterType;
+  const filteredVendors = vendors?.filter(vendor => {
+    const matchesSearch = vendor?.businessName?.toLowerCase().includes(searchTerm?.toLowerCase()) || vendor?.ownerName?.toLowerCase().includes(searchTerm?.toLowerCase());
+    const matchesFilter = filterType === 'all' || vendor?.type?.toLowerCase() === filterType;
     return matchesSearch && matchesFilter;
   });
 
-  const getStatusBadge = (status: string, outstanding: number) => {
+  const getStatusBadge = (status: string) => {
     if (status === 'Defaulter') {
       return <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Defaulter</span>;
     }
@@ -112,7 +111,7 @@ const Vendors: React.FC = () => {
               placeholder="Search vendors by name or business..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e?.target?.value)}
             />
           </div>
           <div className="flex items-center space-x-4">
@@ -121,7 +120,7 @@ const Vendors: React.FC = () => {
               <select
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
+                onChange={(e) => setFilterType(e?.target?.value)}
               >
                 <option value="all">All Types</option>
                 <option value="permanent">Permanent</option>
@@ -135,15 +134,15 @@ const Vendors: React.FC = () => {
 
       {/* Vendors Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredVendors.map((vendor) => (
+        {filteredVendors?.map((vendor) => (
           <div key={vendor.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900">{vendor.businessName}</h3>
-                <p className="text-gray-600">{vendor.ownerName}</p>
+                <h3 className="text-lg font-semibold text-gray-900">{vendor?.businessName}</h3>
+                <p className="text-gray-600">{vendor?.ownerName}</p>
               </div>
               <div className="flex items-center space-x-2">
-                {getStatusBadge(vendor.status, vendor.outstanding)}
+                {getStatusBadge(vendor?.status)}
                 <div className="flex space-x-1">
                   <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
                     <Edit className="w-4 h-4" />
@@ -158,31 +157,31 @@ const Vendors: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center text-sm text-gray-600">
                 <Phone className="w-4 h-4 mr-2" />
-                {vendor.phone}
+                {vendor?.phone}
               </div>
               <div className="flex items-center text-sm text-gray-600">
                 <MapPin className="w-4 h-4 mr-2" />
-                {vendor.address}
+                {vendor?.address}
               </div>
               <div className="flex items-center text-sm text-gray-600">
                 <Building className="w-4 h-4 mr-2" />
-                {vendor.type} • {vendor.category} • {vendor.area}
+                {vendor?.type} • {vendor?.category} • {vendor?.area}
               </div>
               <div className="flex items-center text-sm text-gray-600">
                 <Calendar className="w-4 h-4 mr-2" />
-                Tax Period: {vendor.taxPeriod}
+                Tax Period: {vendor?.taxPeriod}
               </div>
             </div>
 
             <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">Last Payment:</span>
-                <span className="font-medium text-gray-900">{vendor.lastPayment}</span>
+                <span className="font-medium text-gray-900">{vendor?.lastPayment}</span>
               </div>
-              {vendor.outstanding > 0 && (
+              {vendor?.outstanding > 0 && (
                 <div className="flex items-center justify-between text-sm mt-2">
                   <span className="text-gray-500">Outstanding:</span>
-                  <span className="font-medium text-red-600">₹{vendor.outstanding.toLocaleString()}</span>
+                  <span className="font-medium text-red-600">₹{vendor?.outstanding?.toLocaleString()}</span>
                 </div>
               )}
             </div>
@@ -190,7 +189,7 @@ const Vendors: React.FC = () => {
         ))}
       </div>
 
-      {filteredVendors.length === 0 && (
+      {filteredVendors?.length === 0 && (
         <div className="text-center py-12">
           <div className="text-gray-500">
             <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />

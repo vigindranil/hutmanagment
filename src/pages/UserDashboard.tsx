@@ -101,8 +101,8 @@ const UserDashboard: React.FC = () => {
           requestOptions
         );
 
-        const result = await response.json();
-        const data = Array.isArray(result?.data) ? result.data : [result.data];
+        const result = await response?.json();
+        const data = Array?.isArray(result?.data) ? result.data : [result?.data];
         setApplicationData(data || []);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -139,11 +139,11 @@ const UserDashboard: React.FC = () => {
       );
       
   
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+      if (!response?.ok) {
+        throw new Error(`HTTP ${response?.status}: ${await response?.text()}`);
       }
   
-      const result = await response.json();
+      const result = await response?.json();
       setSelectedDetails(result?.data || null);
       setIsModalOpen(true);
     } catch (error) {
@@ -164,7 +164,7 @@ const UserDashboard: React.FC = () => {
 
         {loading ? (
           <p>Loading...</p>
-        ) : applicationData.length > 0 ? (
+        ) : applicationData?.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-200 rounded-lg">
               <thead className="bg-gray-100 text-gray-700">
@@ -179,7 +179,7 @@ const UserDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {applicationData.map((row, idx) => (
+                {applicationData?.map((row, idx) => (
                   <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                     <td className="px-4 py-2 border text-sm">{row?.survey_date}</td>
                     <td className="px-4 py-2 border text-sm">{row?.application_number}</td>
@@ -190,7 +190,7 @@ const UserDashboard: React.FC = () => {
                     <td className="px-4 py-2 border text-sm flex gap-2">
                       <button
                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs"
-                        onClick={() => handleViewClick(row.survey_id)}
+                        onClick={() => handleViewClick(row?.survey_id)}
                       >
                         View
                       </button>
@@ -276,12 +276,12 @@ const UserDashboard: React.FC = () => {
                       { label: "Stall Image 2", value: selectedDetails?.stall_image2 },
                     ].map((item, idx) => (
                       <tr key={idx} className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                        <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item.label}</td>
+                        <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item?.label}</td>
                         <td className="px-4 py-2 border-b text-gray-900">
-                          {item.label.toLowerCase().includes("image") && item.value ? (
-                            <a href={String(item.value)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a>
+                          {item?.label?.toLowerCase().includes("image") && item?.value ? (
+                            <a href={String(item?.value)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a>
                           ) : (
-                            item.value || <span className="text-gray-400">-</span>
+                            item?.value || <span className="text-gray-400">-</span>
                           )}
                         </td>
                       </tr>

@@ -82,9 +82,7 @@ const Reports: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState<FullApplicationDetails | null>(null);
 
-  const handleSearch = () => {
-    fetchSurveyData();
-  };
+  const handleSearch = () => {fetchSurveyData();};
 
   const handleViewClick = async (surveyId: string) => {
     try {
@@ -95,7 +93,7 @@ const Reports: React.FC = () => {
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Content-Type", "application/json");
 
-      const raw = JSON.stringify({ surveyID: parseInt(surveyId) });
+      const raw = JSON?.stringify({ surveyID: parseInt(surveyId) });
 
       const requestOptions = {
         method: "POST",
@@ -104,14 +102,11 @@ const Reports: React.FC = () => {
         redirect: "follow" as RequestRedirect,
       };
 
-      const response = await fetch(
-        BASE_API_URL + "user/getHaatApplicationDetailsBySurveyID",
-        requestOptions
-      );
+      const response = await fetch(BASE_API_URL + "user/getHaatApplicationDetailsBySurveyID",requestOptions);
 
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+        throw new Error(`HTTP ${response?.status}: ${await response?.text()}`);
       }
 
       const result = await response.json();
@@ -138,7 +133,7 @@ const Reports: React.FC = () => {
 
       console.log("Survey Report API Result:", result);
 
-      if (result?.status === 0 && Array.isArray(result?.data)) {
+      if (result?.status === 0 && Array?.isArray(result?.data)) {
         setSurveyData(result.data);
       } else {
         setSurveyData([]);
@@ -148,9 +143,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchSurveyData();
-  }, []);
+  useEffect(() => {fetchSurveyData();}, []);
 
   const surveyStatusMap: { [key: number]: string } = {
     1: "New",

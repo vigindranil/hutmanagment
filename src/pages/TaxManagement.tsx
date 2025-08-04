@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, Settings, Plus, Edit, Trash2, IndianRupee } from 'lucide-react';
+import { Calculator, Plus, Edit, Trash2, IndianRupee } from 'lucide-react';
 
 const TaxManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState('rates');
@@ -170,8 +170,8 @@ const TaxManagement: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {taxRates.map((rate) => (
-                      <tr key={rate.id} className="hover:bg-gray-50">
+                    {taxRates?.map((rate) => (
+                      <tr key={rate?.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {rate.type}
                         </td>
@@ -185,7 +185,7 @@ const TaxManagement: React.FC = () => {
                           ₹{rate.ratePerSqFt}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          ₹{rate.minAmount} - ₹{rate.maxAmount}
+                          ₹{rate.minAmount} - ₹{rate?.maxAmount}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex space-x-2">
@@ -217,28 +217,28 @@ const TaxManagement: React.FC = () => {
               </div>
 
               <div className="space-y-4">
-                {recentBills.map((bill) => (
-                  <div key={bill.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200">
+                {recentBills?.map((bill) => (
+                  <div key={bill?.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-4">
-                          <h3 className="text-lg font-medium text-gray-900">{bill.vendorName}</h3>
-                          {getStatusBadge(bill.status)}
+                          <h3 className="text-lg font-medium text-gray-900">{bill?.vendorName}</h3>
+                          {getStatusBadge(bill?.status)}
                         </div>
                         <div className="mt-2 text-sm text-gray-500">
-                          <span>Bill ID: {bill.id}</span>
+                          <span>Bill ID: {bill?.id}</span>
                           <span className="mx-2">•</span>
-                          <span>Period: {bill.period}</span>
+                          <span>Period: {bill?.period}</span>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-gray-900">₹{bill.amount.toLocaleString()}</div>
+                        <div className="text-lg font-bold text-gray-900">₹{bill?.amount?.toLocaleString()}</div>
                         <div className="text-sm text-gray-500">
-                          Due: {bill.dueDate}
+                          Due: {bill?.dueDate}
                         </div>
-                        {bill.paidDate && (
+                        {bill?.paidDate && (
                           <div className="text-sm text-green-600">
-                            Paid: {bill.paidDate}
+                            Paid: {bill?.paidDate}
                           </div>
                         )}
                       </div>

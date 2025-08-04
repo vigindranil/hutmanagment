@@ -51,11 +51,11 @@ const Login: React.FC = () => {
       const response = await fetch(BASE_API_URL + "auth/authentication", requestOptions);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(`HTTP error! Status: ${response?.status}`);
       }
 
       const result = await response.json();
-      if (result.status == 0) {
+      if (result?.status == 0) {
         Cookies.set('token', result?.data?.access_token);
         const decoded_data = jwtDecode<any>(result?.data?.access_token || "");
         const user_details = JSON.parse(decoded_data?.userDetails);
@@ -188,7 +188,7 @@ const Login: React.FC = () => {
                     autoComplete="off"
                     required
                     value={email}
-                    onChange={(e) => setEmail(String(e.target.value))}
+                    onChange={(e) => setEmail(String(e?.target?.value))}
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200"
                     placeholder={loginType === 'admin' ? 'Enter your Admin Id' : 'Enter your User Id'}
                   />
@@ -210,7 +210,7 @@ const Login: React.FC = () => {
                     autoComplete="current-password"
                     required
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e?.target?.value)}
                     className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200"
                     placeholder="Enter your password"
                   />
@@ -284,14 +284,14 @@ const Login: React.FC = () => {
           </div>
 
           <div className="space-y-8">
-            {features.map((feature, index) => (
+            {features?.map((feature, index) => (
               <div key={index} className="flex items-start space-x-4 group">
                 <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl group-hover:bg-white/30 transition-all duration-300">
                   <feature.icon className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-1">{feature.title}</h3>
-                  <p className="text-blue-100">{feature.description}</p>
+                  <h3 className="text-lg font-semibold mb-1">{feature?.title}</h3>
+                  <p className="text-blue-100">{feature?.description}</p>
                 </div>
               </div>
             ))}
