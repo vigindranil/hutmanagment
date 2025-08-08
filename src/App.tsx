@@ -15,8 +15,8 @@ import UserDashboard from './pages/UserDashboard';
 function App() {
   return (
     
-  // <BrowserRouter>
-    <BrowserRouter basename='/HaatManagement'>
+  <BrowserRouter>
+    {/* // <BrowserRouter basename='/HaatManagement'> */}
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />

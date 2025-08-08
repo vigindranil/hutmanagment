@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { BASE_API_URL } from "../constants";
+const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import Cookies from 'js-cookie';
 import { decodeJwtToken } from "../utils/decodeToken";
 import { commonApiImage } from "../commonAPI";

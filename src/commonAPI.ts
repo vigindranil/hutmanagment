@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { BASE_API_URL } from './constants';
+const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 
 export const commonApi = async (url: string, body: any = {}) => {
     const myHeaders = new Headers();

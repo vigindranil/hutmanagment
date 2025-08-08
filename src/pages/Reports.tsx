@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { decodeJwtToken } from "../utils/decodeToken";
 import { commonApi, commonApiImage } from "../commonAPI";
 import moment from "moment";
-import { BASE_API_URL } from "../constants";
+const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import Cookies from "js-cookie";
 import { Dialog } from "@headlessui/react";
 

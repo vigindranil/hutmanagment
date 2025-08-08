@@ -12,7 +12,7 @@ import {
   BarChart3,
   CheckCircle
 } from 'lucide-react';
-import { BASE_API_URL } from "../constants";
+const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';

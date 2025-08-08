@@ -1,1 +1,0 @@
-export const BASE_API_URL = "http://115.187.62.16:9999/HMSRestAPI/api/" 
