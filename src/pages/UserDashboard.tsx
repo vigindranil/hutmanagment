@@ -3,7 +3,10 @@ import React, { useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { BASE_API_URL } from "../constants";
 import Cookies from 'js-cookie';
+import { decodeJwtToken } from "../utils/decodeToken";
+import { commonApiImage } from "../commonAPI";
 
+// --- INTERFACES ---
 interface HaatApplicationDetails {
   survey_id: string;
   survey_date: string;
@@ -73,21 +76,53 @@ interface FullApplicationDetails {
   user_id?: number;
 }
 
+// --- API UTILITY ---
+interface ImageResponse {
+  version: string;
+  status: number;
+  message: string;
+  data: string; // This will contain the base64 string
+}
+
+const getIdentityDocument = async (documentPath: string): Promise<ImageResponse> => {
+  const token = Cookies.get('token');
+  const url = `${BASE_API_URL}/getImgAsBase64ByFileName/${documentPath}`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'accept': '*/*',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch image");
+  }
+  return response.json();
+};
+
+
+// --- COMPONENT ---
 const UserDashboard: React.FC = () => {
   const [applicationData, setApplicationData] = useState<HaatApplicationDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState<FullApplicationDetails | null>(null);
+  const [isImageLoading, setIsImageLoading] = useState(false);
 
   useEffect(() => {
     const fetchApplicationDetails = async () => {
       try {
+        setLoading(true);
         const myHeaders = new Headers();
         myHeaders.append("accept", "*/*");
-        myHeaders.append("Authorization", "Basic ODAwMTEwNDM3Njo5OTk5");
+        myHeaders.append("Authorization", "Basic ODAwMTEwNDM3NjphZG1pbkAxMjM=");
         myHeaders.append("Content-Type", "application/json");
 
-        const raw = JSON.stringify({ user_id: 13 });
+        const decoded = decodeJwtToken();
+        console.log(decoded);
+        
+        const userId = decoded?.UserID ?? 0;
+        const raw = JSON.stringify({ user_id: userId });
 
         const requestOptions = {
           method: "POST",
@@ -96,13 +131,9 @@ const UserDashboard: React.FC = () => {
           redirect: "follow" as RequestRedirect,
         };
 
-        const response = await fetch(
-          BASE_API_URL + "user/getHaatApplicationDetailsByUserID",
-          requestOptions
-        );
-
-        const result = await response?.json();
-        const data = Array?.isArray(result?.data) ? result.data : [result?.data];
+        const response = await fetch(BASE_API_URL + "user/getHaatApplicationDetailsByUserID", requestOptions);
+        const result = await response.json();
+        const data = Array.isArray(result?.data) ? result.data : [result.data];
         setApplicationData(data || []);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -118,37 +149,88 @@ const UserDashboard: React.FC = () => {
   const handleViewClick = async (surveyId: string) => {
     try {
       const token = Cookies.get('token'); // get fresh token
-  
+
       const myHeaders = new Headers();
       myHeaders.append("accept", "*/*");
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Content-Type", "application/json");
-  
+
       const raw = JSON.stringify({ surveyID: parseInt(surveyId) });
-  
+
       const requestOptions = {
         method: "POST",
         headers: myHeaders,
         body: raw,
         redirect: "follow" as RequestRedirect,
       };
-  
+
       const response = await fetch(
         BASE_API_URL + "user/getHaatApplicationDetailsBySurveyID",
         requestOptions
       );
-      
-  
+
       if (!response?.ok) {
         throw new Error(`HTTP ${response?.status}: ${await response?.text()}`);
       }
-  
-      const result = await response?.json();
-      setSelectedDetails(result?.data || null);
+
+      const result = await response.json();
+
+      const stall_image1 = await commonApiImage(result?.data?.stall_image1);
+      const stall_image2 = await commonApiImage(result?.data?.stall_image2);
+      const pan_image = await commonApiImage(result?.data?.pan_image);
+      const sketch_map_attached = await commonApiImage(result?.data?.sketch_map_attached);
+      
+      setSelectedDetails({...result?.data, stall_image1, stall_image2, pan_image, sketch_map_attached});
       setIsModalOpen(true);
     } catch (error) {
       console.error("Error fetching full details:", error);
       alert("Failed to fetch application details. Make sure your credentials/token are valid.");
+    }
+  };
+
+  const handleViewImage = async (documentPath: string | undefined) => {
+    if (!documentPath) {
+      alert("No document path provided.");
+      return;
+    }
+
+    setIsImageLoading(true);
+    try {
+      console.log("Fetching image for path:", documentPath);
+      const result = await getIdentityDocument(documentPath);
+      console.log("API Response:", result);
+
+      if (result && result.data && result.data.startsWith("data:image")) {
+        const newTab = window.open();
+        if (newTab) {
+          newTab.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Document Viewer</title>
+                        <style>
+                            body { margin: 0; background: #2e2e2e; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                            img { max-width: 100%; max-height: 100%; }
+                        </style>
+                    </head>
+                    <body>
+                        <img src="${result.data}" alt="Document Preview" />
+                    </body>
+                    </html>
+                `);
+          newTab.document.close();
+        } else {
+          throw new Error("Could not open new tab. Popup blocker?");
+        }
+      } else {
+        console.error("Unexpected image data:", result.data);
+        throw new Error("Image data missing or invalid.");
+      }
+    } catch (error) {
+      console.error("Error displaying image:", error);
+      alert("Could not load the image. Please try again.");
+    } finally {
+      setIsImageLoading(false);
     }
   };
 
@@ -219,13 +301,6 @@ const UserDashboard: React.FC = () => {
               <Dialog.Title className="text-2xl font-extrabold text-blue-700 tracking-wide">
                 Application Details
               </Dialog.Title>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-red-500 text-2xl font-bold focus:outline-none"
-                aria-label="Close"
-              >
-                &times;
-              </button>
             </div>
             {selectedDetails ? (
               <div className="overflow-x-auto">
@@ -271,17 +346,17 @@ const UserDashboard: React.FC = () => {
                       { label: "Direction", value: selectedDetails?.direction },
                       { label: "Latitude", value: selectedDetails?.latitude },
                       { label: "Longitude", value: selectedDetails?.longitude },
-                      { label: "Sketch Map Attached", value: selectedDetails?.sketch_map_attached },
+                      { label: "Sketch Map Attached Image", value: selectedDetails?.sketch_map_attached },
                       { label: "Stall Image 1", value: selectedDetails?.stall_image1 },
                       { label: "Stall Image 2", value: selectedDetails?.stall_image2 },
                     ].map((item, idx) => (
                       <tr key={idx} className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                        <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item?.label}</td>
+                        <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item.label}</td>
                         <td className="px-4 py-2 border-b text-gray-900">
-                          {item?.label?.toLowerCase().includes("image") && item?.value ? (
-                            <a href={String(item?.value)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a>
+                          {item.label.toLowerCase().includes("image") && item.value ? (
+                            <a href={String(item.value)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a>
                           ) : (
-                            item?.value || <span className="text-gray-400">-</span>
+                            item.value || <span className="text-gray-400">-</span>
                           )}
                         </td>
                       </tr>

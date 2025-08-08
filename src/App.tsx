@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import Layout from './components/Layout';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -14,57 +14,59 @@ import UserDashboard from './pages/UserDashboard';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/survey" element={
+    
+  // <BrowserRouter>
+    <BrowserRouter basename='/HaatManagement'>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/survey" element={
             <Layout>
               <Survey />
             </Layout>
           } />
-        <Route path="/dashboard" element={
-          <Layout>
-            <Dashboard />
-          </Layout>
-        } />
-        <Route path="/vendors" element={
-          <Layout>
-            <Vendors />
-          </Layout>
-        } />
-        <Route path="/tax-management" element={
-          <Layout>
-            <TaxManagement />
-          </Layout>
-        } />
-        <Route path="/payments" element={
-          <Layout>
-            <Payments />
-          </Layout>
-        } />
-        <Route path="/defaulters" element={
-          <Layout>
-            <Defaulters />
-          </Layout>
-        } />
-        <Route path="/reports" element={
-          <Layout>
-            <Reports />
-          </Layout>
-        } />
-        <Route path="/settings" element={
-          <Layout>
-            <Settings />
-          </Layout>
-        } />
-        <Route path="/user-dashboard" element={
-          <Layout>
-            <UserDashboard />
-          </Layout>
-        } />
-      </Routes>
-    </Router>
+          <Route path="/dashboard" element={
+            <Layout>
+              <Dashboard />
+            </Layout>
+          } />
+          <Route path="/vendors" element={
+            <Layout>
+              <Vendors />
+            </Layout>
+          } />
+          <Route path="/tax-management" element={
+            <Layout>
+              <TaxManagement />
+            </Layout>
+          } />
+          <Route path="/payments" element={
+            <Layout>
+              <Payments />
+            </Layout>
+          } />
+          <Route path="/defaulters" element={
+            <Layout>
+              <Defaulters />
+            </Layout>
+          } />
+          <Route path="/reports" element={
+            <Layout>
+              <Reports />
+            </Layout>
+          } />
+          <Route path="/settings" element={
+            <Layout>
+              <Settings />
+            </Layout>
+          } />
+          <Route path="/user-dashboard" element={
+            <Layout>
+              <UserDashboard />
+            </Layout>
+          } />
+        </Routes>
+    </BrowserRouter>
   );
 }
 

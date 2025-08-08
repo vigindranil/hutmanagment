@@ -65,7 +65,7 @@ const Login: React.FC = () => {
         } else if(loginType === 'user' && user_details?.UserTypeID == 1) { // for user
           navigate('/user-dashboard');
         } else {
-          Swal.fire({
+          Swal?.fire({
             icon: 'error',
             title: 'Login Failed',
             text: 'Invalid login type or credentials',
@@ -74,7 +74,7 @@ const Login: React.FC = () => {
         }
 
       } else {
-        Swal.fire({
+        Swal?.fire({
           icon: 'error',
           title: 'Login Failed',
           text: result?.message || 'Please check your credentials and try again.',

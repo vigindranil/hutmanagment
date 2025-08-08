@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import Cookies from 'js-cookie';
 
+
 export function decodeJwtToken(): any | null {
     try {
         const token = Cookies.get('token');
@@ -11,3 +12,4 @@ export function decodeJwtToken(): any | null {
         return null;
     }
 }
+

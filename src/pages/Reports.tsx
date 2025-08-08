@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { decodeJwtToken } from "../utils/decodeToken";
-import { commonApi } from "../commonAPI";
+import { commonApi, commonApiImage } from "../commonAPI";
 import moment from "moment";
 import { BASE_API_URL } from "../constants";
 import Cookies from "js-cookie";
@@ -82,35 +82,35 @@ const Reports: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState<FullApplicationDetails | null>(null);
 
-  const handleSearch = () => {fetchSurveyData();};
+  const handleSearch = () => { fetchSurveyData(); };
 
   const handleViewClick = async (surveyId: string) => {
     try {
       const token = Cookies.get('token'); // get fresh token
-
       const myHeaders = new Headers();
       myHeaders.append("accept", "*/*");
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Content-Type", "application/json");
 
       const raw = JSON?.stringify({ surveyID: parseInt(surveyId) });
-
       const requestOptions = {
         method: "POST",
         headers: myHeaders,
         body: raw,
         redirect: "follow" as RequestRedirect,
       };
-
-      const response = await fetch(BASE_API_URL + "user/getHaatApplicationDetailsBySurveyID",requestOptions);
-
+      const response: any = await fetch(BASE_API_URL + "user/getHaatApplicationDetailsBySurveyID", requestOptions);
 
       if (!response.ok) {
         throw new Error(`HTTP ${response?.status}: ${await response?.text()}`);
       }
-
       const result = await response.json();
-      setSelectedDetails(result?.data || null);
+      const stall_image1 = await commonApiImage(result?.data?.stall_image1);
+      const stall_image2 = await commonApiImage(result?.data?.stall_image2);
+      const pan_image = await commonApiImage(result?.data?.pan_image);
+      const sketch_map_attached = await commonApiImage(result?.data?.sketch_map_attached);
+      
+      setSelectedDetails({...result?.data, stall_image1, stall_image2, pan_image, sketch_map_attached});
       setIsModalOpen(true);
     } catch (error) {
       console.error("Error fetching full details:", error);
@@ -119,13 +119,20 @@ const Reports: React.FC = () => {
   };
 
 
-  const fetchSurveyData = async () => {
+  // Set default toDate to system date on initial render
+  useEffect(() => {
+    if (!toDate) {
+      setToDate(moment().format("YYYY-MM-DD"));
+    }
+    // eslint-disable-next-line
+  }, []);
 
+  const fetchSurveyData = async () => {
     try {
       const userDetails = decodeJwtToken();
       const body = {
         from_date: fromDate ? moment(fromDate).format("DD-MM-YYYY") : null,
-        to_date: toDate ? moment(toDate).format("DD-MM-YYYY") : null,
+        to_date: toDate ? moment(toDate).format("DD-MM-YYYY") : moment().format("DD-MM-YYYY"),
         application_status_id: parseInt(applicationStatus),
         user_id: userDetails?.UserID
       }
@@ -133,7 +140,7 @@ const Reports: React.FC = () => {
 
       console.log("Survey Report API Result:", result);
 
-      if (result?.status === 0 && Array?.isArray(result?.data)) {
+      if (result?.status == 0 && Array?.isArray(result?.data)) {
         setSurveyData(result.data);
       } else {
         setSurveyData([]);
@@ -143,11 +150,11 @@ const Reports: React.FC = () => {
     }
   };
 
-  useEffect(() => {fetchSurveyData();}, []);
+  useEffect(() => { fetchSurveyData(); }, []);
 
   const surveyStatusMap: { [key: number]: string } = {
     1: "New",
-    2: "Existing", 
+    2: "Existing",
     3: "Transfer",
     4: "Rent",
   };
@@ -320,7 +327,7 @@ const Reports: React.FC = () => {
                       { label: "Direction", value: selectedDetails?.direction },
                       { label: "Latitude", value: selectedDetails?.latitude },
                       { label: "Longitude", value: selectedDetails?.longitude },
-                      { label: "Sketch Map Attached", value: selectedDetails?.sketch_map_attached },
+                      { label: "Sketch Map Attached Image", value: selectedDetails?.sketch_map_attached },
                       { label: "Stall Image 1", value: selectedDetails?.stall_image1 },
                       { label: "Stall Image 2", value: selectedDetails?.stall_image2 },
                     ].map((item, idx) => (
@@ -356,5 +363,7 @@ const Reports: React.FC = () => {
   );
 };
 
-
 export default Reports;
+
+
+
