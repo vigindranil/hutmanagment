@@ -236,7 +236,7 @@ const UserDashboard: React.FC = () => {
 
   return (
     <div className="pt-8 pl-8 pr-8">
-      <div className="p-8 bg-white/80 rounded-2xl shadow-xl border border-white/20">
+      <div className="p-8 bg-white/80 rounded-2xl shadow-xl border border-white/20" style={{ boxShadow: "0 4px 24px 0 rgba(229, 26, 26, 0.42), 0 2px 8px 0 rgba(0, 255, 0, 0.33), 0 1.5px 6px 0 rgba(18, 18, 228, 0.42)" }}>
         <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
           My Application
         </h1>

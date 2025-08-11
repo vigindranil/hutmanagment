@@ -21,7 +21,6 @@ import { commonApi } from '../commonAPI';
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
 
-
   const recentActivities = [
     {
       type: 'payment' as const,
