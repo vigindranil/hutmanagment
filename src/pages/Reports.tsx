@@ -81,6 +81,7 @@ const Reports: React.FC = () => {
   const [toDate, setToDate] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState<FullApplicationDetails | null>(null);
+  const [isImageLoading, setIsImageLoading] = useState(false);
 
   const handleSearch = () => { fetchSurveyData(); };
 
@@ -158,6 +159,78 @@ const Reports: React.FC = () => {
     3: "Transfer",
     4: "Rent",
   };
+
+
+  interface ImageResponse {
+    version: string;
+    status: number;
+    message: string;
+    data: string; // This will contain the base64 string
+  }
+
+  const getIdentityDocument = async (documentPath: string): Promise<ImageResponse> => {
+    const token = Cookies.get('token');
+    const url = `${BASE_API_URL}/getImgAsBase64ByFileName/${documentPath}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'accept': '*/*',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch image");
+    }
+    return response.json();
+  };
+
+
+  const handleViewImage = async (documentPath: string | undefined) => {
+    if (!documentPath) {
+      alert("No document path provided.");
+      return;
+    }
+
+    setIsImageLoading(true);
+    try {
+      console.log("Fetching image for path:", documentPath);
+      const result = await getIdentityDocument(documentPath);
+      console.log("API Response:", result);
+
+      if (result && result.data && result.data.startsWith("data:image")) {
+        const newTab = window.open();
+        if (newTab) {
+          newTab.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Document Viewer</title>
+                        <style>
+                            body { margin: 0; background: #2e2e2e; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                            img { max-width: 100%; max-height: 100%; }
+                        </style>
+                    </head>
+                    <body>
+                        <img src="${result.data}" alt="Document Preview" />
+                    </body>
+                    </html>
+                `);
+          newTab.document.close();
+        } else {
+          throw new Error("Could not open new tab. Popup blocker?");
+        }
+      } else {
+        console.error("Unexpected image data:", result.data);
+        throw new Error("Image data missing or invalid.");
+      }
+    } catch (error) {
+      console.error("Error displaying image:", error);
+      alert("Could not load the image. Please try again.");
+    } finally {
+      setIsImageLoading(false);
+    }
+  };
+
 
   return (
     <div className="space-y-6">
@@ -270,7 +343,7 @@ const Reports: React.FC = () => {
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-8">
-          <Dialog.Panel className="mx-auto w-full max-w-5xl rounded-2xl bg-white p-8 shadow-2xl overflow-y-auto max-h-[95vh] border-2 border-blue-400">
+          <Dialog.Panel className="mx-auto w-full max-w-6xl rounded-2xl bg-white p-8 shadow-2xl overflow-y-auto max-h-[95vh] border-2 border-blue-400">
             <div className="flex items-center justify-between mb-6">
               <Dialog.Title className="text-2xl font-extrabold text-blue-700 tracking-wide">
                 Application Details
@@ -283,23 +356,36 @@ const Reports: React.FC = () => {
                 &times;
               </button>
             </div>
+
             {selectedDetails ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
-                  <tbody>
-                    {[
+              <div className="space-y-8">
+
+                {/* Reusable Table Rendering */}
+                {[
+                  {
+                    title: "Basic Information",
+                    icon: "👤",
+                    color: "blue",
+                    data: [
                       { label: "Name", value: selectedDetails?.name },
                       { label: "Guardian", value: selectedDetails?.guardian_name },
                       { label: "Address", value: selectedDetails?.address },
                       { label: "Mobile", value: selectedDetails?.mobile },
                       { label: "Citizenship", value: selectedDetails?.citizenship },
                       { label: "PIN Code", value: selectedDetails?.pin_code },
+                      { label: "PAN", value: selectedDetails?.pan },
+                      { label: "PAN Image", value: selectedDetails?.pan_image, isImage: true },
+                    ]
+                  },
+                  {
+                    title: "Work Order Details",
+                    icon: "📋",
+                    color: "green",
+                    data: [
                       { label: "Is Within Family", value: selectedDetails?.is_within_family ? "Yes" : "No" },
                       { label: "Transfer Relationship", value: selectedDetails?.transfer_relationship },
                       { label: "Document Type", value: selectedDetails?.document_type },
-                      { label: "Document Image", value: selectedDetails?.document_image },
-                      { label: "PAN", value: selectedDetails?.pan },
-                      { label: "PAN Image", value: selectedDetails?.pan_image },
+                      { label: "Document Image", value: selectedDetails?.document_image, isImage: true },
                       { label: "Previous License No", value: selectedDetails?.previous_license_no },
                       { label: "License Expiry", value: selectedDetails?.license_expiry_date },
                       { label: "Property Tax Payment To Year", value: selectedDetails?.property_tax_payment_to_year },
@@ -308,15 +394,15 @@ const Reports: React.FC = () => {
                       { label: "Occupy From Year", value: selectedDetails?.occupy_from_year },
                       { label: "Present Occupier Name", value: selectedDetails?.present_occupier_name },
                       { label: "Occupier Guardian Name", value: selectedDetails?.occupier_guardian_name },
-                      { label: "Residential Certificate Attached", value: selectedDetails?.residential_certificate_attached },
-                      { label: "Trade License Attached", value: selectedDetails?.trade_license_attached },
-                      { label: "Affidavit Attached", value: selectedDetails?.affidavit_attached },
-                      { label: "ADSR Name", value: selectedDetails?.adsr_name },
-                      { label: "Warision Certificate Attached", value: selectedDetails?.warision_certificate_attached },
-                      { label: "Death Certificate Attached", value: selectedDetails?.death_certificate_attached },
-                      { label: "NOC Legal Heirs Attached", value: selectedDetails?.noc_legal_heirs_attached },
                       { label: "Is Same Owner", value: selectedDetails?.is_same_owner ? "Yes" : "No" },
                       { label: "Rented To Whom", value: selectedDetails?.rented_to_whom },
+                    ]
+                  },
+                  {
+                    title: "Location Details",
+                    icon: "📍",
+                    color: "orange",
+                    data: [
                       { label: "Stall No", value: selectedDetails?.stall_no },
                       { label: "Holding No", value: selectedDetails?.holding_no },
                       { label: "JL No", value: selectedDetails?.jl_no },
@@ -327,27 +413,65 @@ const Reports: React.FC = () => {
                       { label: "Direction", value: selectedDetails?.direction },
                       { label: "Latitude", value: selectedDetails?.latitude },
                       { label: "Longitude", value: selectedDetails?.longitude },
-                      { label: "Sketch Map Attached Image", value: selectedDetails?.sketch_map_attached },
-                      { label: "Stall Image 1", value: selectedDetails?.stall_image1 },
-                      { label: "Stall Image 2", value: selectedDetails?.stall_image2 },
-                    ].map((item, idx) => (
-                      <tr key={idx} className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                        <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item.label}</td>
-                        <td className="px-4 py-2 border-b text-gray-900">
-                          {item.label.toLowerCase().includes("image") && item.value ? (
-                            <a href={String(item.value)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a>
-                          ) : (
-                            item.value || <span className="text-gray-400">-</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                      { label: "Sketch Map Attached Image", value: selectedDetails?.sketch_map_attached, isImage: true },
+                      { label: "Stall Image 1", value: selectedDetails?.stall_image1, isImage: true },
+                      { label: "Stall Image 2", value: selectedDetails?.stall_image2, isImage: true },
+                    ]
+                  },
+                  {
+                    title: "Vendor Details",
+                    icon: "🏢",
+                    color: "purple",
+                    data: [
+                      { label: "Residential Certificate Attached", value: selectedDetails?.residential_certificate_attached, isImage: true },
+                      { label: "Trade License Attached", value: selectedDetails?.trade_license_attached, isImage: true },
+                      { label: "Affidavit Attached", value: selectedDetails?.affidavit_attached, isImage: true },
+                      { label: "ADSR Name", value: selectedDetails?.adsr_name },
+                      { label: "Warision Certificate Attached", value: selectedDetails?.warision_certificate_attached, isImage: true },
+                      { label: "Death Certificate Attached", value: selectedDetails?.death_certificate_attached, isImage: true },
+                      { label: "NOC Legal Heirs Attached", value: selectedDetails?.noc_legal_heirs_attached, isImage: true },
+                    ]
+                  }
+                ].map((section, idx) => (
+                  <div
+                    key={idx}
+                    className={`bg-gradient-to-r from-${section.color}-50 to-${section.color}-100 rounded-lg p-6 border-l-4 border-${section.color}-500`}
+                  >
+                    <h3 className={`text-xl font-bold text-${section.color}-800 mb-4 flex items-center`}>
+                      <span className="mr-2">{section.icon}</span>
+                      {section.title}
+                    </h3>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
+                        <tbody>
+                          {section.data.map((item, i) => (
+                            <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                              <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item.label}</td>
+                              <td className="px-4 py-2 border-b text-gray-900">
+                                {item.isImage && item.value ? (
+                                  <a href={item.value} target="_blank">
+                                  <img
+                                    src={item.value}
+                                    alt={item.label}
+                                    className="w-32 h-auto rounded border"
+                                  />
+                                  </a>
+                                ) : (
+                                  item.value || <span className="text-gray-400">-</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               <p className="text-center text-lg text-red-500 py-8">No data found.</p>
             )}
+
             <div className="mt-8 flex justify-end">
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -364,6 +488,3 @@ const Reports: React.FC = () => {
 };
 
 export default Reports;
-
-
-

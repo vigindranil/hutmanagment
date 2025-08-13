@@ -124,7 +124,7 @@ const Dashboard: React.FC = () => {
               Dashboard
             </h1>
           </div>
-          <p className="text-gray-600 font-medium">Welcome back to Vendor Tax Management System</p>
+          <p className="text-gray-600 font-medium">Welcome back to Haat Management System</p>
         </div>
         <div className="mt-4 sm:mt-0 flex items-center space-x-3">
           <div className="flex items-center space-x-2 text-sm text-gray-500 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-white/20">

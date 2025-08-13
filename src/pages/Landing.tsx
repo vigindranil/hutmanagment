@@ -103,7 +103,7 @@ const Landing: React.FC = () => {
                 </div>
                 <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
                   <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                    Vendor Tax
+                    Haat
                   </span>
                   <br />
                   <span className="text-gray-900">Management</span>
@@ -170,7 +170,7 @@ const Landing: React.FC = () => {
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Modern Tax Management</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Streamline your vendor tax collection process with our comprehensive digital platform designed specifically for Zila Parishad operations.
+              Streamline your haat collection process with our comprehensive digital platform designed specifically for Zila Parishad operations.
             </p>
           </div>
 

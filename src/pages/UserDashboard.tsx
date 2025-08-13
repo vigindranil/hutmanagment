@@ -1,385 +1,177 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { Dialog } from "@headlessui/react";
-const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
-import Cookies from 'js-cookie';
-import { decodeJwtToken } from "../utils/decodeToken";
-import { commonApiImage } from "../commonAPI";
+import React, { useEffect, useState } from 'react';
+import {
+  Users,
+  IndianRupee,
+  AlertTriangle,
+  TrendingUp,
+  Calendar,
+  Sparkles,
+  Home
+} from 'lucide-react';
+import { FaIdCard } from "react-icons/fa";
+import StatsCard from '../components/StatsCard';
+import RecentActivity from '../components/RecentActivity';
+import { decodeJwtToken } from '../utils/decodeToken';
+import { commonApi } from '../commonAPI';
 
-// --- INTERFACES ---
-interface HaatApplicationDetails {
-  survey_id: string;
-  survey_date: string;
-  application_number: string;
-  haat_id: string;
-  haat_name: string;
-  shop_owner_name: string;
-  mobile_number: string;
-  survey_status: string;
-  license_type: string;
-  district_id: string;
-  district_name: string;
-}
 
-interface FullApplicationDetails {
-  survey_id: number;
-  name: string;
-  guardian_name: string;
-  address: string;
-  mobile: string;
-  citizenship: string;
-  pin_code: number;
-  license_type: number;
-  application_status: number;
-  usage_type: number;
-  applicant_type: number;
-  license_expiry_date: string;
-  property_tax_payment_to_year: number;
-  occupy: boolean;
-  occupy_from_year: number;
-  area_dom_sqft: number;
-  area_com_sqft: number;
-  latitude: number;
-  longitude: number;
-  is_within_family?: boolean;
-  transfer_relationship?: string;
-  document_type?: string;
-  document_image?: string;
-  pan?: string;
-  pan_image?: string;
-  previous_license_no?: string;
-  land_transfer_explanation?: string;
-  present_occupier_name?: string;
-  occupier_guardian_name?: string;
-  residential_certificate_attached?: string;
-  trade_license_attached?: string;
-  affidavit_attached?: string;
-  adsr_name?: string;
-  warision_certificate_attached?: string;
-  death_certificate_attached?: string;
-  noc_legal_heirs_attached?: string;
-  is_same_owner?: boolean;
-  rented_to_whom?: string;
-  district_id?: number;
-  police_station_id?: number;
-  hat_id?: number;
-  mouza_id?: number;
-  stall_no?: string;
-  holding_no?: string;
-  jl_no?: string;
-  khatian_no?: string;
-  plot_no?: string;
-  direction?: string;
-  sketch_map_attached?: string;
-  stall_image1?: string;
-  stall_image2?: string;
-  user_id?: number;
-}
+const Dashboard: React.FC = () => {
+  const [stats, setStats] = useState<any>(null);
 
-// --- API UTILITY ---
-interface ImageResponse {
-  version: string;
-  status: number;
-  message: string;
-  data: string; // This will contain the base64 string
-}
-
-const getIdentityDocument = async (documentPath: string): Promise<ImageResponse> => {
-  const token = Cookies.get('token');
-  const url = `${BASE_API_URL}/getImgAsBase64ByFileName/${documentPath}`;
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'accept': '*/*',
-      'Authorization': `Bearer ${token}`,
+  const recentActivities = [
+    {
+      type: 'payment' as const,
+      description: 'Payment received from Raj Grocery Store',
+      amount: '₹1,200',
+      time: '2 hours ago',
+      status: 'success' as const
     },
-  });
-  if (!response.ok) {
-    throw new Error("Failed to fetch image");
+    {
+      type: 'registration' as const,
+      description: 'New vendor registered - Modern Tailors',
+      location: 'Market Complex A',
+      time: '4 hours ago',
+      status: 'info' as const
+    },
+    {
+      type: 'defaulter' as const,
+      description: 'Vendor marked as defaulter - ABC Electronics',
+      amount: '₹3,600',
+      time: '6 hours ago',
+      status: 'warning' as const
+    },
+    {
+      type: 'survey' as const,
+      description: 'Survey completed for Block 12',
+      location: '45 vendors surveyed',
+      time: '1 day ago',
+      status: 'success' as const
+    }
+  ];
+
+  const dashboardApiCall = async () => {
+    const userDetails = decodeJwtToken();
+
+    const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
+    setStats([
+      {
+        title: 'Total Shop',
+        value: result?.data?.total_survey ? result?.data?.total_survey?.toString() : "3",
+        // change: '+12%',
+        changeType: 'positive' as const,
+        icon: Users,
+        color: 'blue' as const
+      },
+      {
+        title: 'Survey Details',
+        value: result?.data?.total_payment ? result?.data?.total_payment?.toString() : "1",
+        // change: '0%',
+        changeType: 'neutral' as const,
+        icon: TrendingUp,
+        color: 'green' as const
+      },
+      {
+        title: 'Change Request',
+        value: result?.data?.total_approval_pending ? result?.data?.total_approval_pending?.toString() : "3",
+        // change: '-15%',
+        changeType: 'negative' as const,
+        icon: AlertTriangle,
+        color: 'red' as const
+      },
+      {
+        title: 'Initial Payment Pending (25%)',
+        value: result?.data?.total_approval ? result?.data?.total_approval?.toString() : "1",
+        // change: '+3.2%',
+        changeType: 'positive' as const,
+        // icon: TrendingUp,
+        icon: IndianRupee,
+        color: 'purple' as const
+      },
+      {
+        title: 'Initial Payment Done',
+        value: result?.data?.total_license_holder ? result?.data?.total_license_holder?.toString() : "1",
+        // change: '+3.2%',
+        changeType: 'positive' as const,
+        // icon: FaIdCard,
+        icon: IndianRupee,
+        color: 'purple' as const
+      },
+      {
+        title: 'Hearing Details',
+        value: result?.data?.total_rent_holder ? result?.data?.total_rent_holder?.toString() : "1",
+        // change: '+3.2%',
+        changeType: 'positive' as const,
+        // icon: Home,
+        icon: FaIdCard,
+        color: 'purple' as const
+      },
+      {
+        title: 'Final Payment (Rest 75%)',
+        value: result?.data?.total_rent_holder ? result?.data?.total_rent_holder?.toString() : "1",
+        // change: '+3.2%',
+        changeType: 'positive' as const,
+        // icon: Home,
+        icon: IndianRupee,
+        color: 'purple' as const
+      },
+      {
+        title: 'Licence Details',
+        value: result?.data?.total_rent_holder ? result?.data?.total_rent_holder?.toString() : "1",
+        // change: '+3.2%',
+        changeType: 'positive' as const,
+        icon: FaIdCard,
+        color: 'purple' as const
+      }
+    ])
   }
-  return response.json();
-};
-
-
-// --- COMPONENT ---
-const UserDashboard: React.FC = () => {
-  const [applicationData, setApplicationData] = useState<HaatApplicationDetails[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDetails, setSelectedDetails] = useState<FullApplicationDetails | null>(null);
-  const [isImageLoading, setIsImageLoading] = useState(false);
-
   useEffect(() => {
-    const fetchApplicationDetails = async () => {
-      try {
-        setLoading(true);
-        const myHeaders = new Headers();
-        myHeaders.append("accept", "*/*");
-        myHeaders.append("Authorization", "Basic ODAwMTEwNDM3NjphZG1pbkAxMjM=");
-        myHeaders.append("Content-Type", "application/json");
-
-        const decoded = decodeJwtToken();
-        console.log(decoded);
-        
-        const userId = decoded?.UserID ?? 0;
-        const raw = JSON.stringify({ user_id: userId });
-
-        const requestOptions = {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-          redirect: "follow" as RequestRedirect,
-        };
-
-        const response = await fetch(BASE_API_URL + "user/getHaatApplicationDetailsByUserID", requestOptions);
-        const result = await response.json();
-        const data = Array.isArray(result?.data) ? result.data : [result.data];
-        setApplicationData(data || []);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setApplicationData([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchApplicationDetails();
-  }, []);
-
-  const handleViewClick = async (surveyId: string) => {
-    try {
-      const token = Cookies.get('token'); // get fresh token
-
-      const myHeaders = new Headers();
-      myHeaders.append("accept", "*/*");
-      myHeaders.append("Authorization", `Bearer ${token}`);
-      myHeaders.append("Content-Type", "application/json");
-
-      const raw = JSON.stringify({ surveyID: parseInt(surveyId) });
-
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow" as RequestRedirect,
-      };
-
-      const response = await fetch(
-        BASE_API_URL + "user/getHaatApplicationDetailsBySurveyID",
-        requestOptions
-      );
-
-      if (!response?.ok) {
-        throw new Error(`HTTP ${response?.status}: ${await response?.text()}`);
-      }
-
-      const result = await response.json();
-
-      const stall_image1 = await commonApiImage(result?.data?.stall_image1);
-      const stall_image2 = await commonApiImage(result?.data?.stall_image2);
-      const pan_image = await commonApiImage(result?.data?.pan_image);
-      const sketch_map_attached = await commonApiImage(result?.data?.sketch_map_attached);
-      
-      setSelectedDetails({...result?.data, stall_image1, stall_image2, pan_image, sketch_map_attached});
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error("Error fetching full details:", error);
-      alert("Failed to fetch application details. Make sure your credentials/token are valid.");
-    }
-  };
-
-  const handleViewImage = async (documentPath: string | undefined) => {
-    if (!documentPath) {
-      alert("No document path provided.");
-      return;
-    }
-
-    setIsImageLoading(true);
-    try {
-      console.log("Fetching image for path:", documentPath);
-      const result = await getIdentityDocument(documentPath);
-      console.log("API Response:", result);
-
-      if (result && result.data && result.data.startsWith("data:image")) {
-        const newTab = window.open();
-        if (newTab) {
-          newTab.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Document Viewer</title>
-                        <style>
-                            body { margin: 0; background: #2e2e2e; display: flex; justify-content: center; align-items: center; height: 100vh; }
-                            img { max-width: 100%; max-height: 100%; }
-                        </style>
-                    </head>
-                    <body>
-                        <img src="${result.data}" alt="Document Preview" />
-                    </body>
-                    </html>
-                `);
-          newTab.document.close();
-        } else {
-          throw new Error("Could not open new tab. Popup blocker?");
-        }
-      } else {
-        console.error("Unexpected image data:", result.data);
-        throw new Error("Image data missing or invalid.");
-      }
-    } catch (error) {
-      console.error("Error displaying image:", error);
-      alert("Could not load the image. Please try again.");
-    } finally {
-      setIsImageLoading(false);
-    }
-  };
+    dashboardApiCall();
+  }, [])
 
   return (
-    <div className="pt-8 pl-8 pr-8">
-      <div className="p-8 bg-white/80 rounded-2xl shadow-xl border border-white/20" style={{ boxShadow: "0 4px 24px 0 rgba(229, 26, 26, 0.42), 0 2px 8px 0 rgba(0, 255, 0, 0.33), 0 1.5px 6px 0 rgba(18, 18, 228, 0.42)" }}>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
-          My Application
-        </h1>
-        <p className="text-gray-600 font-medium mb-6">
-          Welcome to your application dashboard.
-        </p>
-
-        {loading ? (
-          <p>Loading...</p>
-        ) : applicationData?.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-              <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                  <th className="px-4 py-2 border">Survey Date</th>
-                  <th className="px-4 py-2 border">Application Number</th>
-                  <th className="px-4 py-2 border">Haat Name</th>
-                  <th className="px-4 py-2 border">Shop Owner Name</th>
-                  <th className="px-4 py-2 border">Mobile</th>
-                  <th className="px-4 py-2 border">District</th>
-                  <th className="px-4 py-2 border">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {applicationData?.map((row, idx) => (
-                  <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <td className="px-4 py-2 border text-sm">{row?.survey_date}</td>
-                    <td className="px-4 py-2 border text-sm">{row?.application_number}</td>
-                    <td className="px-4 py-2 border text-sm">{row?.haat_name}</td>
-                    <td className="px-4 py-2 border text-sm">{row?.shop_owner_name}</td>
-                    <td className="px-4 py-2 border text-sm">{row?.mobile_number}</td>
-                    <td className="px-4 py-2 border text-sm">{row?.district_name}</td>
-                    <td className="px-4 py-2 border text-sm flex gap-2">
-                      <button
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs"
-                        onClick={() => handleViewClick(row?.survey_id)}
-                      >
-                        View
-                      </button>
-                      <button
-                        className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs"
-                      >
-                        Payment
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="flex items-center space-x-3 mb-2">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              Dashboard
+            </h1>
           </div>
-        ) : (
-          <p className="text-red-500">No application data found.</p>
-        )}
+          <p className="text-gray-600 font-medium">Welcome back to Haat Management System</p>
+        </div>
+        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
+          <div className="flex items-center space-x-2 text-sm text-gray-500 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-white/20">
+            <Calendar className="w-4 h-4 text-blue-500" />
+            <span className="font-medium">
+              Last updated: {
+                (() => {
+                  const d = new Date();
+                  const day = String(d?.getDate()).padStart(2, '0');
+                  const month = String(d?.getMonth() + 1).padStart(2, '0');
+                  const year = d.getFullYear();
+                  return `${day}/${month}/${year}`;
+                })()
+              }
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* MODAL */}
-      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-50">
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-8">
-          <Dialog.Panel className="mx-auto w-full max-w-5xl rounded-2xl bg-white p-8 shadow-2xl overflow-y-auto max-h-[95vh] border-2 border-blue-400">
-            <div className="flex items-center justify-between mb-6">
-              <Dialog.Title className="text-2xl font-extrabold text-blue-700 tracking-wide">
-                Application Details
-              </Dialog.Title>
-            </div>
-            {selectedDetails ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
-                  <tbody>
-                    {[
-                      { label: "Name", value: selectedDetails?.name },
-                      { label: "Guardian", value: selectedDetails?.guardian_name },
-                      { label: "Address", value: selectedDetails?.address },
-                      { label: "Mobile", value: selectedDetails?.mobile },
-                      { label: "Citizenship", value: selectedDetails?.citizenship },
-                      { label: "PIN Code", value: selectedDetails?.pin_code },
-                      { label: "Is Within Family", value: selectedDetails?.is_within_family ? "Yes" : "No" },
-                      { label: "Transfer Relationship", value: selectedDetails?.transfer_relationship },
-                      { label: "Document Type", value: selectedDetails?.document_type },
-                      { label: "Document Image", value: selectedDetails?.document_image },
-                      { label: "PAN", value: selectedDetails?.pan },
-                      { label: "PAN Image", value: selectedDetails?.pan_image },
-                      { label: "Previous License No", value: selectedDetails?.previous_license_no },
-                      { label: "License Expiry", value: selectedDetails?.license_expiry_date },
-                      { label: "Property Tax Payment To Year", value: selectedDetails?.property_tax_payment_to_year },
-                      { label: "Land Transfer Explanation", value: selectedDetails?.land_transfer_explanation },
-                      { label: "Occupy", value: selectedDetails?.occupy ? "Yes" : "No" },
-                      { label: "Occupy From Year", value: selectedDetails?.occupy_from_year },
-                      { label: "Present Occupier Name", value: selectedDetails?.present_occupier_name },
-                      { label: "Occupier Guardian Name", value: selectedDetails?.occupier_guardian_name },
-                      { label: "Residential Certificate Attached", value: selectedDetails?.residential_certificate_attached },
-                      { label: "Trade License Attached", value: selectedDetails?.trade_license_attached },
-                      { label: "Affidavit Attached", value: selectedDetails?.affidavit_attached },
-                      { label: "ADSR Name", value: selectedDetails?.adsr_name },
-                      { label: "Warision Certificate Attached", value: selectedDetails?.warision_certificate_attached },
-                      { label: "Death Certificate Attached", value: selectedDetails?.death_certificate_attached },
-                      { label: "NOC Legal Heirs Attached", value: selectedDetails?.noc_legal_heirs_attached },
-                      { label: "Is Same Owner", value: selectedDetails?.is_same_owner ? "Yes" : "No" },
-                      { label: "Rented To Whom", value: selectedDetails?.rented_to_whom },
-                      { label: "Stall No", value: selectedDetails?.stall_no },
-                      { label: "Holding No", value: selectedDetails?.holding_no },
-                      { label: "JL No", value: selectedDetails?.jl_no },
-                      { label: "Khatian No", value: selectedDetails?.khatian_no },
-                      { label: "Plot No", value: selectedDetails?.plot_no },
-                      { label: "Area DOM", value: selectedDetails?.area_dom_sqft ? `${selectedDetails?.area_dom_sqft} sqft` : "" },
-                      { label: "Area COM", value: selectedDetails?.area_com_sqft ? `${selectedDetails?.area_com_sqft} sqft` : "" },
-                      { label: "Direction", value: selectedDetails?.direction },
-                      { label: "Latitude", value: selectedDetails?.latitude },
-                      { label: "Longitude", value: selectedDetails?.longitude },
-                      { label: "Sketch Map Attached Image", value: selectedDetails?.sketch_map_attached },
-                      { label: "Stall Image 1", value: selectedDetails?.stall_image1 },
-                      { label: "Stall Image 2", value: selectedDetails?.stall_image2 },
-                    ].map((item, idx) => (
-                      <tr key={idx} className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                        <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item.label}</td>
-                        <td className="px-4 py-2 border-b text-gray-900">
-                          {item.label.toLowerCase().includes("image") && item.value ? (
-                            <a href={String(item.value)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a>
-                          ) : (
-                            item.value || <span className="text-gray-400">-</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="text-center text-lg text-red-500 py-8">No data found.</p>
-            )}
-            <div className="mt-8 flex justify-end">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-8 py-2 rounded-lg text-base font-semibold shadow-md transition"
-              >
-                Close
-              </button>
-            </div>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats?.map((stat: any, index: number) => (
+          <StatsCard key={index} {...stat} />
+        ))}
+      </div>
+
+      {/* Recent Activity */}
+      <RecentActivity activities={recentActivities} />
     </div>
   );
 };
 
-export default UserDashboard;
+export default Dashboard;

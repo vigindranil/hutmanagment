@@ -50,9 +50,7 @@ const Login: React.FC = () => {
     try {
       const response = await fetch(BASE_API_URL + "auth/authentication", requestOptions);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response?.status}`);
-      }
+      if (!response.ok) {throw new Error(`HTTP error! Status: ${response?.status}`);}
 
       const result = await response.json();
       if (result?.status == 0) {
@@ -140,7 +138,7 @@ const Login: React.FC = () => {
 
             <div className="space-y-2">
               <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
-              <p className="text-gray-600">Sign in to access the Vendor Tax Management System</p>
+              <p className="text-gray-600">Sign in to access the Haat Management System</p>
             </div>
           </div>
 
@@ -279,7 +277,7 @@ const Login: React.FC = () => {
               Modern Tax Management
             </h2>
             <p className="text-xl text-blue-100 leading-relaxed">
-              Streamline your vendor tax collection process with our comprehensive digital platform designed for Zila Parishad operations.
+              Streamline your haat collection process with our comprehensive digital platform designed for Zila Parishad operations.
             </p>
           </div>
 
