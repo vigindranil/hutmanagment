@@ -1,5 +1,6 @@
 import React from 'react';
 import { DivideIcon as LucideIcon } from 'lucide-react';
+const app_base_url = import.meta.env.VITE_APP_URL;
 
 interface StatsCardProps {
   title: string;
@@ -8,6 +9,7 @@ interface StatsCardProps {
   changeType: 'positive' | 'negative' | 'neutral';
   icon: typeof LucideIcon;
   color: 'blue' | 'green' | 'red' | 'purple' | 'orange';
+  HaatDashoardStatus: number
 }
 
 const StatsCard: React.FC<StatsCardProps> = ({
@@ -16,7 +18,8 @@ const StatsCard: React.FC<StatsCardProps> = ({
   change,
   changeType,
   icon: Icon,
-  color
+  color,
+  HaatDashoardStatus
 }) => {
   const colorClasses = {
     blue: {
@@ -60,7 +63,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
   const colorConfig = colorClasses[color];
 
   return (
-    <div className={`relative bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl ${colorConfig.shadow} border border-white/20 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 group overflow-hidden`}>
+    <a href={`${app_base_url}survey-details?_hti=${HaatDashoardStatus}&title=${title}`} className={`relative bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl ${colorConfig.shadow} border border-white/20 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 group overflow-hidden`}>
       {/* Background gradient overlay */}
       <div className={`absolute inset-0 bg-gradient-to-br ${colorConfig.bg} opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>      
       <div className="relative z-10 flex items-center justify-between">
@@ -78,7 +81,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
           <Icon className="w-8 h-8 text-white" />
         </div>
       </div>
-    </div>
+    </a>
   );
 };
 

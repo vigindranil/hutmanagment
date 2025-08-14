@@ -63,7 +63,8 @@ const Dashboard: React.FC = () => {
         // change: '+12%',
         changeType: 'positive' as const,
         icon: Users,
-        color: 'blue' as const
+        color: 'blue' as const,
+        HaatDashoardStatus: 1
       },
       {
         title: 'Total Payment',
@@ -71,7 +72,8 @@ const Dashboard: React.FC = () => {
         // change: '0%',
         changeType: 'neutral' as const,
         icon: IndianRupee,
-        color: 'green' as const
+        color: 'green' as const,
+        HaatDashoardStatus: 2
       },
       {
         title: 'Pending Approvals',
@@ -79,7 +81,8 @@ const Dashboard: React.FC = () => {
         // change: '-15%',
         changeType: 'negative' as const,
         icon: AlertTriangle,
-        color: 'red' as const
+        color: 'red' as const,
+        HaatDashoardStatus: 3
       },
       {
         title: 'Approved Applications',
@@ -87,7 +90,8 @@ const Dashboard: React.FC = () => {
         // change: '+3.2%',
         changeType: 'positive' as const,
         icon: TrendingUp,
-        color: 'purple' as const
+        color: 'purple' as const,
+        HaatDashoardStatus: 4
       },
       {
         title: 'License Holder',
@@ -95,7 +99,8 @@ const Dashboard: React.FC = () => {
         // change: '+3.2%',
         changeType: 'positive' as const,
         icon: FaIdCard,
-        color: 'purple' as const
+        color: 'purple' as const,
+        HaatDashoardStatus: 5
       },
       {
         title: 'Rent Holder',
@@ -103,7 +108,8 @@ const Dashboard: React.FC = () => {
         // change: '+3.2%',
         changeType: 'positive' as const,
         icon: Home,
-        color: 'purple' as const
+        color: 'purple' as const,
+        HaatDashoardStatus: 6
       }
     ])
   }

@@ -11,12 +11,13 @@ import Defaulters from './pages/Defaulters';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import UserDashboard from './pages/UserDashboard';
+import SurveyTable from './pages/SurveyDetails';
 
 function App() {
   return (
     
   // <BrowserRouter>
-    <BrowserRouter basename='/HaatManagement'>
+     <BrowserRouter basename='/HaatManagement'>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
@@ -63,6 +64,11 @@ function App() {
           <Route path="/user-dashboard" element={
             <Layout>
               <UserDashboard />
+            </Layout>
+          } />
+          <Route path="/survey-details" element={
+            <Layout>
+              <SurveyTable />
             </Layout>
           } />
         </Routes>

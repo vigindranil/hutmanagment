@@ -49,14 +49,16 @@ const Dashboard: React.FC = () => {
     }
   ];
 
-  const dashboardApiCall = async () => {
+  const UserdashboardApiCall = async () => {
     const userDetails = decodeJwtToken();
 
-    const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
+    const result = await commonApi(`user/getDashboardDetailsByShopOwnerID?ShopOwnerID=${userDetails?.UserID}`);
+    console.log(result);
+    
     setStats([
       {
         title: 'Total Shop',
-        value: result?.data?.total_survey ? result?.data?.total_survey?.toString() : "3",
+        value: result?.data?.total_shops ? result?.data?.total_shops?.toString() : "0",
         // change: '+12%',
         changeType: 'positive' as const,
         icon: Users,
@@ -64,7 +66,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Survey Details',
-        value: result?.data?.total_payment ? result?.data?.total_payment?.toString() : "1",
+        value: result?.data?.complete_survey ? result?.data?.complete_survey?.toString() : "0",
         // change: '0%',
         changeType: 'neutral' as const,
         icon: TrendingUp,
@@ -72,7 +74,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Change Request',
-        value: result?.data?.total_approval_pending ? result?.data?.total_approval_pending?.toString() : "3",
+        value: result?.data?.changing_request ? result?.data?.changing_request?.toString() : "0",
         // change: '-15%',
         changeType: 'negative' as const,
         icon: AlertTriangle,
@@ -80,7 +82,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Initial Payment Pending (25%)',
-        value: result?.data?.total_approval ? result?.data?.total_approval?.toString() : "1",
+        value: result?.data?.initial_payment_pending ? result?.data?.initial_payment_pending?.toString() : "0",
         // change: '+3.2%',
         changeType: 'positive' as const,
         // icon: TrendingUp,
@@ -89,7 +91,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Initial Payment Done',
-        value: result?.data?.total_license_holder ? result?.data?.total_license_holder?.toString() : "1",
+        value: result?.data?.initial_payment_done ? result?.data?.initial_payment_done?.toString() : "0",
         // change: '+3.2%',
         changeType: 'positive' as const,
         // icon: FaIdCard,
@@ -98,7 +100,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Hearing Details',
-        value: result?.data?.total_rent_holder ? result?.data?.total_rent_holder?.toString() : "1",
+        value: result?.data?.hearing_done ? result?.data?.hearing_done?.toString() : "0",
         // change: '+3.2%',
         changeType: 'positive' as const,
         // icon: Home,
@@ -107,7 +109,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Final Payment (Rest 75%)',
-        value: result?.data?.total_rent_holder ? result?.data?.total_rent_holder?.toString() : "1",
+        value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",
         // change: '+3.2%',
         changeType: 'positive' as const,
         // icon: Home,
@@ -116,7 +118,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Licence Details',
-        value: result?.data?.total_rent_holder ? result?.data?.total_rent_holder?.toString() : "1",
+        value: result?.data?.licensed_shops ? result?.data?.licensed_shops?.toString() : "0",
         // change: '+3.2%',
         changeType: 'positive' as const,
         icon: FaIdCard,
@@ -125,7 +127,7 @@ const Dashboard: React.FC = () => {
     ])
   }
   useEffect(() => {
-    dashboardApiCall();
+    UserdashboardApiCall();
   }, [])
 
   return (
