@@ -110,8 +110,15 @@ const Reports: React.FC = () => {
       const stall_image2 = await commonApiImage(result?.data?.stall_image2);
       const pan_image = await commonApiImage(result?.data?.pan_image);
       const sketch_map_attached = await commonApiImage(result?.data?.sketch_map_attached);
+      const document_image = await commonApiImage(result?.data?.document_image);
+      const residential_certificate_attached = await commonApiImage(result?.data?.residential_certificate_attached);
+      const trade_license_attached = await commonApiImage(result?.data?.trade_license_attached);
+      const affidavit_attached = await commonApiImage(result?.data?.affidavit_attached);
+      const warision_certificate_attached = await commonApiImage(result?.data?.warision_certificate_attached);
+      const death_certificate_attached = await commonApiImage(result?.data?.death_certificate_attached);
+      const noc_legal_heirs_attached = await commonApiImage(result?.data?.noc_legal_heirs_attached);
       
-      setSelectedDetails({...result?.data, stall_image1, stall_image2, pan_image, sketch_map_attached});
+      setSelectedDetails({...result?.data, stall_image1, stall_image2, pan_image, sketch_map_attached, residential_certificate_attached, document_image, trade_license_attached, affidavit_attached, warision_certificate_attached, noc_legal_heirs_attached, death_certificate_attached});
       setIsModalOpen(true);
     } catch (error) {
       console.error("Error fetching full details:", error);
@@ -449,15 +456,37 @@ const Reports: React.FC = () => {
                               <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item.label}</td>
                               <td className="px-4 py-2 border-b text-gray-900">
                                 {item.isImage && item.value ? (
-                                  <a href={item.value} target="_blank">
+                                  // Open image in new tab on click
                                   <img
                                     src={item.value}
                                     alt={item.label}
-                                    className="w-32 h-auto rounded border"
+                                    className="w-32 h-auto rounded border cursor-pointer"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                      // Open image in a new tab
+                                      const newTab = window.open();
+                                      if (newTab) {
+                                        newTab?.document.write(`
+                                          <!DOCTYPE html>
+                                          <html>
+                                          <head>
+                                              <title>Document Viewer</title>
+                                              <style>
+                                                  body { margin: 0; background: #2e2e2e; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                                                  img { max-width: 100%; max-height: 100%; }
+                                              </style>
+                                          </head>
+                                          <body>
+                                              <img src="${item.value}" alt="Document Preview" />
+                                          </body>
+                                          </html>
+                                        `);
+                                        newTab?.document?.close();
+                                      }
+                                    }}
                                   />
-                                  </a>
                                 ) : (
-                                  item.value || <span className="text-gray-400">-</span>
+                                  item?.value || <span className="text-gray-400">-</span>
                                 )}
                               </td>
                             </tr>

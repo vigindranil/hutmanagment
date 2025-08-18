@@ -6,7 +6,6 @@ import {
   TrendingUp,
   Calendar,
   Sparkles,
-  Home
 } from 'lucide-react';
 import { FaIdCard } from "react-icons/fa";
 import StatsCard from '../components/StatsCard';
@@ -59,70 +58,66 @@ const Dashboard: React.FC = () => {
       {
         title: 'Total Shop',
         value: result?.data?.total_shops ? result?.data?.total_shops?.toString() : "0",
-        // change: '+12%',
         changeType: 'positive' as const,
         icon: Users,
-        color: 'blue' as const
+        color: 'blue' as const,
+        HaatDashoardStatus: 1
       },
       {
         title: 'Survey Details',
         value: result?.data?.complete_survey ? result?.data?.complete_survey?.toString() : "0",
-        // change: '0%',
         changeType: 'neutral' as const,
         icon: TrendingUp,
-        color: 'green' as const
+        color: 'green' as const,
+        HaatDashoardStatus: 2
       },
       {
         title: 'Change Request',
         value: result?.data?.changing_request ? result?.data?.changing_request?.toString() : "0",
-        // change: '-15%',
         changeType: 'negative' as const,
         icon: AlertTriangle,
-        color: 'red' as const
+        color: 'red' as const,
+        HaatDashoardStatus: 3
       },
       {
-        title: 'Initial Payment Pending (25%)',
+        title: 'Initial Payment Pending',
         value: result?.data?.initial_payment_pending ? result?.data?.initial_payment_pending?.toString() : "0",
-        // change: '+3.2%',
         changeType: 'positive' as const,
-        // icon: TrendingUp,
         icon: IndianRupee,
-        color: 'purple' as const
+        color: 'purple' as const,
+        HaatDashoardStatus: 4
       },
       {
         title: 'Initial Payment Done',
         value: result?.data?.initial_payment_done ? result?.data?.initial_payment_done?.toString() : "0",
-        // change: '+3.2%',
         changeType: 'positive' as const,
-        // icon: FaIdCard,
         icon: IndianRupee,
-        color: 'purple' as const
+        color: 'purple' as const,
+        HaatDashoardStatus: 5
       },
       {
         title: 'Hearing Details',
-        value: result?.data?.hearing_done ? result?.data?.hearing_done?.toString() : "0",
-        // change: '+3.2%',
-        changeType: 'positive' as const,
-        // icon: Home,
+        value: result?.data?.hearing_done ? result?.data?.hearing_done?.toString() : "0",        
+        changeType: 'positive' as const,     
         icon: FaIdCard,
-        color: 'purple' as const
+        color: 'purple' as const,
+        HaatDashoardStatus: 6
       },
       {
-        title: 'Final Payment (Rest 75%)',
-        value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",
-        // change: '+3.2%',
-        changeType: 'positive' as const,
-        // icon: Home,
+        title: 'Final Payment',
+        value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",        
+        changeType: 'positive' as const,        
         icon: IndianRupee,
-        color: 'purple' as const
+        color: 'purple' as const,
+        HaatDashoardStatus: 7
       },
       {
         title: 'Licence Details',
         value: result?.data?.licensed_shops ? result?.data?.licensed_shops?.toString() : "0",
-        // change: '+3.2%',
         changeType: 'positive' as const,
         icon: FaIdCard,
-        color: 'purple' as const
+        color: 'purple' as const,
+        HaatDashoardStatus: 8
       }
     ])
   }
@@ -166,7 +161,7 @@ const Dashboard: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats?.map((stat: any, index: number) => (
-          <StatsCard key={index} {...stat} />
+          <StatsCard dashboardType="USER" key={index} {...stat} />
         ))}
       </div>
 

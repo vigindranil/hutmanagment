@@ -9,7 +9,8 @@ interface StatsCardProps {
   changeType: 'positive' | 'negative' | 'neutral';
   icon: typeof LucideIcon;
   color: 'blue' | 'green' | 'red' | 'purple' | 'orange';
-  HaatDashoardStatus: number
+  HaatDashoardStatus: number,
+  dashboardType: string
 }
 
 const StatsCard: React.FC<StatsCardProps> = ({
@@ -19,7 +20,8 @@ const StatsCard: React.FC<StatsCardProps> = ({
   changeType,
   icon: Icon,
   color,
-  HaatDashoardStatus
+  HaatDashoardStatus,
+  dashboardType
 }) => {
   const colorClasses = {
     blue: {
@@ -63,7 +65,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
   const colorConfig = colorClasses[color];
 
   return (
-    <a href={`${app_base_url}survey-details?_hti=${HaatDashoardStatus}&title=${title}`} className={`relative bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl ${colorConfig.shadow} border border-white/20 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 group overflow-hidden`}>
+    <a href={`${app_base_url}survey-details?_hti=${HaatDashoardStatus}&title=${title}&dashboardType=${dashboardType}`} className={`relative bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl ${colorConfig.shadow} border border-white/20 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 group overflow-hidden`}>
       {/* Background gradient overlay */}
       <div className={`absolute inset-0 bg-gradient-to-br ${colorConfig.bg} opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>      
       <div className="relative z-10 flex items-center justify-between">
