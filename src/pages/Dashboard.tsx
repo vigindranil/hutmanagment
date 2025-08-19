@@ -113,8 +113,49 @@ const Dashboard: React.FC = () => {
       }
     ])
   }
+
+  
+  const getDashBoardDetailsByCheckerID = async () => {
+    const userDetails = decodeJwtToken();
+
+    const result = await commonApi(`user/getDashBoardCountDetailsByCheckerID?CheckerID=${userDetails?.UserID}`);
+    setStats([
+      {
+        title: 'Total Survey',
+        value: result?.data?.total_survey ? result?.data?.total_survey?.toString() : "0",
+        changeType: 'positive' as const,
+        icon: Users,
+        color: 'blue' as const,
+        HaatDashoardStatus: 1
+      },
+      {
+        title: 'Hearing Pending',
+        value: result?.data?.hearing_pending ? result?.data?.hearing_pending?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: IndianRupee,
+        color: 'green' as const,
+        HaatDashoardStatus: 2
+      },
+      {
+        title: 'Hearing Approved',
+        value: result?.data?.hearing_approved ? result?.data?.hearing_approved?.toString() : "0",
+        changeType: 'negative' as const,
+        icon: AlertTriangle,
+        color: 'red' as const,
+        HaatDashoardStatus: 3
+      }
+    ])
+  }
+
   useEffect(() => {
-    dashboardApiCall();
+    const user_details = decodeJwtToken();
+    console.log(user_details);
+    
+    if (user_details?.UserTypeID == 100){
+      dashboardApiCall();
+    } else if(user_details?.UserTypeID == 50){
+      getDashBoardDetailsByCheckerID();
+    }
   }, [])
 
   return (

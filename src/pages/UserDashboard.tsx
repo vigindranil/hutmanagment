@@ -13,7 +13,6 @@ import RecentActivity from '../components/RecentActivity';
 import { decodeJwtToken } from '../utils/decodeToken';
 import { commonApi } from '../commonAPI';
 
-
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
 
@@ -121,12 +120,41 @@ const Dashboard: React.FC = () => {
       }
     ])
   }
+
   useEffect(() => {
     UserdashboardApiCall();
   }, [])
 
+  // Handle browser back button (popstate event)
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      // Show confirm dialog for logout
+      const shouldLogout = window.confirm("Do you want to logout?");
+      if (shouldLogout) {
+        // Clear local storage/session and redirect to login (customize as needed)
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "/login";
+      } else {
+        // Push current state again to prevent navigation
+        window.history.pushState(null, '', window.location.pathname);
+      }
+    };
+
+    window.history.pushState(null, '', window.location.pathname); // Push initial state
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   return (
     <div className="space-y-8">
+      {/* <div
+  className="w-screen bg-red-200 h-screen bg-cover bg-center"
+  
+></div> */}
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
