@@ -114,11 +114,11 @@ const Dashboard: React.FC = () => {
     ])
   }
 
-  
+
   const getDashBoardDetailsByCheckerID = async () => {
     const userDetails = decodeJwtToken();
-
     const result = await commonApi(`user/getDashBoardCountDetailsByCheckerID?CheckerID=${userDetails?.UserID}`);
+
     setStats([
       {
         title: 'Total Survey',
@@ -129,7 +129,7 @@ const Dashboard: React.FC = () => {
         HaatDashoardStatus: 1
       },
       {
-        title: 'Hearing Pending',
+        title: 'Hearing Date Pending',
         value: result?.data?.hearing_pending ? result?.data?.hearing_pending?.toString() : "0",
         changeType: 'neutral' as const,
         icon: IndianRupee,
@@ -137,7 +137,7 @@ const Dashboard: React.FC = () => {
         HaatDashoardStatus: 2
       },
       {
-        title: 'Hearing Approved',
+        title: 'Hearing Date Initiated',
         value: result?.data?.hearing_approved ? result?.data?.hearing_approved?.toString() : "0",
         changeType: 'negative' as const,
         icon: AlertTriangle,
@@ -147,16 +147,17 @@ const Dashboard: React.FC = () => {
     ])
   }
 
+
   useEffect(() => {
     const user_details = decodeJwtToken();
     console.log(user_details);
-    
-    if (user_details?.UserTypeID == 100){
+
+    if (user_details?.UserTypeID === 100) {
       dashboardApiCall();
-    } else if(user_details?.UserTypeID == 50){
+    } else if (user_details?.UserTypeID === 50) {
       getDashBoardDetailsByCheckerID();
     }
-  }, [])
+  }, []);
 
   return (
     <div className="space-y-8">

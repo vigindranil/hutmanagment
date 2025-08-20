@@ -9,43 +9,12 @@ import {
 } from 'lucide-react';
 import { FaIdCard } from "react-icons/fa";
 import StatsCard from '../components/StatsCard';
-import RecentActivity from '../components/RecentActivity';
 import { decodeJwtToken } from '../utils/decodeToken';
 import { commonApi } from '../commonAPI';
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
 
-  const recentActivities = [
-    {
-      type: 'payment' as const,
-      description: 'Payment received from Raj Grocery Store',
-      amount: '₹1,200',
-      time: '2 hours ago',
-      status: 'success' as const
-    },
-    {
-      type: 'registration' as const,
-      description: 'New vendor registered - Modern Tailors',
-      location: 'Market Complex A',
-      time: '4 hours ago',
-      status: 'info' as const
-    },
-    {
-      type: 'defaulter' as const,
-      description: 'Vendor marked as defaulter - ABC Electronics',
-      amount: '₹3,600',
-      time: '6 hours ago',
-      status: 'warning' as const
-    },
-    {
-      type: 'survey' as const,
-      description: 'Survey completed for Block 12',
-      location: '45 vendors surveyed',
-      time: '1 day ago',
-      status: 'success' as const
-    }
-  ];
 
   const UserdashboardApiCall = async () => {
     const userDetails = decodeJwtToken();
@@ -63,7 +32,7 @@ const Dashboard: React.FC = () => {
         HaatDashoardStatus: 1
       },
       {
-        title: 'Survey Details',
+        title: 'Complete Survey',
         value: result?.data?.complete_survey ? result?.data?.complete_survey?.toString() : "0",
         changeType: 'neutral' as const,
         icon: TrendingUp,
@@ -95,7 +64,7 @@ const Dashboard: React.FC = () => {
         HaatDashoardStatus: 5
       },
       {
-        title: 'Hearing Details',
+        title: 'Hearing Done',
         value: result?.data?.hearing_done ? result?.data?.hearing_done?.toString() : "0",        
         changeType: 'positive' as const,     
         icon: FaIdCard,
@@ -103,12 +72,20 @@ const Dashboard: React.FC = () => {
         HaatDashoardStatus: 6
       },
       {
-        title: 'Final Payment',
-        value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",        
+        title: 'Final Payment Pending',
+        value: result?.data?.final_payment_pending ? result?.data?.final_payment_pending?.toString() : "0",  
         changeType: 'positive' as const,        
         icon: IndianRupee,
         color: 'purple' as const,
         HaatDashoardStatus: 7
+      },
+      {
+        title: 'Final Payment Done',
+        value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",        
+        changeType: 'positive' as const,        
+        icon: IndianRupee,
+        color: 'purple' as const,
+        HaatDashoardStatus: 8
       },
       {
         title: 'Licence Details',
@@ -116,7 +93,7 @@ const Dashboard: React.FC = () => {
         changeType: 'positive' as const,
         icon: FaIdCard,
         color: 'purple' as const,
-        HaatDashoardStatus: 8
+        HaatDashoardStatus: 9
       }
     ])
   }
@@ -192,9 +169,6 @@ const Dashboard: React.FC = () => {
           <StatsCard dashboardType="USER" key={index} {...stat} />
         ))}
       </div>
-
-      {/* Recent Activity */}
-      <RecentActivity activities={recentActivities} />
     </div>
   );
 };

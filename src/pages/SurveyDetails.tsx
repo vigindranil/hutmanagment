@@ -49,6 +49,14 @@ const SurveyTable: React.FC = () => {
     setCurrentPage(1);
   };
 
+  const getCheckerDashboardDetails = async (haatStatusId: any) => {
+    const userDetails = decodeJwtToken();
+
+    const response = await commonApi(`user/getCheckerDashboardDetails?CheckerDashboardStatus=${haatStatusId}&UserID=${userDetails?.UserID}`);
+    setData(response?.data || []);
+    setCurrentPage(1);
+  };
+
   const savePaymentDetailsBySurveyID = async () => {
     setLoading(true);
     const userDetails = decodeJwtToken();
@@ -80,13 +88,18 @@ const SurveyTable: React.FC = () => {
     setCurrentPage(1);
   };
 
+
+
   useEffect(() => {
     const userDetails = decodeJwtToken();
     setUserType(userDetails?.UserTypeID);
-    if (haatStatusId && dashboardType == "ADMIN") {
+    if (haatStatusId && dashboardType == "ADMIN" && userDetails?.UserTypeID == 100) {
       getHaatApplicantionDetailsForAdmin(haatStatusId);
     }
-    if (haatStatusId && dashboardType == "USER") {
+    else if (haatStatusId && dashboardType == "ADMIN" && userDetails?.UserTypeID == 50) {
+      getCheckerDashboardDetails(haatStatusId);
+    }
+    else if (haatStatusId && dashboardType == "USER") {
       getSurveyDetailsByShopOwnerID(haatStatusId);
     }
   }, [haatStatusId]);
@@ -155,34 +168,54 @@ const SurveyTable: React.FC = () => {
                 <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
                   <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                      Application No
+                    </div>
+                  </th>
+
+                  <th className="px-6 py-5 text-left">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
                       <Calendar className="w-4 h-4" />
                       Survey Date
                     </div>
                   </th>
-                  <th className="px-6 py-5 text-left">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                      Application No.
-                    </div>
-                  </th>
+
                   <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
                       <Building className="w-4 h-4" />
                       Haat Name
                     </div>
                   </th>
+
                   <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
                       <User className="w-4 h-4" />
-                      Shop Owner
+                      Shop Owner Name
                     </div>
                   </th>
+
                   <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
                       <Phone className="w-4 h-4" />
                       Mobile
                     </div>
                   </th>
-                  {(haatStatusId == "4" && userType == 1 ) && (
+                  {(userType == 50) && (
+                    <>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                          <Calendar className="w-4 h-4" />
+                          Payment Date
+                        </div>
+                      </th>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                          <IndianRupee className="w-4 h-4" />
+                          Amount
+                        </div>
+                      </th>
+                    </>
+                  )}
+                  {(haatStatusId == "4" && userType == 1) && (
                     <>
                       <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
@@ -207,24 +240,37 @@ const SurveyTable: React.FC = () => {
                       className="group hover:bg-blue-50/50 transition-colors duration-200"
                     >
                       <td className="px-6 py-4">
-                        <span className="text-slate-900 font-medium">{survey?.survey_date}</span>
-                      </td>
-                      <td className="px-6 py-4">
                         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
                           {survey?.application_number}
                         </span>
                       </td>
+
+                      <td className="px-6 py-4">
+                        <span className="text-slate-900 font-medium">{survey?.survey_date}</span>
+                      </td>
+
                       <td className="px-6 py-4">
                         <span className="text-slate-900 font-medium">{survey?.haat_name}</span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="text-slate-900">{survey?.shop_owner_name}</span>
-                      </td>
+
+                      {(userType == 50) ? <td className="px-6 py-4"><span className="text-slate-900">{survey?.shopowner_name}</span></td> : <td className="px-6 py-4"><span className="text-slate-900">{survey?.shop_owner_name}</span></td>}
+                      
                       <td className="px-6 py-4">
                         <span className="text-slate-600">{survey?.mobile_number}</span>
                       </td>
 
-                      {(haatStatusId == "4" && userType == 1 ) && (
+                      {userType == 50 && (
+                        <>
+                          <td className="px-6 py-4">
+                            <span className="text-slate-900 font-medium">{survey?.payment_date}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-slate-900 font-medium">{survey?.amount}</span>
+                          </td>
+                        </>
+                      )}
+
+                      {(haatStatusId == "4" && userType == 1) && (
                         <>
                           <td className="px-6 py-4">
                             <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-800">
@@ -276,21 +322,20 @@ const SurveyTable: React.FC = () => {
                   <span className="font-semibold">{Math.min(endIdx, totalItems)}</span> of{' '}
                   <span className="font-semibold">{totalItems}</span> results
                 </p>
-                
+
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      currentPage === 1
+                    className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === 1
                         ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                         : 'bg-white text-slate-700 hover:bg-slate-50 shadow-sm hover:shadow border border-slate-200'
-                    }`}
+                      }`}
                   >
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Previous
                   </button>
-                  
+
                   <div className="flex space-x-1">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       let pageNumber;
@@ -302,31 +347,29 @@ const SurveyTable: React.FC = () => {
                         pageNumber = start + i;
                         if (pageNumber > end) return null;
                       }
-                      
+
                       return (
                         <button
                           key={pageNumber}
                           onClick={() => handlePageChange(pageNumber)}
-                          className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200 ${
-                            currentPage === pageNumber
+                          className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === pageNumber
                               ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
                               : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
-                          }`}
+                            }`}
                         >
                           {pageNumber}
                         </button>
                       );
                     })}
                   </div>
-                  
+
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      currentPage === totalPages
+                    className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
                         ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                         : 'bg-white text-slate-700 hover:bg-slate-50 shadow-sm hover:shadow border border-slate-200'
-                    }`}
+                      }`}
                   >
                     Next
                     <ChevronRight className="w-4 h-4 ml-1" />
@@ -393,7 +436,7 @@ const SurveyTable: React.FC = () => {
                           required
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-2">Mobile Number</label>
                         <input
@@ -405,7 +448,7 @@ const SurveyTable: React.FC = () => {
                           required
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
                         <input
