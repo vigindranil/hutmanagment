@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom";
 import { commonApi } from '../commonAPI';
 import { decodeJwtToken } from '../utils/decodeToken';
-import { ChevronLeft, ChevronRight, CreditCard, X, CheckCircle, Calendar, Building, User, Phone, IndianRupee } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CreditCard, X, CheckCircle, Calendar, Building, User, Phone, IndianRupee, Send } from 'lucide-react';
 
 interface SurveyData {
   survey_id: number;
@@ -26,12 +26,15 @@ const SurveyTable: React.FC = () => {
   const dashboardType = searchParams?.get("dashboardType");
   const [selectedSurvey, setSelectedSurvey] = useState<SurveyData | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showHearingModal, setShowHearingModal] = useState(false);
   const [paymentName, setPaymentName] = useState('');
   const [paymentNumber, setPaymentNumber] = useState('');
   const [paymentEmail, setPaymentEmail] = useState('');
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState(1);
+  const [hearingDate, setHearingDate] = useState('');
+  const [selectedSurveys, setSelectedSurveys] = useState<number[]>([]);
 
   const [data, setData] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -68,7 +71,11 @@ const SurveyTable: React.FC = () => {
       user_id: userDetails?.UserID,
       error_code: 0,
     };
-    await commonApi(`user/savePaymentDetailsBySurveyID`, payload);
+    const response = await commonApi(`user/savePaymentDetailsBySurveyID`, payload);
+    if(response?.status == 0) {
+      setPaymentSuccess(true);
+    }
+
     setLoading(false);
   };
 
@@ -88,8 +95,6 @@ const SurveyTable: React.FC = () => {
     setCurrentPage(1);
   };
 
-
-
   useEffect(() => {
     const userDetails = decodeJwtToken();
     setUserType(userDetails?.UserTypeID);
@@ -102,7 +107,59 @@ const SurveyTable: React.FC = () => {
     else if (haatStatusId && dashboardType == "USER") {
       getSurveyDetailsByShopOwnerID(haatStatusId);
     }
-  }, [haatStatusId]);
+  }, [haatStatusId, paymentSuccess]);
+
+  // Checkbox functionality
+  const handleCheckboxChange = (surveyId: number) => {
+    setSelectedSurveys(prev => 
+      prev.includes(surveyId) 
+        ? prev.filter(id => id !== surveyId)
+        : [...prev, surveyId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedSurveys.length === paginatedData.length) {
+      setSelectedSurveys([]);
+    } else {
+      const allIds = paginatedData.map((survey: any) => survey.survey_id);
+      setSelectedSurveys(allIds);
+    }
+  };
+
+  const handleSubmitSelected = () => {
+    if (selectedSurveys.length > 0) {
+      setShowHearingModal(true);
+    }
+  };
+
+  const handleHearingDateSubmit = async () => {
+    if (!hearingDate) return;
+    
+    setLoading(true);
+    try {
+      
+      const userDetails = decodeJwtToken();
+      // Add your API call here to update hearing dates for selected surveys
+      console.log('Selected Survey IDs:', selectedSurveys);
+      console.log('Hearing Date:', hearingDate);
+      
+      const response = await commonApi('user/saveHearingDateByCheckerID', {
+        lstSurveyId: selectedSurveys,
+        entry_user_id: userDetails?.UserID,
+        hearing_date: hearingDate
+      });
+      
+      // Reset selections and close modal
+      setSelectedSurveys([]);
+      setHearingDate('');
+      setShowHearingModal(false);
+    } catch (error) {
+      console.error('Error updating hearing date:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Pagination
   const totalItems = data?.length;
@@ -120,23 +177,23 @@ const SurveyTable: React.FC = () => {
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await savePaymentDetailsBySurveyID();
-    setPaymentSuccess(true);
-    setTimeout(() => {
-      setShowPaymentModal(false);
-      setPaymentSuccess(false);
-      setPaymentName('');
-      setPaymentNumber('');
-      setPaymentEmail('');
-    }, 2000);
   };
 
-  const closeModal = () => {
+  const closePaymentModal = () => {
     setShowPaymentModal(false);
     setPaymentSuccess(false);
     setPaymentName('');
     setPaymentNumber('');
     setPaymentEmail('');
   };
+
+  const closeHearingModal = () => {
+    setShowHearingModal(false);
+    setHearingDate('');
+  };
+
+  // Check if checkboxes should be shown
+  const showCheckboxes = userType == 50 && haatStatusId == "2";
 
   return (
     <div className="min-h-screen">
@@ -166,6 +223,19 @@ const SurveyTable: React.FC = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                  {showCheckboxes && (
+                    <th className="px-6 py-5 text-left">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                          checked={selectedSurveys.length === paginatedData.length && paginatedData.length > 0}
+                          onChange={handleSelectAll}
+                        />
+                      </div>
+                    </th>
+                  )}
+
                   <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
                       Application No
@@ -199,6 +269,16 @@ const SurveyTable: React.FC = () => {
                       Mobile
                     </div>
                   </th>
+                  {(haatStatusId == "5") && (
+                    <>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                          <IndianRupee className="w-4 h-4" />
+                          Amount
+                        </div>
+                      </th>
+                    </>
+                  )}
                   {(userType == 50) && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -232,6 +312,8 @@ const SurveyTable: React.FC = () => {
                   )}
                 </tr>
               </thead>
+
+              
               <tbody className="divide-y divide-slate-100">
                 {paginatedData && paginatedData.length > 0 ? (
                   paginatedData.map((survey: any, index: number) => (
@@ -239,6 +321,17 @@ const SurveyTable: React.FC = () => {
                       key={survey.survey_id}
                       className="group hover:bg-blue-50/50 transition-colors duration-200"
                     >
+                      {showCheckboxes && (
+                        <td className="px-6 py-4">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                            checked={selectedSurveys.includes(survey.survey_id)}
+                            onChange={() => handleCheckboxChange(survey.survey_id)}
+                          />
+                        </td>
+                      )}
+
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
                           {survey?.application_number}
@@ -253,11 +346,22 @@ const SurveyTable: React.FC = () => {
                         <span className="text-slate-900 font-medium">{survey?.haat_name}</span>
                       </td>
 
-                      {(userType == 50) ? <td className="px-6 py-4"><span className="text-slate-900">{survey?.shopowner_name}</span></td> : <td className="px-6 py-4"><span className="text-slate-900">{survey?.shop_owner_name}</span></td>}
-                      
+                      {(userType == 50) ? <td className="px-6 py-4"><span className="text-slate-900 font-medium">{survey?.shopowner_name}</span></td> : <td className="px-6 py-4"><span className="text-slate-900 font-medium">{survey?.shop_owner_name}</span></td>}
+
                       <td className="px-6 py-4">
-                        <span className="text-slate-600">{survey?.mobile_number}</span>
+                        <span className="text-slate-600 font-medium">{survey?.mobile_number}</span>
                       </td>
+
+                      {haatStatusId == "5" && (
+                        <>
+                          <td className="px-6 py-4">
+                        <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-800">
+                          ₹{survey?.initial_amount}
+                        </span>
+                      </td>
+                        </>
+                      )}
+                      
 
                       {userType == 50 && (
                         <>
@@ -265,7 +369,7 @@ const SurveyTable: React.FC = () => {
                             <span className="text-slate-900 font-medium">{survey?.payment_date}</span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-slate-900 font-medium">{survey?.amount}</span>
+                            <span className="text-slate-900 font-medium">{survey?.initial_amount}</span>
                           </td>
                         </>
                       )}
@@ -274,7 +378,7 @@ const SurveyTable: React.FC = () => {
                         <>
                           <td className="px-6 py-4">
                             <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-800">
-                              ₹{survey?.amount}
+                              ₹{survey?.initial_amount}
                             </span>
                           </td>
                           <td className="px-6 py-4">
@@ -313,6 +417,24 @@ const SurveyTable: React.FC = () => {
             </table>
           </div>
 
+          {/* Submit Button for Selected Items */}
+          {showCheckboxes && selectedSurveys.length > 0 && (
+            <div className="bg-slate-50 px-6 py-4 border-t border-slate-200">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-slate-700">
+                  <span className="font-semibold">{selectedSurveys.length}</span> items selected
+                </p>
+                <button
+                  onClick={handleSubmitSelected}
+                  className="inline-flex items-center px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Submit Selected ({selectedSurveys.length})
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="bg-slate-50 px-6 py-4 border-t border-slate-200">
@@ -328,8 +450,8 @@ const SurveyTable: React.FC = () => {
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === 1
-                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                        : 'bg-white text-slate-700 hover:bg-slate-50 shadow-sm hover:shadow border border-slate-200'
+                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                      : 'bg-white text-slate-700 hover:bg-slate-50 shadow-sm hover:shadow border border-slate-200'
                       }`}
                   >
                     <ChevronLeft className="w-4 h-4 mr-1" />
@@ -353,8 +475,8 @@ const SurveyTable: React.FC = () => {
                           key={pageNumber}
                           onClick={() => handlePageChange(pageNumber)}
                           className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === pageNumber
-                              ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
-                              : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
+                            : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
                             }`}
                         >
                           {pageNumber}
@@ -367,10 +489,10 @@ const SurveyTable: React.FC = () => {
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
-                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                        : 'bg-white text-slate-700 hover:bg-slate-50 shadow-sm hover:shadow border border-slate-200'
+                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                      : 'bg-white text-slate-700 hover:bg-slate-50 shadow-sm hover:shadow border border-slate-200'
                       }`}
-                  >
+                    >
                     Next
                     <ChevronRight className="w-4 h-4 ml-1" />
                   </button>
@@ -397,7 +519,7 @@ const SurveyTable: React.FC = () => {
                 </div>
                 <button
                   className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors duration-200"
-                  onClick={closeModal}
+                  onClick={closePaymentModal}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -419,7 +541,7 @@ const SurveyTable: React.FC = () => {
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-slate-700">Amount to Pay</span>
-                        <span className="text-2xl font-bold text-slate-900">₹{selectedSurvey?.amount}</span>
+                        <span className="text-2xl font-bold text-slate-900">₹{selectedSurvey?.initial_amount}</span>
                       </div>
                     </div>
 
@@ -479,6 +601,84 @@ const SurveyTable: React.FC = () => {
                     </button>
                   </form>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Hearing Date Modal */}
+        {showHearingModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform animate-in slide-in-from-bottom-4 duration-300">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">Select Hearing Date</h2>
+                    <p className="text-sm text-slate-600">Choose a hearing date for selected surveys</p>
+                  </div>
+                </div>
+                <button
+                  className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors duration-200"
+                  onClick={closeHearingModal}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6">
+                <div className="space-y-6">
+                  {/* Selected Count Display */}
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-700">Selected Surveys</span>
+                      <span className="text-2xl font-bold text-slate-900">{selectedSurveys.length}</span>
+                    </div>
+                  </div>
+
+                  {/* Date Input */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Hearing Date</label>
+                    <input
+                      type="date"
+                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
+                      value={hearingDate}
+                      onChange={e => setHearingDate(e.target.value)}
+                      required
+                      min={new Date().toISOString().split('T')[0]} // Set minimum date to today
+                    />
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={closeHearingModal}
+                      className="flex-1 px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold transition-colors duration-200"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleHearingDateSubmit}
+                      disabled={!hearingDate || loading}
+                      className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                    >
+                      {loading ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Processing...
+                        </div>
+                      ) : (
+                        'Go'
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

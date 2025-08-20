@@ -6,13 +6,10 @@ import {
   IndianRupee,
   Shield,
   BarChart3,
-  Smartphone,
-  CheckCircle,
   ArrowRight,
-  MapPin,
-  Clock,
   Star
 } from 'lucide-react';
+import bgimg from '../../src/assets/Haat Image.png'
 
 const Landing: React.FC = () => {
   const features = [
@@ -40,24 +37,6 @@ const Landing: React.FC = () => {
       description: 'Bank-grade security with role-based access control and encrypted data transmission.',
       gradient: 'from-orange-500 to-red-600'
     }
-  ];
-
-  const stats = [
-    // { number: '1,247', label: 'Registered Vendors', icon: Users },
-    // { number: '₹2.8L', label: 'Monthly Collection', icon: IndianRupee },
-    // { number: '92.8%', label: 'Collection Rate', icon: BarChart3 },
-    // { number: '24/7', label: 'System Uptime', icon: Clock }
-  ];
-
-  const benefits = [
-    // 'Digital vendor registration with geolocation',
-    // 'Automated tax calculation and billing',
-    // 'Multiple payment gateway integration',
-    // 'Real-time collection tracking',
-    // 'Defaulter management system',
-    // 'Mobile app for vendors and surveyors',
-    // 'Comprehensive reporting dashboard',
-    // 'SMS/WhatsApp notifications'
   ];
 
   return (
@@ -134,8 +113,8 @@ const Landing: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="relative h-[400px] w-full overflow-hidden rounded-3xl shadow-2xl">
                       <img
-                        src="./assets/src/ChatGPT Image Aug 20, 2025, 01_41_30 PM.png"
-                        alt=""
+                        src={bgimg}
+                        alt="Indian traditional market with vendors and colorful stalls"
                         className="w-full h-full object-cover scale-110 hover:scale-125 transition-all duration-700 ease-in-out"
                       />
                     </div>
@@ -148,20 +127,11 @@ const Landing: React.FC = () => {
         </div>
       </section>
 
-
-      {/* Benefits Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Zila Parishad Jalpaiguri. All rights reserved.</p>
+            <p>&copy; 2025 Zila Parishad Jalpaiguri. All rights reserved.</p>
           </div>
         </div>
       </footer>

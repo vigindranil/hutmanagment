@@ -7,16 +7,12 @@ import {
   Eye,
   EyeOff,
   ArrowLeft,
-  Shield,
-  Users,
-  BarChart3,
-  CheckCircle
 } from 'lucide-react';
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
-
+import bgimg from '../../src/assets/haat2.jpg'
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +25,6 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
 
     const myHeaders = new Headers();
     myHeaders.append("accept", "*/*");
@@ -89,25 +84,6 @@ const Login: React.FC = () => {
       alert("Login failed. Please check your credentials and try again.");
     }
   };
-
-
-  const features = [
-    {
-      icon: Users,
-      title: 'Vendor Management',
-      description: 'Complete digital registration and tracking'
-    },
-    {
-      icon: BarChart3,
-      title: 'Analytics Dashboard',
-      description: 'Real-time collection insights and reports'
-    },
-    {
-      icon: Shield,
-      title: 'Secure Platform',
-      description: 'Bank-grade security and data protection'
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex">
@@ -265,44 +241,25 @@ const Login: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Panel - Features */}
-      <div className="hidden lg:flex lg:flex-1 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 relative overflow-hidden">
+      {/* Right Panel - Image Background */}
+      <div className="hidden lg:flex lg:flex-1 relative overflow-hidden">
         {/* Background decorations */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -translate-y-48 translate-x-48"></div>
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/10 rounded-full translate-y-36 -translate-x-36"></div>
-
-        <div className="relative flex flex-col justify-center px-12 xl:px-16 text-white">
-          <div className="mb-12">
-            <h2 className="text-4xl font-bold mb-4">
-              Modern Tax Management
-            </h2>
-            <p className="text-xl text-blue-100 leading-relaxed">
-              Streamline your haat collection process with our comprehensive digital platform designed for Zila Parishad operations.
-            </p>
-          </div>
-
-          <div className="space-y-8">
-            {features?.map((feature, index) => (
-              <div key={index} className="flex items-start space-x-4 group">
-                <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl group-hover:bg-white/30 transition-all duration-300">
-                  <feature.icon className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-1">{feature?.title}</h3>
-                  <p className="text-blue-100">{feature?.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-            <div className="flex items-center space-x-3 mb-3">
-              <CheckCircle className="w-5 h-5 text-green-300" />
-              <span className="font-semibold">Trusted by Government</span>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full -translate-y-48 translate-x-48 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-indigo-400/20 to-pink-400/20 rounded-full translate-y-36 -translate-x-36 blur-3xl"></div>
+        
+        {/* Image Container */}
+        <div className="relative w-full h-full flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10"></div>
+          <div className="relative w-full h-full overflow-hidden rounded-l-3xl">
+            <img
+              src={bgimg}
+              alt="Indian traditional market with vendors and colorful stalls"
+              className="w-full h-full object-cover hover:scale-105 transition-all duration-700 ease-in-out"
+            />
+            {/* Overlay with branding */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
             </div>
-            <p className="text-blue-100 text-sm">
-              Built specifically for Zila Parishad operations with compliance to government standards and security protocols.
-            </p>
           </div>
         </div>
       </div>
