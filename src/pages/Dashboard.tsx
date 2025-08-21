@@ -6,7 +6,9 @@ import {
   TrendingUp,
   Calendar,
   Sparkles,
-  Home
+  Home,
+  CheckCheck,
+  CalendarClock
 } from 'lucide-react';
 import { FaIdCard } from "react-icons/fa";
 import StatsCard from '../components/StatsCard';
@@ -21,8 +23,10 @@ const Dashboard: React.FC = () => {
   const dashboardApiCall = async () => {
     const userDetails = decodeJwtToken();
 
-    const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
-    setStats([
+  
+  //Admin Dashboard
+  const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
+  setStats([
       {
         title: 'Total Vendors',
         value: result?.data?.total_survey ? result?.data?.total_survey?.toString() : "0",
@@ -80,11 +84,10 @@ const Dashboard: React.FC = () => {
     ])
   }
 
-
+  //Checker Dashboard
   const getDashBoardDetailsByCheckerID = async () => {
     const userDetails = decodeJwtToken();
     const result = await commonApi(`user/getDashBoardCountDetailsByCheckerID?CheckerID=${userDetails?.UserID}`);
-
     setStats([
       {
         title: 'Total Survey',
@@ -98,20 +101,53 @@ const Dashboard: React.FC = () => {
         title: 'Hearing Date Pending',
         value: result?.data?.hearing_pending ? result?.data?.hearing_pending?.toString() : "0",
         changeType: 'neutral' as const,
-        icon: IndianRupee,
-        color: 'green' as const,
+        icon: CalendarClock,
+        color: 'red' as const,
         HaatDashoardStatus: 2
       },
       {
         title: 'Hearing Date Initiated',
         value: result?.data?.hearing_approved ? result?.data?.hearing_approved?.toString() : "0",
         changeType: 'negative' as const,
-        icon: AlertTriangle,
-        color: 'red' as const,
+        icon: CheckCheck,
+        color: 'green' as const,
         HaatDashoardStatus: 3
+      },
+      {
+        title: 'Initial Payment Done',
+        value: result?.data?.initial_payment_done ? result?.data?.initial_payment_done?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: IndianRupee,
+        color: 'green' as const,
+        HaatDashoardStatus: 4
       }
     ])
   }
+
+  //Hearing Officer Dashboard
+  const getHearingCountByHearingUserID = async () => {
+    const userDetails = decodeJwtToken();
+    const result = await commonApi(`user/getHearingCountByHearingUserID?HearingUserID=${userDetails?.UserID}`);
+
+    setStats([
+      {
+        title: 'Hearing Pending',
+        value: result?.data?.hearing_pending ? result?.data?.hearing_pending?.toString() : "0",
+        changeType: 'positive' as const,
+        icon: CalendarClock,
+        color: 'red' as const,
+        HaatDashoardStatus: 1
+      },
+      {
+        title: 'Approved Hearing',
+        value: result?.data?.approved_hearing ? result?.data?.approved_hearing?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: CheckCheck,
+        color: 'green' as const,
+        HaatDashoardStatus: 2
+      },
+    ]);
+  };
 
 
   useEffect(() => {
@@ -122,6 +158,8 @@ const Dashboard: React.FC = () => {
       dashboardApiCall();
     } else if (user_details?.UserTypeID === 50) {
       getDashBoardDetailsByCheckerID();
+    }else if (user_details?.UserTypeID === 60) {
+      getHearingCountByHearingUserID();
     }
   }, []);
 

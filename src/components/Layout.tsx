@@ -74,7 +74,9 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
 
   const navigation = [
     { name: 'Dashboard', user_type_id: 100, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
-    { name: 'UserDashboard', user_type_id: 1, href: '/user-dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+    { name: 'User Dashboard', user_type_id: 1, href: '/user-dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+    { name: 'Checker Dashboard', user_type_id: 50, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+    { name: 'Hearing Officer Dasboard', user_type_id: 60, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Survey', user_type_id: 100, href: '/survey', icon: ClipboardList, color: 'from-teal-500 to-cyan-600' },
     // { name: 'Vendors', href: '/vendors', icon: Users, color: 'from-green-500 to-teal-600' },
     // { name: 'Tax Management', href: '/tax-management', icon: Calculator, color: 'from-orange-500 to-red-600' },

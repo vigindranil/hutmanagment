@@ -53,7 +53,7 @@ const Login: React.FC = () => {
         const decoded_data = jwtDecode<any>(result?.data?.access_token || "");
         const user_details = JSON.parse(decoded_data?.userDetails);
 
-        if (loginType === 'admin' && (user_details?.UserTypeID == 100 || user_details?.UserTypeID == 50) ){ // for admin
+        if (loginType === 'admin' && (user_details?.UserTypeID == 100 || user_details?.UserTypeID == 50 || user_details?.UserTypeID == 60) ){ // for admin
           navigate('/dashboard');
         } else if(loginType === 'user' && user_details?.UserTypeID == 1) { // for user
           navigate('/user-dashboard');
