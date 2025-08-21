@@ -19,6 +19,7 @@ interface SurveyData {
   survey_status: string;
   amount: number;
   initial_amount: number;
+  final_amount: number;
 }
 
 interface viewSurveyData {
@@ -113,7 +114,6 @@ const SurveyTable: React.FC = () => {
   const [selectedSurveyForRemarks, setSelectedSurveyForRemarks] = useState<number | null>(null);
   const [viewData, setViewData] = useState<viewSurveyData | null>(null);
 
-
   const [data, setData] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -158,8 +158,6 @@ const SurveyTable: React.FC = () => {
     }
   };
 
-
-
   const getHaatApplicantionDetailsForAdmin = async (haatStatusId: any) => {
     const userDetails = decodeJwtToken();
     const payload = {
@@ -185,7 +183,7 @@ const SurveyTable: React.FC = () => {
     setLoading(true);
     const userDetails = decodeJwtToken();
     const payload = {
-      initial_or_final_payment_status: selectedSurvey?.survey_status === 'FINAL' ? 2 : 1,
+      initial_or_final_payment_status: selectedSurvey?.survey_status === 'INITIAL' ? 1 : selectedSurvey?.survey_status === 'FINAL' ? 2 : undefined,
       survey_id: selectedSurvey?.survey_id,
       transaction_number: Math.floor(1000 + Math.random() * 9000).toString(),
       amount: selectedSurvey?.amount ?? 0,
@@ -223,33 +221,33 @@ const SurveyTable: React.FC = () => {
     setCurrentPage(1);
   };
 
-  // const handleViewDetails = async (surveyId: number) => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await commonApi(`user/getHaatApplicationDetailsBySurveyID?survey_id=${surveyId}`,{});
-  //     if (response?.status === 0) {
-  //       setViewData(response.data);
-  //       setShowViewModal(true);
-  //     } else {
-  //       // @ts-ignore
-  //       window.Swal?.fire({
-  //         icon: 'error',
-  //         title: 'Error',
-  //         text: 'Failed to fetch details. Please try again.',
-  //       }) || alert('Failed to fetch details. Please try again.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching survey details:', error);
-  //     // @ts-ignore
-  //     window.Swal?.fire({
-  //       icon: 'error',
-  //       title: 'Error',
-  //       text: 'Something went wrong. Please try again.',
-  //     }) || alert('Something went wrong. Please try again.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const handleViewDetails = async (surveyId: number) => {
+    setLoading(true);
+    try {
+      const response = await commonApi(`user/getHaatApplicationDetailsBySurveyID?survey_id=${surveyId}`, {});
+      if (response?.status === 0) {
+        setViewData(response.data);
+        setShowViewModal(true);
+      } else {
+        // @ts-ignore
+        window.Swal?.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to fetch details. Please try again.',
+        }) || alert('Failed to fetch details. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error fetching survey details:', error);
+      // @ts-ignore
+      window.Swal?.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Something went wrong. Please try again.',
+      }) || alert('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   // Function to handle approve/reject button clicks
@@ -398,7 +396,6 @@ const SurveyTable: React.FC = () => {
       }
       setLoading(false);
 
-
       // Reset selections and close modal
       setSelectedSurveys([]);
       setHearingDate('');
@@ -452,14 +449,14 @@ const SurveyTable: React.FC = () => {
     setViewData(null);
   };
 
-
   // Check if checkboxes should be shown
   const showCheckboxes = userType == 50 && haatStatusId == "2";
 
   // Check if approved button should be shown
   const showApprovedButton = userType == 60 && haatStatusId == "1";
   // Check if view button should be shown
-  const showViewButton = (userType == 60 || 50) && haatStatusId == "1";
+  // REWRITE: Show view button for userType 50 and haatStatusId == "2"
+  const showViewButton = (userType == 60 && haatStatusId == "1") || (userType == 50 && haatStatusId == "2");
 
   return (
     <div className="min-h-screen">
@@ -536,7 +533,7 @@ const SurveyTable: React.FC = () => {
                     </div>
                   </th>
 
-                  {(userType == 60 && haatStatusId == "1") && (
+                  {(userType == 1 && haatStatusId == "7") && (
                     <th className="px-6 py-5 text-left">
                       <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
                         <IndianRupee className="w-4 h-4" />
@@ -545,6 +542,25 @@ const SurveyTable: React.FC = () => {
                     </th>
                   )}
 
+                  {(haatStatusId == "7" && userType == 1) && (
+                    <>
+                      <th className="px-6 py-5 text-left">
+                        <div className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                          Actions
+                        </div>
+                      </th>
+                    </>
+                  )}
+
+
+                  {(userType == 60 && haatStatusId == "1") && (
+                    <th className="px-6 py-5 text-left">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                        <IndianRupee className="w-4 h-4" />
+                        Amount
+                      </div>
+                    </th>
+                  )}
 
                   {(userType == 60 && haatStatusId == "2") && (
                     <>
@@ -633,9 +649,16 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
+                  {/* Add Actions column for view button for userType 50 and haatStatusId == 2 */}
+                  {showViewButton && !showApprovedButton && (
+                    <th className="px-6 py-5 text-left">
+                      <div className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                        Actions
+                      </div>
+                    </th>
+                  )}
                 </tr>
               </thead>
-
 
               <tbody className="divide-y divide-slate-100">
                 {paginatedData && paginatedData.length > 0 ? (
@@ -675,6 +698,34 @@ const SurveyTable: React.FC = () => {
                         <span className="text-slate-600 font-medium">{survey?.mobile_number}</span>
                       </td>
 
+                      {userType == 1 && haatStatusId == "7" && (
+                        <>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-800">
+                              ₹{survey?.final_amount}
+                            </span>
+                          </td>
+                        </>
+                      )}
+
+                      {(haatStatusId == "7" && userType == 1) && (
+                        <>
+                          <td className="px-6 py-4">
+                            <button
+                              onClick={() => {
+                                setShowPaymentModal(true);
+                                setSelectedSurvey(survey);
+                              }}
+                              className="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                            >
+                              <CreditCard className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200" />
+                              Pay Now
+                            </button>
+                          </td>
+                        </>
+                      )}
+
+
                       {(userType == 60 && haatStatusId == "1") && (
                         <td className="px-6 py-4">
                           <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-800">
@@ -682,7 +733,6 @@ const SurveyTable: React.FC = () => {
                           </span>
                         </td>
                       )}
-
 
                       {userType == 60 && haatStatusId == "2" && (
                         <>
@@ -749,6 +799,7 @@ const SurveyTable: React.FC = () => {
                         </>
                       )}
 
+
                       {showApprovedButton && (
                         <td className="px-6 py-4 flex gap-2">
                           <button
@@ -774,12 +825,33 @@ const SurveyTable: React.FC = () => {
                           )}
                         </td>
                       )}
+
+                      {/* Show view button for userType 50 and haatStatusId == 2, if not already shown in showApprovedButton */}
+                      {!showApprovedButton && showViewButton && (
+                        <td className="px-6 py-4 flex gap-2">
+                          <button
+                            onClick={() => handleViewClick(survey.survey_id)}
+                            className="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td
-                      colSpan={Number(haatStatusId) === 4 ? 7 : showApprovedButton ? 7 : 6}
+                      colSpan={
+                        Number(haatStatusId) === 4
+                          ? 7
+                          : showApprovedButton
+                            ? 7
+                            : showViewButton
+                              ? 7
+                              : 6
+                      }
                       className="text-center py-16"
                     >
                       <div className="flex flex-col items-center">
@@ -904,23 +976,40 @@ const SurveyTable: React.FC = () => {
                 </button>
               </div>
 
-              {/* Modal Content */}
+              {/* PAyment Modal Content */}
               <div className="p-6">
-                {paymentSuccess ? (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle className="w-8 h-8 text-green-600" />
+                {typeof paymentSuccess === "number" ? (
+                  paymentSuccess === 0 ? (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle className="w-8 h-8 text-green-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Successful!</h3>
+                      <p className="text-slate-600">Your payment has been processed successfully.</p>
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Successful!</h3>
-                    <p className="text-slate-600">Your payment has been processed successfully.</p>
-                  </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <X className="w-8 h-8 text-red-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Failed!</h3>
+                      <p className="text-slate-600">Your payment could not be processed. Please try again.</p>
+                    </div>
+                  )
                 ) : (
                   <form onSubmit={handlePaymentSubmit} className="space-y-6">
                     {/* Amount Display */}
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-slate-700">Amount to Pay</span>
-                        <span className="text-2xl font-bold text-slate-900">₹{selectedSurvey?.initial_amount}</span>
+                        <span className="text-2xl font-bold text-slate-900">
+                          ₹
+                          {(userType == 1 && haatStatusId == "7") 
+                            ? selectedSurvey?.final_amount
+                            : (userType == 1 && haatStatusId == "4")
+                              ? selectedSurvey?.initial_amount
+                              : ""}
+                        </span>
                       </div>
                     </div>
 
@@ -1165,6 +1254,7 @@ const SurveyTable: React.FC = () => {
             </div>
           </div>
         )}
+
         {/* View Modal */}
         {showViewModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -1191,127 +1281,127 @@ const SurveyTable: React.FC = () => {
           </div>
         )}
 
-               {/* MODAL */}
-               <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-[9999]">
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
-                <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-8">
-                  <Dialog.Panel className="mx-auto w-full max-w-6xl rounded-2xl bg-white p-8 shadow-2xl overflow-y-auto max-h-[95vh] border-2 border-blue-400">
-                    <div className="flex items-center justify-between mb-6">
-                      <Dialog.Title className="text-2xl font-extrabold text-blue-700 tracking-wide">
-                        Application Details
-                      </Dialog.Title>
-                      <button
-                        onClick={() => setIsModalOpen(false)}
-                        className="text-gray-400 hover:text-red-500 text-2xl font-bold focus:outline-none"
-                        aria-label="Close"
-                      >
-                        &times;
-                      </button>
-                    </div>
+        {/* MODAL */}
+        <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-[9999]">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
+          <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-8">
+            <Dialog.Panel className="mx-auto w-full max-w-6xl rounded-2xl bg-white p-8 shadow-2xl overflow-y-auto max-h-[95vh] border-2 border-blue-400">
+              <div className="flex items-center justify-between mb-6">
+                <Dialog.Title className="text-2xl font-extrabold text-blue-700 tracking-wide">
+                  Application Details
+                </Dialog.Title>
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-gray-400 hover:text-red-500 text-2xl font-bold focus:outline-none"
+                  aria-label="Close"
+                >
+                  &times;
+                </button>
+              </div>
 
-                    {selectedDetails ? (
-                      <div className="space-y-8">
+              {selectedDetails ? (
+                <div className="space-y-8">
 
-                        {/* Reusable Table Rendering */}
-                        {[
-                          {
-                            title: "Basic Information",
-                            icon: "👤",
-                            color: "blue",
-                            data: [
-                              { label: "Name", value: selectedDetails?.name },
-                              { label: "Guardian", value: selectedDetails?.guardian_name },
-                              { label: "Address", value: selectedDetails?.address },
-                              { label: "Mobile", value: selectedDetails?.mobile },
-                              { label: "Citizenship", value: selectedDetails?.citizenship },
-                              { label: "PIN Code", value: selectedDetails?.pin_code },
-                              { label: "PAN", value: selectedDetails?.pan },
-                              { label: "PAN Image", value: selectedDetails?.pan_image, isImage: true },
-                            ]
-                          },
-                          {
-                            title: "Work Order Details",
-                            icon: "📋",
-                            color: "green",
-                            data: [
-                              { label: "Is Within Family", value: selectedDetails?.is_within_family ? "Yes" : "No" },
-                              { label: "Transfer Relationship", value: selectedDetails?.transfer_relationship },
-                              { label: "Document Type", value: selectedDetails?.document_type },
-                              { label: "Document Image", value: selectedDetails?.document_image, isImage: true },
-                              { label: "Previous License No", value: selectedDetails?.previous_license_no },
-                              { label: "License Expiry", value: selectedDetails?.license_expiry_date },
-                              { label: "Property Tax Payment To Year", value: selectedDetails?.property_tax_payment_to_year },
-                              { label: "Land Transfer Explanation", value: selectedDetails?.land_transfer_explanation },
-                              { label: "Occupy", value: selectedDetails?.occupy ? "Yes" : "No" },
-                              { label: "Occupy From Year", value: selectedDetails?.occupy_from_year },
-                              { label: "Present Occupier Name", value: selectedDetails?.present_occupier_name },
-                              { label: "Occupier Guardian Name", value: selectedDetails?.occupier_guardian_name },
-                              { label: "Is Same Owner", value: selectedDetails?.is_same_owner ? "Yes" : "No" },
-                              { label: "Rented To Whom", value: selectedDetails?.rented_to_whom },
-                            ]
-                          },
-                          {
-                            title: "Location Details",
-                            icon: "📍",
-                            color: "orange",
-                            data: [
-                              { label: "Stall No", value: selectedDetails?.stall_no },
-                              { label: "Holding No", value: selectedDetails?.holding_no },
-                              { label: "JL No", value: selectedDetails?.jl_no },
-                              { label: "Khatian No", value: selectedDetails?.khatian_no },
-                              { label: "Plot No", value: selectedDetails?.plot_no },
-                              { label: "Area DOM", value: selectedDetails?.area_dom_sqft ? `${selectedDetails?.area_dom_sqft} sqft` : "" },
-                              { label: "Area COM", value: selectedDetails?.area_com_sqft ? `${selectedDetails?.area_com_sqft} sqft` : "" },
-                              { label: "Direction", value: selectedDetails?.direction },
-                              { label: "Latitude", value: selectedDetails?.latitude },
-                              { label: "Longitude", value: selectedDetails?.longitude },
-                              { label: "Sketch Map Attached Image", value: selectedDetails?.sketch_map_attached, isImage: true },
-                              { label: "Stall Image 1", value: selectedDetails?.stall_image1, isImage: true },
-                              { label: "Stall Image 2", value: selectedDetails?.stall_image2, isImage: true },
-                            ]
-                          },
-                          {
-                            title: "Vendor Details",
-                            icon: "🏢",
-                            color: "purple",
-                            data: [
-                              { label: "Residential Certificate Attached", value: selectedDetails?.residential_certificate_attached, isImage: true },
-                              { label: "Trade License Attached", value: selectedDetails?.trade_license_attached, isImage: true },
-                              { label: "Affidavit Attached", value: selectedDetails?.affidavit_attached, isImage: true },
-                              { label: "ADSR Name", value: selectedDetails?.adsr_name },
-                              { label: "Warision Certificate Attached", value: selectedDetails?.warision_certificate_attached, isImage: true },
-                              { label: "Death Certificate Attached", value: selectedDetails?.death_certificate_attached, isImage: true },
-                              { label: "NOC Legal Heirs Attached", value: selectedDetails?.noc_legal_heirs_attached, isImage: true },
-                            ]
-                          }
-                        ].map((section, idx) => (
-                          <div
-                            key={idx}
-                            className={`bg-gradient-to-r from-${section.color}-50 to-${section.color}-100 rounded-lg p-6 border-l-4 border-${section.color}-500`}
-                          >
-                            <h3 className={`text-xl font-bold text-${section.color}-800 mb-4 flex items-center`}>
-                              <span className="mr-2">{section.icon}</span>
-                              {section.title}
-                            </h3>
-                            <div className="overflow-x-auto">
-                              <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
-                                <tbody>
-                                  {section.data.map((item, i) => (
-                                    <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                                      <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item.label}</td>
-                                      <td className="px-4 py-2 border-b text-gray-900">
-                                        {item.isImage && item.value ? (
-                                          // Open image in new tab on click
-                                          <img
-                                            src={item.value}
-                                            alt={item.label}
-                                            className="w-32 h-auto rounded border cursor-pointer"
-                                            style={{ cursor: "pointer" }}
-                                            onClick={() => {
-                                              // Open image in a new tab
-                                              const newTab = window.open();
-                                              if (newTab) {
-                                                newTab?.document.write(`
+                  {/* Reusable Table Rendering */}
+                  {[
+                    {
+                      title: "Basic Information",
+                      icon: "👤",
+                      color: "blue",
+                      data: [
+                        { label: "Name", value: selectedDetails?.name },
+                        { label: "Guardian", value: selectedDetails?.guardian_name },
+                        { label: "Address", value: selectedDetails?.address },
+                        { label: "Mobile", value: selectedDetails?.mobile },
+                        { label: "Citizenship", value: selectedDetails?.citizenship },
+                        { label: "PIN Code", value: selectedDetails?.pin_code },
+                        { label: "PAN", value: selectedDetails?.pan },
+                        { label: "PAN Image", value: selectedDetails?.pan_image, isImage: true },
+                      ]
+                    },
+                    {
+                      title: "Work Order Details",
+                      icon: "📋",
+                      color: "green",
+                      data: [
+                        { label: "Is Within Family", value: selectedDetails?.is_within_family ? "Yes" : "No" },
+                        { label: "Transfer Relationship", value: selectedDetails?.transfer_relationship },
+                        { label: "Document Type", value: selectedDetails?.document_type },
+                        { label: "Document Image", value: selectedDetails?.document_image, isImage: true },
+                        { label: "Previous License No", value: selectedDetails?.previous_license_no },
+                        { label: "License Expiry", value: selectedDetails?.license_expiry_date },
+                        { label: "Property Tax Payment To Year", value: selectedDetails?.property_tax_payment_to_year },
+                        { label: "Land Transfer Explanation", value: selectedDetails?.land_transfer_explanation },
+                        { label: "Occupy", value: selectedDetails?.occupy ? "Yes" : "No" },
+                        { label: "Occupy From Year", value: selectedDetails?.occupy_from_year },
+                        { label: "Present Occupier Name", value: selectedDetails?.present_occupier_name },
+                        { label: "Occupier Guardian Name", value: selectedDetails?.occupier_guardian_name },
+                        { label: "Is Same Owner", value: selectedDetails?.is_same_owner ? "Yes" : "No" },
+                        { label: "Rented To Whom", value: selectedDetails?.rented_to_whom },
+                      ]
+                    },
+                    {
+                      title: "Location Details",
+                      icon: "📍",
+                      color: "orange",
+                      data: [
+                        { label: "Stall No", value: selectedDetails?.stall_no },
+                        { label: "Holding No", value: selectedDetails?.holding_no },
+                        { label: "JL No", value: selectedDetails?.jl_no },
+                        { label: "Khatian No", value: selectedDetails?.khatian_no },
+                        { label: "Plot No", value: selectedDetails?.plot_no },
+                        { label: "Area DOM", value: selectedDetails?.area_dom_sqft ? `${selectedDetails?.area_dom_sqft} sqft` : "" },
+                        { label: "Area COM", value: selectedDetails?.area_com_sqft ? `${selectedDetails?.area_com_sqft} sqft` : "" },
+                        { label: "Direction", value: selectedDetails?.direction },
+                        { label: "Latitude", value: selectedDetails?.latitude },
+                        { label: "Longitude", value: selectedDetails?.longitude },
+                        { label: "Sketch Map Attached Image", value: selectedDetails?.sketch_map_attached, isImage: true },
+                        { label: "Stall Image 1", value: selectedDetails?.stall_image1, isImage: true },
+                        { label: "Stall Image 2", value: selectedDetails?.stall_image2, isImage: true },
+                      ]
+                    },
+                    {
+                      title: "Vendor Details",
+                      icon: "🏢",
+                      color: "purple",
+                      data: [
+                        { label: "Residential Certificate Attached", value: selectedDetails?.residential_certificate_attached, isImage: true },
+                        { label: "Trade License Attached", value: selectedDetails?.trade_license_attached, isImage: true },
+                        { label: "Affidavit Attached", value: selectedDetails?.affidavit_attached, isImage: true },
+                        { label: "ADSR Name", value: selectedDetails?.adsr_name },
+                        { label: "Warision Certificate Attached", value: selectedDetails?.warision_certificate_attached, isImage: true },
+                        { label: "Death Certificate Attached", value: selectedDetails?.death_certificate_attached, isImage: true },
+                        { label: "NOC Legal Heirs Attached", value: selectedDetails?.noc_legal_heirs_attached, isImage: true },
+                      ]
+                    }
+                  ].map((section, idx) => (
+                    <div
+                      key={idx}
+                      className={`bg-gradient-to-r from-${section.color}-50 to-${section.color}-100 rounded-lg p-6 border-l-4 border-${section.color}-500`}
+                    >
+                      <h3 className={`text-xl font-bold text-${section.color}-800 mb-4 flex items-center`}>
+                        <span className="mr-2">{section.icon}</span>
+                        {section.title}
+                      </h3>
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
+                          <tbody>
+                            {section.data.map((item, i) => (
+                              <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                                <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item.label}</td>
+                                <td className="px-4 py-2 border-b text-gray-900">
+                                  {item.isImage && item.value ? (
+                                    // Open image in new tab on click
+                                    <img
+                                      src={item.value}
+                                      alt={item.label}
+                                      className="w-32 h-auto rounded border cursor-pointer"
+                                      style={{ cursor: "pointer" }}
+                                      onClick={() => {
+                                        // Open image in a new tab
+                                        const newTab = window.open();
+                                        if (newTab) {
+                                          newTab?.document.write(`
                                           <!DOCTYPE html>
                                           <html>
                                           <head>
@@ -1326,37 +1416,37 @@ const SurveyTable: React.FC = () => {
                                           </body>
                                           </html>
                                         `);
-                                                newTab?.document?.close();
-                                              }
-                                            }}
-                                          />
-                                        ) : (
-                                          item?.value || <span className="text-gray-400">-</span>
-                                        )}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        ))}
+                                          newTab?.document?.close();
+                                        }
+                                      }}
+                                    />
+                                  ) : (
+                                    item?.value || <span className="text-gray-400">-</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
-                    ) : (
-                      <p className="text-center text-lg text-red-500 py-8">No data found.</p>
-                    )}
-
-                    <div className="mt-8 flex justify-end">
-                      <button
-                        onClick={() => setIsModalOpen(false)}
-                        className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-8 py-2 rounded-lg text-base font-semibold shadow-md transition"
-                      >
-                        Close
-                      </button>
                     </div>
-                  </Dialog.Panel>
+                  ))}
                 </div>
-              </Dialog>
+              ) : (
+                <p className="text-center text-lg text-red-500 py-8">No data found.</p>
+              )}
+
+              <div className="mt-8 flex justify-end">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-8 py-2 rounded-lg text-base font-semibold shadow-md transition"
+                >
+                  Close
+                </button>
+              </div>
+            </Dialog.Panel>
+          </div>
+        </Dialog>
       </div>
     </div>
   );

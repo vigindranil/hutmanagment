@@ -146,6 +146,14 @@ const Dashboard: React.FC = () => {
         color: 'green' as const,
         HaatDashoardStatus: 2
       },
+      {
+        title: 'Rejected Hearing',
+        value: result?.data?.rejected_hearing ? result?.data?.rejected_hearing?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: AlertTriangle,
+        color: 'red' as const,
+        HaatDashoardStatus: 3
+      }
     ]);
   };
 
