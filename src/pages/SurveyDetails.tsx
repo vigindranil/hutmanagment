@@ -126,6 +126,7 @@ const SurveyTable: React.FC = () => {
   const handleViewClick = async (surveyId: string) => {
     try {
       setIsModalOpen(true);
+      setisLoadingDetails(true);
       const token = Cookies.get('token'); // get fresh token
       const myHeaders = new Headers();
       myHeaders.append("accept", "*/*");
@@ -161,6 +162,10 @@ const SurveyTable: React.FC = () => {
     } catch (error) {
       console.error("Error fetching full details:", error);
       alert("Failed to fetch application details. Make sure your credentials/token are valid.");
+    }
+    finally
+    {
+      setisLoadingDetails(false);
     }
   };
 
