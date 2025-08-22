@@ -8,6 +8,8 @@ export const commonApi = async (url: string, body: any = {}) => {
     const token = Cookies.get('token');
     myHeaders.append("Authorization", `Bearer ${token}`);
 
+    console.log("body",body);
+
     const requestOptions = {
       method: "POST",
       headers: myHeaders,

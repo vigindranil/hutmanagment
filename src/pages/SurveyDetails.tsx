@@ -6,7 +6,9 @@ import { decodeJwtToken } from '../utils/decodeToken';
 import { ChevronLeft, ChevronRight, CreditCard, X, CheckCircle, Calendar, Building, User, Phone, IndianRupee, Send, Check, MessageSquare, Eye } from 'lucide-react';
 import { Dialog } from "@headlessui/react";
 import Cookies from "js-cookie";
+import Swal from 'sweetalert2';
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
+import bgimg from '../../src/assets/table background.jpg'
 
 interface SurveyData {
   survey_id: number;
@@ -105,6 +107,8 @@ const SurveyTable: React.FC = () => {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState(1);
+  const [loads, setLoads] = useState(false);
+
   const [hearingDate, setHearingDate] = useState('');
   const [selectedSurveys, setSelectedSurveys] = useState<number[]>([]);
   const [approvalLoading, setApprovalLoading] = useState<number | null>(null);
@@ -113,6 +117,8 @@ const SurveyTable: React.FC = () => {
   const [approvalAction, setApprovalAction] = useState<'approve' | 'reject'>('approve');
   const [selectedSurveyForRemarks, setSelectedSurveyForRemarks] = useState<number | null>(null);
   const [viewData, setViewData] = useState<viewSurveyData | null>(null);
+
+  const [isLoadingDetails, setisLoadingDetails] = useState(false);
 
   const [data, setData] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -183,19 +189,29 @@ const SurveyTable: React.FC = () => {
     setLoading(true);
     const userDetails = decodeJwtToken();
     const payload = {
-      initial_or_final_payment_status: selectedSurvey?.survey_status === 'INITIAL' ? 1 : selectedSurvey?.survey_status === 'FINAL' ? 2 : undefined,
+      // initial_or_final_payment_status: selectedSurvey?.survey_status === 'INITIAL' ? 1 : selectedSurvey?.survey_status === 'FINAL' ? 2 : undefined,
+      initial_or_final_payment_status: selectedSurvey?.survey_status === "1" ? 1 : selectedSurvey?.survey_status === "5" ? 2 : undefined,
       survey_id: selectedSurvey?.survey_id,
-      transaction_number: Math.floor(1000 + Math.random() * 9000).toString(),
       amount: selectedSurvey?.amount ?? 0,
       user_id: userDetails?.UserID,
-      error_code: 0,
-    };
+  };
+
+
+    console.log("selecterd ",selectedSurvey);
+    
     const response = await commonApi(`user/savePaymentDetailsBySurveyID`, payload);
     if (response?.status == 0) {
       setPaymentSuccess(true);
+      setShowPaymentModal(false);
     }
     setLoading(false);
   };
+
+  // console.log ("payment",paymentSuccess);
+
+
+
+  
 
   const getSurveyDetailsByShopOwnerID = async (haatStatusId: any) => {
     const userDetails = decodeJwtToken();
@@ -387,12 +403,12 @@ const SurveyTable: React.FC = () => {
       });
       if (response?.status == 0) {
         setPaymentSuccess(true);
-        // @ts-ignore
-        window.Swal?.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'Hearing Date Initiated Successfully',
-        }) || alert("Something Went Wrong");
+      
+        Swal.fire({
+          title: "Hearing Date Initiated Successfully",
+          text: "You clicked the button!",
+          icon: "success"
+        }); 
       }
       setLoading(false);
 
@@ -401,6 +417,7 @@ const SurveyTable: React.FC = () => {
       setHearingDate('');
       setShowHearingModal(false);
     } catch (error) {
+      alert("Something Went Wrong");
       console.error('Error updating hearing date:', error);
     } finally {
       setLoading(false);
@@ -423,6 +440,8 @@ const SurveyTable: React.FC = () => {
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await savePaymentDetailsBySurveyID();
+    setShowPaymentModal(true);
+    setLoads(true);
   };
 
   const closePaymentModal = () => {
@@ -431,6 +450,7 @@ const SurveyTable: React.FC = () => {
     setPaymentName('');
     setPaymentNumber('');
     setPaymentEmail('');
+    setLoads(false);
   };
 
   const closeHearingModal = () => {
@@ -449,6 +469,11 @@ const SurveyTable: React.FC = () => {
     setViewData(null);
   };
 
+
+
+
+  console.log("payment succ", typeof paymentSuccess);
+
   // Check if checkboxes should be shown
   const showCheckboxes = userType == 50 && haatStatusId == "2";
 
@@ -460,7 +485,13 @@ const SurveyTable: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="min-h-full fixed z-[0] w-full bg-[url('https://img.freepik.com/free-vector/ecommerce-web-store-hand-drawn-illustration_107791-10966.jpg')] bg-cover bg-center bg-no-repeat opacity-15"></div>
+      <div className="min-h-full fixed z-[0] w-full">
+      <img
+              src={bgimg}
+              alt="background image"
+              className="bg-cover bg-center bg-no-repeat opacity-15"
+            />
+      </div>
       <div className="container mx-auto px-6 py-8 relative z-10">
         {/* Header Section */}
         <div className="mb-8">
@@ -486,6 +517,12 @@ const SurveyTable: React.FC = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                  {/* Table data count column */}
+                  <th className="px-4 py-5 text-left w-12">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                      #
+                    </div>
+                  </th>
                   {showCheckboxes && (
                     <th className="px-6 py-5 text-left">
                       <div className="flex items-center">
@@ -511,6 +548,15 @@ const SurveyTable: React.FC = () => {
                       Survey Date
                     </div>
                   </th>
+
+                  {(userType == 60 && haatStatusId == "1") && (
+                    <th className="px-6 py-5 text-left">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                        <IndianRupee className="w-4 h-4" />
+                        Hearing Date
+                      </div>
+                    </th>
+                  )}
 
                   <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
@@ -667,6 +713,10 @@ const SurveyTable: React.FC = () => {
                       key={survey.survey_id}
                       className="group hover:bg-blue-50/50 transition-colors duration-200"
                     >
+                      {/* Table data count cell */}
+                      <td className="px-4 py-4 text-slate-500 font-semibold text-sm">
+                        {startIdx + index + 1}
+                      </td>
                       {showCheckboxes && (
                         <td className="px-6 py-4">
                           <input
@@ -687,6 +737,14 @@ const SurveyTable: React.FC = () => {
                       <td className="px-6 py-4">
                         <span className="text-slate-900 font-medium">{survey?.survey_date}</span>
                       </td>
+
+                      {userType == 60 && haatStatusId == "1" && (
+                        <>
+                          <td className="px-6 py-4">
+                            <span className="text-slate-900 font-medium">{survey?.hearing_date}</span>
+                          </td>
+                        </>
+                      )}
 
                       <td className="px-6 py-4">
                         <span className="text-slate-900 font-medium">{survey?.haat_name}</span>
@@ -965,7 +1023,6 @@ const SurveyTable: React.FC = () => {
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-slate-900">Payment Details</h2>
-                    <p className="text-sm text-slate-600">Complete your payment securely</p>
                   </div>
                 </div>
                 <button
@@ -978,8 +1035,9 @@ const SurveyTable: React.FC = () => {
 
               {/* PAyment Modal Content */}
               <div className="p-6">
-                {typeof paymentSuccess === "number" ? (
-                  paymentSuccess === 0 ? (
+
+                {(loads && typeof paymentSuccess === "boolean")  ? (
+                  paymentSuccess === true ? (
                     <div className="text-center py-8">
                       <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <CheckCircle className="w-8 h-8 text-green-600" />
@@ -987,6 +1045,7 @@ const SurveyTable: React.FC = () => {
                       <h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Successful!</h3>
                       <p className="text-slate-600">Your payment has been processed successfully.</p>
                     </div>
+                  
                   ) : (
                     <div className="text-center py-8">
                       <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -997,6 +1056,7 @@ const SurveyTable: React.FC = () => {
                     </div>
                   )
                 ) : (
+                  
                   <form onSubmit={handlePaymentSubmit} className="space-y-6">
                     {/* Amount Display */}
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
@@ -1004,7 +1064,7 @@ const SurveyTable: React.FC = () => {
                         <span className="text-sm font-medium text-slate-700">Amount to Pay</span>
                         <span className="text-2xl font-bold text-slate-900">
                           ₹
-                          {(userType == 1 && haatStatusId == "7") 
+                          {(userType == 1 && haatStatusId == "7")
                             ? selectedSurvey?.final_amount
                             : (userType == 1 && haatStatusId == "4")
                               ? selectedSurvey?.initial_amount
@@ -1282,6 +1342,8 @@ const SurveyTable: React.FC = () => {
         )}
 
         {/* MODAL */}
+
+        
         <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-[9999]">
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
           <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-8">
@@ -1299,9 +1361,14 @@ const SurveyTable: React.FC = () => {
                 </button>
               </div>
 
-              {selectedDetails ? (
+              {/* Loader when data is loading */}
+              {isLoadingDetails ? (
+                <div className="flex flex-col items-center justify-center py-16">
+                  <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+                  <div className="text-blue-700 font-semibold text-lg">Loading details...</div>
+                </div>
+              ) : selectedDetails ? (
                 <div className="space-y-8">
-
                   {/* Reusable Table Rendering */}
                   {[
                     {
