@@ -83,7 +83,7 @@ const Dashboard: React.FC = () => {
       }
     ])
   }
-
+  
   //Checker Dashboard
   const getDashBoardDetailsByCheckerID = async () => {
     const userDetails = decodeJwtToken();

@@ -494,7 +494,7 @@ const SurveyTable: React.FC = () => {
       <img
               src={bgimg}
               alt="background image"
-              className="bg-cover bg-center bg-no-repeat opacity-15"
+              className="fixed left-0 top-20 w-full h-full object-cover opacity-15 z-0"
             />
       </div>
       <div className="container mx-auto px-6 py-8 relative z-10">
@@ -517,14 +517,15 @@ const SurveyTable: React.FC = () => {
         </div>
 
         {/* Table Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden backdrop-blur-sm bg-white/95">
+        <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden backdrop-blur-sm bg-white/95">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
                   {/* Table data count column */}
-                  <th className="px-4 py-5 text-left w-12">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                  <th className="px-6 py-5 text-left w-12">
+                    <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                       #
                     </div>
                   </th>
@@ -533,7 +534,7 @@ const SurveyTable: React.FC = () => {
                       <div className="flex items-center">
                         <input
                           type="checkbox"
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                          className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                           checked={selectedSurveys.length === paginatedData.length && paginatedData.length > 0}
                           onChange={handleSelectAll}
                         />
@@ -542,52 +543,67 @@ const SurveyTable: React.FC = () => {
                   )}
 
                   <th className="px-6 py-5 text-left">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                    <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                      <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                        <Building className="w-4 h-4 text-blue-400" />
+                      </div>
                       Application No
                     </div>
                   </th>
 
                   <th className="px-6 py-5 text-left">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                      <Calendar className="w-4 h-4" />
+                    <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                      <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                        <Calendar className="w-4 h-4 text-green-400" />
+                      </div>
                       Survey Date
                     </div>
                   </th>
 
                   {(userType == 60 && haatStatusId == "1") && (
                     <th className="px-6 py-5 text-left">
-                      <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                        <IndianRupee className="w-4 h-4" />
+                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                        <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-purple-400" />
+                        </div>
                         Hearing Date
                       </div>
                     </th>
                   )}
 
                   <th className="px-6 py-5 text-left">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                      <Building className="w-4 h-4" />
+                    <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                      <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                        <Building className="w-4 h-4 text-orange-400" />
+                      </div>
                       Haat Name
                     </div>
                   </th>
 
                   <th className="px-6 py-5 text-left">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                      <User className="w-4 h-4" />
+                    <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                      <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                        <User className="w-4 h-4 text-cyan-400" />
+                      </div>
                       Shop Owner Name
                     </div>
                   </th>
 
                   <th className="px-6 py-5 text-left">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                      <Phone className="w-4 h-4" />
+                    <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                      <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center">
+                        <Phone className="w-4 h-4 text-indigo-400" />
+                      </div>
                       Mobile
                     </div>
                   </th>
 
                   {(userType == 1 && haatStatusId == "7") && (
                     <th className="px-6 py-5 text-left">
-                      <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                        <IndianRupee className="w-4 h-4" />
+                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                          <IndianRupee className="w-4 h-4 text-emerald-400" />
+                        </div>
                         Amount
                       </div>
                     </th>
@@ -596,7 +612,7 @@ const SurveyTable: React.FC = () => {
                   {(haatStatusId == "7" && userType == 1) && (
                     <>
                       <th className="px-6 py-5 text-left">
-                        <div className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                        <div className="text-sm font-bold uppercase tracking-wider">
                           Actions
                         </div>
                       </th>
@@ -606,8 +622,10 @@ const SurveyTable: React.FC = () => {
 
                   {(userType == 60 && haatStatusId == "1") && (
                     <th className="px-6 py-5 text-left">
-                      <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                        <IndianRupee className="w-4 h-4" />
+                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                          <IndianRupee className="w-4 h-4 text-emerald-400" />
+                        </div>
                         Amount
                       </div>
                     </th>
@@ -616,36 +634,46 @@ const SurveyTable: React.FC = () => {
                   {(userType == 60 && haatStatusId == "2") && (
                     <>
                       <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                          <IndianRupee className="w-4 h-4" />
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-rose-500/20 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-4 h-4 text-rose-400" />
+                          </div>
                           Initial Payment Date
                         </div>
                       </th>
 
                       <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                          <IndianRupee className="w-4 h-4" />
-                          Hearing Officername
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-teal-500/20 rounded-lg flex items-center justify-center">
+                            <User className="w-4 h-4 text-teal-400" />
+                          </div>
+                          Hearing Officer
                         </div>
                       </th>
 
                       <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                          <IndianRupee className="w-4 h-4" />
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-violet-500/20 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-4 h-4 text-violet-400" />
+                          </div>
                           Hearing Date
                         </div>
                       </th>
 
                       <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                          <IndianRupee className="w-4 h-4" />
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center">
+                            <MessageSquare className="w-4 h-4 text-amber-400" />
+                          </div>
                           Hearing Remarks
                         </div>
                       </th>
 
                       <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                          <IndianRupee className="w-4 h-4" />
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                            <IndianRupee className="w-4 h-4 text-emerald-400" />
+                          </div>
                           Initial Amount
                         </div>
                       </th>
@@ -655,8 +683,10 @@ const SurveyTable: React.FC = () => {
                   {(haatStatusId == "5") && (
                     <>
                       <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                          <IndianRupee className="w-4 h-4" />
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                            <IndianRupee className="w-4 h-4 text-emerald-400" />
+                          </div>
                           Amount
                         </div>
                       </th>
@@ -665,14 +695,18 @@ const SurveyTable: React.FC = () => {
                   {(userType == 50) && (
                     <>
                       <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                          <Calendar className="w-4 h-4" />
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-4 h-4 text-blue-400" />
+                          </div>
                           Payment Date
                         </div>
                       </th>
                       <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                          <IndianRupee className="w-4 h-4" />
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                            <IndianRupee className="w-4 h-4 text-emerald-400" />
+                          </div>
                           Amount
                         </div>
                       </th>
@@ -681,13 +715,15 @@ const SurveyTable: React.FC = () => {
                   {(haatStatusId == "4" && userType == 1) && (
                     <>
                       <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wider">
-                          <IndianRupee className="w-4 h-4" />
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                            <IndianRupee className="w-4 h-4 text-emerald-400" />
+                          </div>
                           Amount
                         </div>
                       </th>
                       <th className="px-6 py-5 text-left">
-                        <div className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                        <div className="text-sm font-bold uppercase tracking-wider">
                           Actions
                         </div>
                       </th>
@@ -695,7 +731,7 @@ const SurveyTable: React.FC = () => {
                   )}
                   {showApprovedButton && (
                     <th className="px-6 py-5 text-left">
-                      <div className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                      <div className="text-sm font-bold uppercase tracking-wider">
                         Actions
                       </div>
                     </th>
@@ -703,7 +739,7 @@ const SurveyTable: React.FC = () => {
                   {/* Add Actions column for view button for userType 50 and haatStatusId == 2 */}
                   {showViewButton && !showApprovedButton && (
                     <th className="px-6 py-5 text-left">
-                      <div className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                      <div className="text-sm font-bold uppercase tracking-wider">
                         Actions
                       </div>
                     </th>
@@ -716,70 +752,106 @@ const SurveyTable: React.FC = () => {
                   paginatedData.map((survey: any, index: number) => (
                     <tr
                       key={survey.survey_id}
-                      className="group hover:bg-blue-50/50 transition-colors duration-200"
+                      className="group hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/30 transition-all duration-300"
                     >
                       {/* Table data count cell */}
-                      <td className="px-4 py-4 text-slate-500 font-semibold text-sm">
-                        {startIdx + index + 1}
+                      <td className="px-6 py-5">
+                        <div className="w-8 h-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center text-slate-700 font-semibold text-sm">
+                          {startIdx + index + 1}
+                        </div>
                       </td>
                       {showCheckboxes && (
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-5">
                           <input
                             type="checkbox"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                             checked={selectedSurveys.includes(survey.survey_id)}
                             onChange={() => handleCheckboxChange(survey.survey_id)}
                           />
                         </td>
                       )}
 
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                      <td className="px-6 py-5">
+                        <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border border-blue-200">
                           {survey?.application_number}
-                        </span>
+                        </div>
                       </td>
 
-                      <td className="px-6 py-4">
-                        <span className="text-slate-900 font-medium">{survey?.survey_date}</span>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                          <span className="text-slate-900 font-semibold">{survey?.survey_date}</span>
+                        </div>
                       </td>
 
                       {userType == 60 && haatStatusId == "1" && (
                         <>
-                          <td className="px-6 py-4">
-                            <span className="text-slate-900 font-medium">{survey?.hearing_date}</span>
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                              <span className="text-slate-900 font-semibold">{survey?.hearing_date}</span>
+                            </div>
                           </td>
                         </>
                       )}
 
-                      <td className="px-6 py-4">
-                        <span className="text-slate-900 font-medium">{survey?.haat_name}</span>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-orange-100 to-amber-100 rounded-xl flex items-center justify-center">
+                            <Building className="w-5 h-5 text-orange-600" />
+                          </div>
+                          <span className="text-slate-900 font-semibold">{survey?.haat_name}</span>
+                        </div>
                       </td>
 
-                      {(userType == 50) ? <td className="px-6 py-4"><span className="text-slate-900 font-medium">{survey?.shopowner_name}</span></td> : <td className="px-6 py-4"><span className="text-slate-900 font-medium">{survey?.shop_owner_name}</span></td>}
+                      {(userType == 50) ? 
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-xl flex items-center justify-center">
+                              <User className="w-5 h-5 text-cyan-600" />
+                            </div>
+                            <span className="text-slate-900 font-semibold">{survey?.shopowner_name}</span>
+                          </div>
+                        </td> : 
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-xl flex items-center justify-center">
+                              <User className="w-5 h-5 text-cyan-600" />
+                            </div>
+                            <span className="text-slate-900 font-semibold">{survey?.shop_owner_name}</span>
+                          </div>
+                        </td>
+                      }
 
-                      <td className="px-6 py-4">
-                        <span className="text-slate-600 font-medium">{survey?.mobile_number}</span>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl flex items-center justify-center">
+                            <Phone className="w-5 h-5 text-indigo-600" />
+                          </div>
+                          <span className="text-slate-700 font-semibold">{survey?.mobile_number}</span>
+                        </div>
                       </td>
 
                       {userType == 1 && haatStatusId == "7" && (
                         <>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-800">
-                              ₹{survey?.final_amount}
-                            </span>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.final_amount}
+                            </div>
                           </td>
                         </>
                       )}
 
                       {(haatStatusId == "7" && userType == 1) && (
                         <>
-                          <td className="px-6 py-4">
+                          <td className="px-6 py-5">
                             <button
                               onClick={() => {
                                 setShowPaymentModal(true);
                                 setSelectedSurvey(survey);
                               }}
-                              className="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                              className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                             >
                               <CreditCard className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200" />
                               Pay Now
@@ -790,70 +862,93 @@ const SurveyTable: React.FC = () => {
 
 
                       {(userType == 60 && haatStatusId == "1") && (
-                        <td className="px-6 py-4">
-                          <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-800">
-                            ₹{survey?.initial_amount}
-                          </span>
+                        <td className="px-6 py-5">
+                          <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                            <IndianRupee className="w-4 h-4 mr-1" />
+                            {survey?.initial_amount}
+                          </div>
                         </td>
                       )}
 
                       {userType == 60 && haatStatusId == "2" && (
                         <>
-                          <td className="px-6 py-4">
-                            <span className="text-slate-900 font-medium">{survey?.initial_paymentdate}</span>
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-rose-400 rounded-full"></div>
+                              <span className="text-slate-900 font-semibold">{survey?.initial_paymentdate}</span>
+                            </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <span className="text-slate-900 font-medium">{survey?.hearing_officername}</span>
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-xl flex items-center justify-center">
+                                <User className="w-5 h-5 text-teal-600" />
+                              </div>
+                              <span className="text-slate-900 font-semibold">{survey?.hearing_officername}</span>
+                            </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <span className="text-slate-900 font-medium">{survey?.hearing_date}</span>
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-violet-400 rounded-full"></div>
+                              <span className="text-slate-900 font-semibold">{survey?.hearing_date}</span>
+                            </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <span className="text-slate-900 font-medium">{survey?.hearing_remarks}</span>
+                          <td className="px-6 py-5">
+                            <div className="max-w-xs truncate">
+                              <span className="text-slate-900 font-semibold bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">{survey?.hearing_remarks}</span>
+                            </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-800">
-                              ₹{survey?.initial_amount}
-                            </span>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.initial_amount}
+                            </div>
                           </td>
                         </>
                       )}
 
                       {haatStatusId == "5" && (
                         <>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-800">
-                              ₹{survey?.initial_amount}
-                            </span>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.initial_amount}
+                            </div>
                           </td>
                         </>
                       )}
 
                       {userType == 50 && (
                         <>
-                          <td className="px-6 py-4">
-                            <span className="text-slate-900 font-medium">{survey?.payment_date}</span>
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                              <span className="text-slate-900 font-semibold">{survey?.payment_date}</span>
+                            </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <span className="text-slate-900 font-medium">{survey?.initial_amount}</span>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.initial_amount}
+                            </div>
                           </td>
                         </>
                       )}
 
                       {(haatStatusId == "4" && userType == 1) && (
                         <>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-800">
-                              ₹{survey?.initial_amount}
-                            </span>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.initial_amount}
+                            </div>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-6 py-5">
                             <button
                               onClick={() => {
                                 setShowPaymentModal(true);
                                 setSelectedSurvey(survey);
                               }}
-                              className="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                              className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                             >
                               <CreditCard className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200" />
                               Pay Now
@@ -864,37 +959,41 @@ const SurveyTable: React.FC = () => {
 
 
                       {showApprovedButton && (
-                        <td className="px-6 py-4 flex gap-2">
-                          <button
-                            onClick={() => handleApprovalAction(survey.survey_id, 'approve')}
-                            className="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => handleApprovalAction(survey.survey_id, 'reject')}
-                            className="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                          >
-                            Reject
-                          </button>
-                          {showViewButton && (
+                        <td className="px-6 py-5">
+                          <div className="flex gap-3">
                             <button
-                              onClick={() => handleViewClick(survey.survey_id)}
-                              className="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                              onClick={() => handleApprovalAction(survey.survey_id, 'approve')}
+                              className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                             >
-                              <Eye className="w-4 h-4 mr-2" />
-                              View
+                              <Check className="w-4 h-4 mr-2" />
+                              Approve
                             </button>
-                          )}
+                            <button
+                              onClick={() => handleApprovalAction(survey.survey_id, 'reject')}
+                              className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                            >
+                              <X className="w-4 h-4 mr-2" />
+                              Reject
+                            </button>
+                            {showViewButton && (
+                              <button
+                                onClick={() => handleViewClick(survey.survey_id)}
+                                className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                              >
+                                <Eye className="w-4 h-4 mr-2" />
+                                View
+                              </button>
+                            )}
+                          </div>
                         </td>
                       )}
 
                       {/* Show view button for userType 50 and haatStatusId == 2, if not already shown in showApprovedButton */}
                       {!showApprovedButton && showViewButton && (
-                        <td className="px-6 py-4 flex gap-2">
+                        <td className="px-6 py-5">
                           <button
                             onClick={() => handleViewClick(survey.survey_id)}
-                            className="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                            className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             View
@@ -918,11 +1017,11 @@ const SurveyTable: React.FC = () => {
                       className="text-center py-16"
                     >
                       <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                          <Building className="w-8 h-8 text-slate-400" />
+                        <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mb-6">
+                          <Building className="w-10 h-10 text-slate-400" />
                         </div>
-                        <h3 className="text-lg font-semibold text-slate-900 mb-2">No Data Available</h3>
-                        <p className="text-slate-500">No survey records found for the selected criteria.</p>
+                        <h3 className="text-xl font-bold text-slate-900 mb-3">No Data Available</h3>
+                        <p className="text-slate-500 text-lg">No survey records found for the selected criteria.</p>
                       </div>
                     </td>
                   </tr>
@@ -933,14 +1032,14 @@ const SurveyTable: React.FC = () => {
 
           {/* Submit Button for Selected Items */}
           {showCheckboxes && selectedSurveys.length > 0 && (
-            <div className="bg-slate-50 px-6 py-4 border-t border-slate-200">
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-t border-slate-200">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-slate-700">
-                  <span className="font-semibold">{selectedSurveys.length}</span> items selected
+                <p className="text-sm text-slate-700 font-semibold">
+                  <span className="font-bold text-blue-600">{selectedSurveys.length}</span> items selected
                 </p>
                 <button
                   onClick={handleSubmitSelected}
-                  className="inline-flex items-center px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   <Send className="w-4 h-4 mr-2" />
                   Submit Selected ({selectedSurveys.length})
@@ -951,28 +1050,28 @@ const SurveyTable: React.FC = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-slate-50 px-6 py-4 border-t border-slate-200">
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-t border-slate-200">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-slate-700">
-                  Showing <span className="font-semibold">{startIdx + 1}</span> to{' '}
-                  <span className="font-semibold">{Math.min(endIdx, totalItems)}</span> of{' '}
-                  <span className="font-semibold">{totalItems}</span> results
+                <p className="text-sm text-slate-700 font-semibold">
+                  Showing <span className="font-bold text-blue-600">{startIdx + 1}</span> to{' '}
+                  <span className="font-bold text-blue-600">{Math.min(endIdx, totalItems)}</span> of{' '}
+                  <span className="font-bold text-blue-600">{totalItems}</span> results
                 </p>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === 1
+                    className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${currentPage === 1
                       ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                      : 'bg-white text-slate-700 hover:bg-slate-50 shadow-sm hover:shadow border border-slate-200'
+                      : 'bg-white text-slate-700 hover:bg-slate-50 shadow-md hover:shadow-lg border border-slate-200'
                       }`}
                   >
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Previous
                   </button>
 
-                  <div className="flex space-x-1">
+                  <div className="flex space-x-2">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       let pageNumber;
                       if (totalPages <= 5) {
@@ -988,9 +1087,9 @@ const SurveyTable: React.FC = () => {
                         <button
                           key={pageNumber}
                           onClick={() => handlePageChange(pageNumber)}
-                          className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === pageNumber
-                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
-                            : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+                          className={`w-10 h-10 rounded-xl text-sm font-semibold transition-all duration-200 ${currentPage === pageNumber
+                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg transform scale-110'
+                            : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 hover:shadow-md'
                             }`}
                         >
                           {pageNumber}
@@ -1002,9 +1101,9 @@ const SurveyTable: React.FC = () => {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
+                    className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${currentPage === totalPages
                       ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                      : 'bg-white text-slate-700 hover:bg-slate-50 shadow-sm hover:shadow border border-slate-200'
+                      : 'bg-white text-slate-700 hover:bg-slate-50 shadow-md hover:shadow-lg border border-slate-200'
                       }`}
                   >
                     Next
