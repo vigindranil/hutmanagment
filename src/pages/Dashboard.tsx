@@ -99,7 +99,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Hearing Date Pending',
-        value: result?.data?.hearing_pending ? result?.data?.hearing_pending?.toString() : "0",
+        value: result?.data?.final_approval_pending ? result?.data?.final_approval_pending?.toString() : "0",
         changeType: 'neutral' as const,
         icon: CalendarClock,
         color: 'red' as const,
@@ -107,7 +107,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Hearing Date Initiated',
-        value: result?.data?.hearing_approved ? result?.data?.hearing_approved?.toString() : "0",
+        value: result?.data?.final_approval_done ? result?.data?.final_approval_done?.toString() : "0",
         changeType: 'negative' as const,
         icon: CheckCheck,
         color: 'green' as const,
@@ -115,7 +115,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Initial Payment Done',
-        value: result?.data?.initial_payment_done ? result?.data?.initial_payment_done?.toString() : "0",
+        value: result?.data?.final_approval_rejected ? result?.data?.final_approval_rejected?.toString() : "0",
         changeType: 'neutral' as const,
         icon: IndianRupee,
         color: 'green' as const,
@@ -132,7 +132,7 @@ const Dashboard: React.FC = () => {
     setStats([
       {
         title: 'Hearing Pending',
-        value: result?.data?.hearing_pending ? result?.data?.hearing_pending?.toString() : "0",
+        value: result?.data?.final_approval_pending ? result?.data?.final_approval_pending?.toString() : "0",
         changeType: 'positive' as const,
         icon: CalendarClock,
         color: 'red' as const,
@@ -158,6 +158,50 @@ const Dashboard: React.FC = () => {
   };
 
 
+  // approve officer Dashboard
+
+  const getApproveOfficerDashboard = async () => {
+    const userDetails = decodeJwtToken();
+    const result = await commonApi(`user/getDashboardCountByApprovalOfficerID?ApprovalOfficerID=${userDetails?.UserID}`);
+
+    setStats([
+      {
+        title: 'Total Survey',
+        value: result?.data?.total_survey ? result?.data?.total_survey?.toString() : "0",
+        changeType: 'positive' as const,
+        icon: Users,
+        color: 'blue' as const,
+        HaatDashoardStatus: 1
+      },
+      {
+        title: 'Final Approval Pending',
+        value: result?.data?.final_approval_pending ? result?.data?.final_approval_pending?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: CalendarClock,
+        color: 'red' as const,
+        HaatDashoardStatus: 2
+      },
+      {
+        title: 'Final Approval Done',
+        value: result?.data?.final_approval_done ? result?.data?.final_approval_done?.toString() : "0",
+        changeType: 'negative' as const,
+        icon: CheckCheck,
+        color: 'green' as const,
+        HaatDashoardStatus: 3
+      },
+      {
+        title: 'Final Approval Rejected',
+        value: result?.data?.final_approval_rejected ? result?.data?.final_approval_rejected?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: AlertTriangle,
+        color: 'red' as const,
+        HaatDashoardStatus: 4
+      }
+    ]);
+  };
+
+
+
   useEffect(() => {
     const user_details = decodeJwtToken();
     console.log(user_details);
@@ -168,6 +212,9 @@ const Dashboard: React.FC = () => {
       getDashBoardDetailsByCheckerID();
     }else if (user_details?.UserTypeID === 60) {
       getHearingCountByHearingUserID();
+    }
+    else if (user_details?.UserTypeID === 70) {
+      getApproveOfficerDashboard();
     }
   }, []);
 
