@@ -114,7 +114,7 @@ const SurveyTable: React.FC = () => {
   const [approvalLoading, setApprovalLoading] = useState<number | null>(null);
   const [hearingRemarks, setHearingRemarks] = useState<string>("");
   const [remarksText, setRemarksText] = useState<string>("");
-  const [approvalAction, setApprovalAction] = useState<'approve' | 'reject'>('approve');
+  const [approvalAction, setApprovalAction] = useState<'approve' | 'reject' | null>(null);
   const [selectedSurveyForRemarks, setSelectedSurveyForRemarks] = useState<number | null>(null);
   const [viewData, setViewData] = useState<viewSurveyData | null>(null);
 
@@ -556,6 +556,17 @@ const SurveyTable: React.FC = () => {
                     </div>
                   </th>
 
+                  {(userType == 1 && haatStatusId == "6") && (
+                    <th className="px-6 py-5 text-left">
+                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-emerald-400" />
+                        </div>
+                        Hearing Date
+                      </div>
+                    </th>
+                  )}
+
                   {/* {(userType == 60 && haatStatusId == "1") && (
                     <th className="px-6 py-5 text-left">
                       <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
@@ -827,6 +838,17 @@ const SurveyTable: React.FC = () => {
                           <span className="text-slate-900 font-semibold">{survey?.survey_date}</span>
                         </div>
                       </td>
+
+                      {userType == 1 && haatStatusId == "6" && (
+                        <>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              {survey?.hearing_date}
+                            </div>
+                          </td>
+                        </>
+                      )}
 
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
