@@ -141,6 +141,7 @@ const SurveyTable: React.FC = () => {
         redirect: "follow" as RequestRedirect,
       };
       const response: any = await fetch(BASE_API_URL + "user/getHaatApplicationDetailsBySurveyID", requestOptions);
+      console.log(response)
 
       if (!response.ok) {
         throw new Error(`HTTP ${response?.status}: ${await response?.text()}`);
