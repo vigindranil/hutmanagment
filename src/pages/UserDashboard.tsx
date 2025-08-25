@@ -31,14 +31,14 @@ const Dashboard: React.FC = () => {
         color: 'blue' as const,
         HaatDashoardStatus: 1
       },
-      {
-        title: 'Complete Survey',
-        value: result?.data?.complete_survey ? result?.data?.complete_survey?.toString() : "0",
-        changeType: 'neutral' as const,
-        icon: TrendingUp,
-        color: 'green' as const,
-        HaatDashoardStatus: 2
-      },
+      // {
+      //   title: 'Complete Survey',
+      //   value: result?.data?.complete_survey ? result?.data?.complete_survey?.toString() : "0",
+      //   changeType: 'neutral' as const,
+      //   icon: TrendingUp,
+      //   color: 'green' as const,
+      //   HaatDashoardStatus: 2
+      // },
       {
         title: 'Change Request',
         value: result?.data?.changing_request ? result?.data?.changing_request?.toString() : "0",
@@ -52,19 +52,19 @@ const Dashboard: React.FC = () => {
         value: result?.data?.initial_payment_pending ? result?.data?.initial_payment_pending?.toString() : "0",
         changeType: 'positive' as const,
         icon: IndianRupee,
-        color: 'purple' as const,
+        color: 'red' as const,
         HaatDashoardStatus: 4
       },
+      // {
+      //   title: 'Initial Payment Done',
+      //   value: result?.data?.initial_payment_done ? result?.data?.initial_payment_done?.toString() : "0",
+      //   changeType: 'positive' as const,
+      //   icon: IndianRupee,
+      //   color: 'green' as const,
+      //   HaatDashoardStatus: 5
+      // },
       {
-        title: 'Initial Payment Done',
-        value: result?.data?.initial_payment_done ? result?.data?.initial_payment_done?.toString() : "0",
-        changeType: 'positive' as const,
-        icon: IndianRupee,
-        color: 'purple' as const,
-        HaatDashoardStatus: 5
-      },
-      {
-        title: 'Hearing Done',
+        title: 'Hearing Date Initiated',
         value: result?.data?.hearing_done ? result?.data?.hearing_done?.toString() : "0",        
         changeType: 'positive' as const,     
         icon: FaIdCard,
@@ -76,17 +76,17 @@ const Dashboard: React.FC = () => {
         value: result?.data?.final_payment_pending ? result?.data?.final_payment_pending?.toString() : "0",  
         changeType: 'positive' as const,        
         icon: IndianRupee,
-        color: 'purple' as const,
+        color: 'red' as const,
         HaatDashoardStatus: 7
       },
-      {
-        title: 'Final Payment Done',
-        value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",        
-        changeType: 'positive' as const,        
-        icon: IndianRupee,
-        color: 'purple' as const,
-        HaatDashoardStatus: 8
-      },
+      // {
+      //   title: 'Final Payment Done',
+      //   value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",        
+      //   changeType: 'positive' as const,        
+      //   icon: IndianRupee,
+      //   color: 'green' as const,
+      //   HaatDashoardStatus: 8
+      // },
       {
         title: 'Licence Details',
         value: result?.data?.licensed_shops ? result?.data?.licensed_shops?.toString() : "0",
