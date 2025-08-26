@@ -17,7 +17,11 @@ function App() {
   return (
     
   // <BrowserRouter>
+<<<<<<< HEAD
      <BrowserRouter basename='/hutmanagment'>
+=======
+     <BrowserRouter basename='/HutManagement'>
+>>>>>>> 17d2b6efdadfad1312fc64216e3febdc1c324470
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
