@@ -305,7 +305,7 @@ const SurveyTable: React.FC = () => {
     const userDetails = decodeJwtToken();
     const payload = {
       survey_id: selectedSurvey?.survey_id,
-      final_approval_status:  approvalAction === "approve" ? 1 : 2,
+      final_approval_status: approvalAction === "approve" ? 1 : 2,
       remarks: remarksText || "",
       approval_officer_id: decodeJwtToken()?.UserID,
     };
@@ -399,13 +399,16 @@ const SurveyTable: React.FC = () => {
       const payload = {
         survey_id: selectedSurveyForRemarks,
         entry_user_id: userDetails?.UserID,
-        hearing_remarks: remarksText,
+        remarks: remarksText,
         approval_status: approvalAction === "approve" ? 1 : 2,
       };
-      const response = await commonApi(
-        `/user/updateApprovedHearingDetailsByHearingUserID`,
-        payload
-      );
+
+      const url =
+        userType === 70
+          ? `/user/saveFinalApprovalByApprovalOfficerID`
+          : `/user/updateApprovedHearingDetailsByHearingUserID`;
+
+      const response = await commonApi(url, payload);
       console.log(response);
       if (response?.status == 0) {
         setPaymentSuccess(true);
@@ -615,7 +618,8 @@ const SurveyTable: React.FC = () => {
   // REWRITE: Show view button for userType 50 and haatStatusId == "2"
   const showViewButton =
     (userType == 60 && haatStatusId == "1") ||
-    (userType == 50 && haatStatusId == "2");
+    (userType == 50 && haatStatusId == "2") ||
+    (userType == 70 && haatStatusId == "2");
 
   return (
     <div className="min-h-screen">
@@ -686,14 +690,25 @@ const SurveyTable: React.FC = () => {
                     </div>
                   </th>
 
-                  <th className="px-6 py-5 text-left">
+                  {(userType === 70 && haatStatusId === "2") ? (
+                    <th className="px-6 py-5 text-left">
+                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-green-400" />
+                        </div>
+                        Final Survey Date
+                      </div>
+                    </th>
+                  ) : (
+                    <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                       <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
                         <Calendar className="w-4 h-4 text-green-400" />
                       </div>
                       Survey Date
                     </div>
-                  </th>
+                    </th> 
+                  )}
 
                   {/* {(userType == 60 && haatStatusId == "1") && (
                     <th className="px-6 py-5 text-left">
@@ -724,7 +739,15 @@ const SurveyTable: React.FC = () => {
                     </div>
                   </th>
 
-                  <th className="px-6 py-5 text-left">
+                  {(userType === 70 && haatStatusId === "2") ? (<th className="px-6 py-5 text-left">
+                    <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                      <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center">
+                        <IndianRupee className="w-4 h-4 text-indigo-400" />
+                      </div>
+                      Final Amount 
+                    </div>
+                  </th>) : (
+                    <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                       <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center">
                         <Phone className="w-4 h-4 text-indigo-400" />
@@ -732,14 +755,13 @@ const SurveyTable: React.FC = () => {
                       Mobile
                     </div>
                   </th>
+                  )}
 
                   {userType == 70 && haatStatusId == "1" && (
                     <th className="px-6 py-5 text-left">
                       <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                        <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                          <Eye className="w-4 h-4 text-blue-400" />
-                        </div>
-                        View
+                       
+                        Action
                       </div>
                     </th>
                   )}
@@ -768,7 +790,7 @@ const SurveyTable: React.FC = () => {
 
                   {userType == 1 && haatStatusId == "1" && (
                     <th className="px-6 py-5 text-left">
-                      <div className="text-sm font-bold uppercase tracking-wider">
+                      <div className="text-sm font-bold uppercase tracking-wider text-center">
                         Actions
                       </div>
                     </th>
@@ -788,7 +810,7 @@ const SurveyTable: React.FC = () => {
                   {haatStatusId == "7" && userType == 1 && (
                     <>
                       <th className="px-6 py-5 text-left">
-                        <div className="text-sm font-bold uppercase tracking-wider">
+                        <div className="text-sm font-bold uppercase tracking-wider  text-center">
                           Actions
                         </div>
                       </th>
@@ -906,7 +928,7 @@ const SurveyTable: React.FC = () => {
                         </div>
                       </th>
                       <th className="px-6 py-5 text-left">
-                        <div className="text-sm font-bold uppercase tracking-wider">
+                        <div className="text-sm font-bold uppercase tracking-wider  text-center">
                           Actions
                         </div>
                       </th>
@@ -916,7 +938,7 @@ const SurveyTable: React.FC = () => {
                   {haatStatusId == "2" && userType == 70 && (
                     <>
                       <th className="px-6 py-5 text-left">
-                        <div className="text-sm font-bold uppercase tracking-wider">
+                        <div className="text-sm font-bold uppercase tracking-wider  text-center">
                           Actions
                         </div>
                       </th>
@@ -925,7 +947,7 @@ const SurveyTable: React.FC = () => {
 
                   {showApprovedButton && !(userType === 70) && (
                     <th className="px-6 py-5 text-left">
-                      <div className="text-sm font-bold uppercase tracking-wider">
+                      <div className="text-sm font-bold uppercase tracking-wider  text-center">
                         Actions
                       </div>
                     </th>
@@ -933,7 +955,7 @@ const SurveyTable: React.FC = () => {
                   {/* Add Actions column for view button for userType 50 and haatStatusId == 2 */}
                   {showViewButton && !showApprovedButton && (
                     <th className="px-6 py-5 text-left">
-                      <div className="text-sm font-bold uppercase tracking-wider">
+                      <div className="text-sm font-bold uppercase tracking-wider  text-center">
                         Actions
                       </div>
                     </th>
@@ -973,14 +995,23 @@ const SurveyTable: React.FC = () => {
                         </div>
                       </td>
 
-                      <td className="px-6 py-5">
+                      {(userType === 70 && haatStatusId == "2")? (<td className="px-6 py-5">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                           <span className="text-slate-900 font-semibold">
-                            {survey?.survey_date}
+                            {survey?.final_payment_date}
                           </span>
                         </div>
-                      </td>
+                      </td>) : (
+                        <td className="px-6 py-5">
+                         <div className="flex items-center gap-2">
+                         <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                         <span className="text-slate-900 font-semibold">
+                           {survey?.survey_date}
+                         </span>
+                       </div>
+                     </td>
+                      )}
 
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
@@ -1020,10 +1051,12 @@ const SurveyTable: React.FC = () => {
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl flex items-center justify-center">
-                            <Phone className="w-5 h-5 text-indigo-600" />
+                           { (userType === 70 && haatStatusId === "2") 
+                             ? <IndianRupee className="w-5 h-5 text-indigo-600" /> 
+                             : <Phone className="w-5 h-5 text-indigo-600" /> }
                           </div>
                           <span className="text-slate-700 font-semibold">
-                            {survey?.mobile_number}
+                            {( userType === 70 && haatStatusId === "2") ? survey?.final_amount : survey?.mobile_number}
                           </span>
                         </div>
                       </td>
