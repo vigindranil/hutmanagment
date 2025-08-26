@@ -17,7 +17,7 @@ function App() {
   return (
     
   // <BrowserRouter>
-     <BrowserRouter basename='/HaatManagement'>
+     <BrowserRouter basename='/hutmanagment'>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
