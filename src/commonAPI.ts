@@ -48,12 +48,16 @@ export const commonApiImage = async (file_url: string) => {
     headers: myHeaders,
   };
 
+  console.log("file_url", file_url);
+
   const res = await fetch(
     BASE_API_URL + "user/getImgAsBase64ByFileName/" + file_url,
     requestOptions
   );
 
   const response = await res.json(); // adjust based on API response
+
+  console.log("response",response);
   const base64 = response?.data;
   if (!base64) throw new Error("No base64 data returned from API");
 
