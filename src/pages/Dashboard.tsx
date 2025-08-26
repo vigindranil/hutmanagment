@@ -233,8 +233,8 @@ const Dashboard: React.FC = () => {
           </div>
           <p className="text-gray-600 font-medium">Welcome back to Haat Management System</p>
         </div>
-        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-          <div className="flex items-center space-x-2 text-sm text-gray-500 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-white/20">
+        <div className="mt-4 sm:mt-0 flex items-center space-x-3 transform">
+          <div className="relative flex items-center space-x-2 text-sm text-gray-500 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-white/20">
             <Calendar className="w-4 h-4 text-blue-500" />
             <span className="font-medium">
               Last updated: {
@@ -257,8 +257,6 @@ const Dashboard: React.FC = () => {
           <StatsCard dashboardType="ADMIN" key={index} {...stat} />
         ))}
       </div>
-
-
     </div>
   );
 };

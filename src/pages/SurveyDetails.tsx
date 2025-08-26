@@ -266,7 +266,7 @@ const SurveyTable: React.FC = () => {
           ? 2
           : undefined,
       survey_id: selectedSurvey?.survey_id,
-      amount: selectedSurvey?.amount ?? 0,
+      amount: (selectedSurvey?.survey_status === "1" ? selectedSurvey?.initial_amount : selectedSurvey?.final_amount) || 0,
       user_id: userDetails?.UserID,
     };
 

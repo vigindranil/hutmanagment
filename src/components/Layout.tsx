@@ -11,7 +11,10 @@ import {
   Menu,
   X,
   Building2,
-  ClipboardList
+  ClipboardList,
+  ChevronDown,
+  ChevronRight,
+  LogOut
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { decodeJwtToken } from '../utils/decodeToken';
@@ -31,16 +34,14 @@ interface UserDetails {
 
 const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullName, UserType: propUserType }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const location = useLocation();
-
-  
 
   // Dropdown logic moved here
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -62,8 +63,20 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-
   }, [dropdownOpen]);
+
+  // Check if any submenu path is active
+  useEffect(() => {
+    const currentPath = location.pathname;
+    navigation.forEach((item) => {
+      if (item.subMenu) {
+        const hasActiveSubmenu = item.subMenu.some(sub => currentPath === sub.href);
+        if (hasActiveSubmenu && !expandedMenus.includes(item.name)) {
+          setExpandedMenus(prev => [...prev, item.name]);
+        }
+      }
+    });
+  }, [location.pathname]);
 
   function handleLogout() {
     // TODO: Replace with your logout logic
@@ -72,24 +85,48 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
     navigate('/login');
   }
 
+  const toggleSubmenu = (menuName: string) => {
+    setExpandedMenus(prev => 
+      prev.includes(menuName) 
+        ? prev.filter(name => name !== menuName)
+        : [...prev, menuName]
+    );
+  };
+
   const navigation = [
     { name: 'Dashboard', user_type_id: 100, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Shop Owner Dashboard', user_type_id: 1, href: '/user-dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Checker Dashboard', user_type_id: 50, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Hearing Officer Dasboard', user_type_id: 60, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
-    { name: 'Approval Officer', user_type_id: 70, href: '/dashboard', icon: FileText, color: 'from-purple-500 to-indigo-600' },
+    { name: 'Approval Officer Dasboard', user_type_id: 70, href: '/dashboard', icon: FileText, color: 'from-purple-500 to-indigo-600' },
+    {
+      name: 'Reports',
+      user_type_id: 70,
+      icon: FileText,
+      color: 'from-blue-500 to-purple-600 hover:from-green-600 hover:to-indigo-700',
+      subMenu: [
+        { name: 'First Payment Completed', href: '/reports/final-payment-done' },
+        { name: 'Final Payment Completed', href: '/reports/initial-payment-done' },
+        { name: 'Completed Hearing', href: '/reports/initial-payment-done' },
+        { name: 'License Generated', href: '/reports/initial-payment-done' },
+      ],
+    },
     { name: 'Survey', user_type_id: 100, href: '/survey', icon: ClipboardList, color: 'from-teal-500 to-cyan-600' },
     // { name: 'Vendors', href: '/vendors', icon: Users, color: 'from-green-500 to-teal-600' },
     // { name: 'Tax Management', href: '/tax-management', icon: Calculator, color: 'from-orange-500 to-red-600' },
     { name: 'Payments', user_type_id: 100, href: '/payments', icon: CreditCard, color: 'from-emerald-500 to-cyan-600' },
     // { name: 'Defaulters', href: '/defaulters', icon: AlertTriangle, color: 'from-red-500 to-pink-600' },
-    { name: 'Reports', user_type_id: 100, href: '/reports', icon: FileText, color: 'from-purple-500 to-indigo-600' },
+    
     
     // { name: 'Settings', href: '/settings', icon: Settings, color: 'from-gray-500 to-slate-600' },
   ];
 
   const isActivePath = (path: string) => {
     return location.pathname === path;
+  };
+
+  const hasActiveSubmenu = (subMenu: any[]) => {
+    return subMenu.some(sub => location.pathname === sub.href);
   };
 
   return (
@@ -130,22 +167,97 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
             <ul className="space-y-2">
               {navigation.map((item) => {
                 const Icon = item.icon;
-                const active = isActivePath(item.href);
+                const active = item.href ? isActivePath(item.href) : false;
+                const hasSubmenuActive = item.subMenu ? hasActiveSubmenu(item.subMenu) : false;
+                const isExpanded = expandedMenus.includes(item.name);
+                
                 return (
-                  item?.user_type_id == userDetails?.UserTypeID && <li key={item.name}>
-                    <Link
-                      to={item.href}
-                      className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${active
-                        ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
-                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
-                        }`}
-                      onClick={() => setSidebarOpen(false)}
-                    >
-                      <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${active ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
-                        }`} />
-                      {item.name}
-                    </Link>
-                  </li>
+                  item?.user_type_id == userDetails?.UserTypeID && (
+                    <li key={item.name}>
+                      {/* Main menu item */}
+                      {item.subMenu ? (
+                        // Item with submenu
+                        <div>
+                          <button
+                            onClick={() => toggleSubmenu(item.name)}
+                            className={`group w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${
+                              hasSubmenuActive
+                                ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
+                                : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
+                            }`}
+                          >
+                            <div className="flex items-center">
+                              <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${
+                                hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                              }`} />
+                              {item.name}
+                            </div>
+                            {isExpanded ? (
+                              <ChevronDown className={`w-4 h-4 transition-all duration-200 ${
+                                hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                              }`} />
+                            ) : (
+                              <ChevronRight className={`w-4 h-4 transition-all duration-200 ${
+                                hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                              }`} />
+                            )}
+                          </button>
+                          
+                          {/* Enhanced Submenu with Professional Hover Effects */}
+                          {isExpanded && (
+                            <ul className="mt-2 ml-6 space-y-1">
+                              {item.subMenu.map((subItem) => {
+                                const subActive = isActivePath(subItem.href);
+                                return (
+                                  <li key={subItem.name}>
+                                    <Link
+                                      to={subItem.href}
+                                      className={`group block px-4 py-3 text-sm rounded-lg transition-all duration-300 transform hover:translate-x-1 ${
+                                        subActive
+                                          ? 'bg-gradient-to-r from-teal-500 to-indigo-600 text-white shadow-lg shadow-teal-500/25'
+                                          : 'text-gray-600 hover:bg-gradient-to-r hover:from-teal-50 hover:via-blue-50 hover:to-indigo-50 hover:text-teal-700 hover:shadow-md hover:border-l-4 hover:border-teal-400'
+                                      }`}
+                                      onClick={() => setSidebarOpen(false)}
+                                    >
+                                      <span className="flex items-center">
+                                        <span className={`w-2 h-2 rounded-full mr-3 transition-all duration-200 ${
+                                          subActive 
+                                            ? 'bg-white shadow-sm' 
+                                            : 'bg-gray-300 group-hover:bg-teal-400 group-hover:scale-125'
+                                        }`}></span>
+                                        <span className="relative">
+                                          {subItem.name}
+                                          {!subActive && (
+                                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-400 to-indigo-500 transition-all duration-300 group-hover:w-full"></span>
+                                          )}
+                                        </span>
+                                      </span>
+                                    </Link>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          )}
+                        </div>
+                      ) : (
+                        // Regular menu item
+                        <Link
+                          to={item.href}
+                          className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${
+                            active
+                              ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
+                              : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
+                          }`}
+                          onClick={() => setSidebarOpen(false)}
+                        >
+                          <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${
+                            active ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                          }`} />
+                          {item.name}
+                        </Link>
+                      )}
+                    </li>
+                  )
                 );
               })}
             </ul>
@@ -154,9 +266,9 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
       </div>
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-0">
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-0 ">
         {/* Top header */}
-        <header className="bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20 flex-shrink-0">
+        <header className="bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20 flex-shrink-0 relative z-10">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -164,11 +276,11 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
             >
               <Menu className="w-6 h-6" />
             </button>
-            {/* Dropdown section */}
-            <div className="flex items-center space-x-4 ml-auto relative" ref={dropdownRef}>
+            {/* Enhanced Dropdown section */}
+            <div className="flex items-center space-x-4 ml-auto relative " ref={dropdownRef}>
               <div className="relative">
                 <button
-                  className="flex items-center space-x-3 focus:outline-none"
+                  className="flex items-center space-x-3 focus:outline-none hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-xl px-3 py-2 transition-all duration-200 hover:shadow-md"
                   onClick={() => setDropdownOpen((open) => !open)}
                   aria-haspopup="true"
                   aria-expanded={dropdownOpen}
@@ -177,11 +289,11 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                     <p className="text-sm font-semibold text-gray-900">{propUserFullName || userDetails?.UserFullName}</p>
                     <p className="text-xs text-gray-500">{propUserType || userDetails?.UserType}</p>
                   </div>
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
                     <span className="text-sm font-bold text-white">{(propUserFullName || userDetails?.UserFullName)?.[0]}</span>
                   </div>
                   <svg
-                    className={`w-4 h-4 ml-1 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 ml-1 transition-transform duration-200 text-gray-500 ${dropdownOpen ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -189,16 +301,37 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
+                
+                {/* Enhanced Dropdown Menu */}
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black/5 z-50">
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-100 rounded-lg transition"
-                    >
-                      Logout
-                    </button>
+                  <div
+                    className="absolute right-0 mt-2 w-64 max-w-xs bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl ring-1 ring-black/5 border border-white/20 "
+                    style={{
+                      minWidth: '12rem',
+                      top: '100%',
+                    }}
+                  >
+                    <div className="p-2">
+                      {/* User Info */}
+                      <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg mb-2">
+                        <p className="text-sm font-medium text-gray-900">{propUserFullName || userDetails?.UserFullName}</p>
+                        <p className="text-xs text-gray-500">{propUserType || userDetails?.UserType}</p>
+                      </div>
+                      {/* Logout Button */}
+                      <button
+                        onClick={handleLogout}
+                        className="group w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-600 rounded-lg transition-all duration-200 transform hover:scale-105"
+                      >
+                        <LogOut className="w-4 h-4 mr-3 transition-all duration-200 text-gray-400 group-hover:text-red-500" />
+                        <span className="relative">
+                          Logout
+                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-red-400 to-pink-500 transition-all duration-300 group-hover:w-full"></span>
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 )}
+
               </div>
             </div>
           </div>
