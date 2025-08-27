@@ -12,66 +12,104 @@ import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import UserDashboard from './pages/UserDashboard';
 import SurveyTable from './pages/SurveyDetails';
+import ApprovalOfficerReports from './pages/ApprovalOfficerReports';
+import { Navigate, useLocation } from 'react-router-dom';
+
+
+function isAuthenticated() {
+  // Check for token in localStorage or cookies
+  return !!localStorage.getItem('token') || !!document.cookie.match(/token=/);
+}
+
+function ProtectedRoute({ children }: { children: JSX.Element }) {
+  const location = useLocation();
+  return isAuthenticated() ? children : <Navigate to="/login" state={{ from: location }} replace />;
+}
 
 function App() {
   return (
-    
-  // <BrowserRouter>
-     <BrowserRouter basename='/hutManagement'>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/survey" element={
+    <BrowserRouter basename='/HaatManagement'>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/survey" element={
+          <ProtectedRoute>
             <Layout>
               <Survey />
             </Layout>
-          } />
-          <Route path="/dashboard" element={
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
             <Layout>
               <Dashboard />
             </Layout>
-          } />
-          <Route path="/vendors" element={
+          </ProtectedRoute>
+        } />
+        <Route path="/vendors" element={
+          <ProtectedRoute>
             <Layout>
               <Vendors />
             </Layout>
-          } />
-          <Route path="/tax-management" element={
+          </ProtectedRoute>
+        } />
+        <Route path="/tax-management" element={
+          <ProtectedRoute>
             <Layout>
               <TaxManagement />
             </Layout>
-          } />
-          <Route path="/payments" element={
+          </ProtectedRoute>
+        } />
+        <Route path="/payments" element={
+          <ProtectedRoute>
             <Layout>
               <Payments />
             </Layout>
-          } />
-          <Route path="/defaulters" element={
+          </ProtectedRoute>
+        } />
+        <Route path="/defaulters" element={
+          <ProtectedRoute>
             <Layout>
               <Defaulters />
             </Layout>
-          } />
-          <Route path="/reports" element={
+          </ProtectedRoute>
+        } />
+        <Route path="/reports" element={
+          <ProtectedRoute>
             <Layout>
               <Reports />
             </Layout>
-          } />
-          <Route path="/settings" element={
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
             <Layout>
               <Settings />
             </Layout>
-          } />
-          <Route path="/user-dashboard" element={
+          </ProtectedRoute>
+        } />
+        <Route path="/user-dashboard" element={
+          <ProtectedRoute>
             <Layout>
               <UserDashboard />
             </Layout>
-          } />
-          <Route path="/survey-details" element={
+          </ProtectedRoute>
+        } />
+        <Route path="/survey-details" element={
+          <ProtectedRoute>
             <Layout>
               <SurveyTable />
             </Layout>
-          } />
-        </Routes>
+          </ProtectedRoute>
+        } />
+        <Route path="/approvalofficerreport" element={
+          <ProtectedRoute>
+            <Layout>
+              <ApprovalOfficerReports />
+            </Layout>
+          </ProtectedRoute>
+        } />
+      </Routes>
     </BrowserRouter>
   );
 }

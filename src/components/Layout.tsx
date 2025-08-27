@@ -105,7 +105,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
       icon: FileText,
       color: 'from-blue-500 to-purple-600 hover:from-green-600 hover:to-indigo-700',
       subMenu: [
-        { name: 'First Payment Completed', href: '/reports/final-payment-done' },
+        { name: 'First Payment Completed', href: '/approvalofficerreport'},
         { name: 'Final Payment Completed', href: '/reports/initial-payment-done' },
         { name: 'Completed Hearing', href: '/reports/initial-payment-done' },
         { name: 'License Generated', href: '/reports/initial-payment-done' },

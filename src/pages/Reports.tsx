@@ -346,8 +346,6 @@ const Reports: React.FC = () => {
         </table>
       </div>
 
-
-
       {/* MODAL */}
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />

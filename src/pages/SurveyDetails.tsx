@@ -916,6 +916,15 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
+                  {haatStatusId == "1" && userType == 50 && (
+                    <>
+                      <th className="px-6 py-5 text-left">
+                        <div className="text-sm font-bold uppercase tracking-wider  text-center">
+                          Actions
+                        </div>
+                      </th>
+                    </>
+                  )}
 
                   {haatStatusId == "4" && userType == 1 && (
                     <>
