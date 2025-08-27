@@ -699,15 +699,24 @@ const SurveyTable: React.FC = () => {
                         Final Survey Date
                       </div>
                     </th>
+                  ) : (userType === 1 && haatStatusId === "6") ? (
+                    <th className="px-6 py-5 text-left">
+                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-green-400" />
+                        </div>
+                        Hearing Date
+                      </div>
+                    </th>
                   ) : (
                     <th className="px-6 py-5 text-left">
-                    <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                      <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                        <Calendar className="w-4 h-4 text-green-400" />
+                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-green-400" />
+                        </div>
+                        Survey Date
                       </div>
-                      Survey Date
-                    </div>
-                    </th> 
+                    </th>
                   )}
 
                   {/* {(userType == 60 && haatStatusId == "1") && (
@@ -766,7 +775,7 @@ const SurveyTable: React.FC = () => {
                     </th>
                   )}
 
-                  {userType == 1 && haatStatusId == "1" && (
+                  {/* {userType == 1 && haatStatusId == "1" && (
                     <th className="px-6 py-5 text-left">
                       <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                         <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
@@ -776,7 +785,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-
                   {userType == 1 && haatStatusId == "1" && (
                     <th className="px-6 py-5 text-left">
                       <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
@@ -786,7 +794,7 @@ const SurveyTable: React.FC = () => {
                         Final Amount
                       </div>
                     </th>
-                  )}
+                  )} */}
 
                   {userType == 1 && haatStatusId == "1" && (
                     <th className="px-6 py-5 text-left">
@@ -1004,22 +1012,33 @@ const SurveyTable: React.FC = () => {
                         </div>
                       </td>
 
-                      {(userType === 70 && haatStatusId == "2")? (<td className="px-6 py-5">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                          <span className="text-slate-900 font-semibold">
-                            {survey?.final_payment_date}
-                          </span>
-                        </div>
-                      </td>) : (
+                      {(userType === 70 && haatStatusId == "2") ? (
                         <td className="px-6 py-5">
-                         <div className="flex items-center gap-2">
-                         <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                         <span className="text-slate-900 font-semibold">
-                           {survey?.survey_date}
-                         </span>
-                       </div>
-                     </td>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span className="text-slate-900 font-semibold">
+                              {survey?.final_payment_date}
+                            </span>
+                          </div>
+                        </td>
+                      ) : (userType === 1 && haatStatusId == "6") ? (
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span className="text-slate-900 font-semibold">
+                              {survey?.hearing_date}
+                            </span>
+                          </div>
+                        </td>
+                      ) : (
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span className="text-slate-900 font-semibold">
+                              {survey?.survey_date}
+                            </span>
+                          </div>
+                        </td>
                       )}
 
                       <td className="px-6 py-5">
@@ -1070,7 +1089,7 @@ const SurveyTable: React.FC = () => {
                         </div>
                       </td>
 
-                      {userType == 1 && haatStatusId == "1" && (
+                      {/* {userType == 1 && haatStatusId == "1" && (
                         <>
                           <td className="px-6 py-5">
                             <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
@@ -1090,12 +1109,12 @@ const SurveyTable: React.FC = () => {
                             </div>
                           </td>
                         </>
-                      )}
+                      )} */}
 
                       {userType == 1 && haatStatusId == "1" && (
                         <button
                           onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                          className="group inline-flex items-center px-5 py-2.5 mt-6 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                         >
                           <Eye className="w-4 h-4 mr-2" />
                           View

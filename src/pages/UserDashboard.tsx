@@ -4,8 +4,11 @@ import {
   IndianRupee,
   AlertTriangle,
   TrendingUp,
+  SquarePen,
   Calendar,
+  CalendarClock,
   Sparkles,
+  Store
 } from 'lucide-react';
 import { FaIdCard } from "react-icons/fa";
 import StatsCard from '../components/StatsCard';
@@ -15,6 +18,26 @@ import { commonApi } from '../commonAPI';
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
 
+  const ClockArrowDownIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="lucide lucide-clock-arrow-down"
+    >
+      <path d="M12 6v6l2 1" />
+      <path d="M12.337 21.994a10 10 0 1 1 9.588-8.767" />
+      <path d="m14 18 4 4 4-4" />
+      <path d="M18 14v8" />
+    </svg>
+  );
+  
 
   const UserdashboardApiCall = async () => {
     const userDetails = decodeJwtToken();
@@ -27,8 +50,8 @@ const Dashboard: React.FC = () => {
         title: 'Total Shop',
         value: result?.data?.total_shops ? result?.data?.total_shops?.toString() : "0",
         changeType: 'positive' as const,
-        icon: Users,
-        color: 'blue' as const,
+        icon: Store,
+        color: 'green' as const,
         HaatDashoardStatus: 1
       },
       // {
@@ -43,7 +66,7 @@ const Dashboard: React.FC = () => {
         title: 'Change Request',
         value: result?.data?.changing_request ? result?.data?.changing_request?.toString() : "0",
         changeType: 'negative' as const,
-        icon: AlertTriangle,
+        icon: SquarePen,
         color: 'red' as const,
         HaatDashoardStatus: 3
       },
@@ -52,7 +75,7 @@ const Dashboard: React.FC = () => {
         value: result?.data?.initial_payment_pending ? result?.data?.initial_payment_pending?.toString() : "0",
         changeType: 'positive' as const,
         icon: IndianRupee,
-        color: 'red' as const,
+        color: 'orange' as const,
         HaatDashoardStatus: 4
       },
       // {
@@ -64,11 +87,11 @@ const Dashboard: React.FC = () => {
       //   HaatDashoardStatus: 5
       // },
       {
-        title: 'Hearing Date Initiated',
+        title: 'Hearing Date Pending',
         value: result?.data?.hearing_done ? result?.data?.hearing_done?.toString() : "0",        
         changeType: 'positive' as const,     
-        icon: FaIdCard,
-        color: 'purple' as const,
+        icon: CalendarClock,
+        color: 'orange' as const,
         HaatDashoardStatus: 6
       },
       {
@@ -76,7 +99,7 @@ const Dashboard: React.FC = () => {
         value: result?.data?.final_payment_pending ? result?.data?.final_payment_pending?.toString() : "0",  
         changeType: 'positive' as const,        
         icon: IndianRupee,
-        color: 'red' as const,
+        color: 'orange' as const,
         HaatDashoardStatus: 7
       },
       // {
@@ -87,14 +110,31 @@ const Dashboard: React.FC = () => {
       //   color: 'green' as const,
       //   HaatDashoardStatus: 8
       // },
+       {
+        title: 'Final Approval Pending',
+        value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",        
+        changeType: 'positive' as const,        
+        icon: ClockArrowDownIcon,
+        color: 'orange' as const,
+        HaatDashoardStatus: 8
+      },
       {
         title: 'Licence Details',
         value: result?.data?.licensed_shops ? result?.data?.licensed_shops?.toString() : "0",
         changeType: 'positive' as const,
         icon: FaIdCard,
-        color: 'purple' as const,
+        color: 'green' as const,
         HaatDashoardStatus: 9
-      }
+      },
+      {
+        title: 'Reject Application',
+        value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",        
+        changeType: 'positive' as const,        
+        icon: AlertTriangle,
+        color: 'red' as const,
+        HaatDashoardStatus: 8
+      },
+      
     ])
   }
 
