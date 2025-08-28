@@ -99,7 +99,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Hearing Date Pending',
-        value: result?.data?.final_approval_pending ? result?.data?.final_approval_pending?.toString() : "0",
+        value: result?.data?.hearing_pending ? result?.data?.hearing_pending?.toString() : "0",
         changeType: 'neutral' as const,
         icon: CalendarClock,
         color: 'red' as const,
@@ -107,7 +107,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Hearing Date Initiated',
-        value: result?.data?.final_approval_done ? result?.data?.final_approval_done?.toString() : "0",
+        value: result?.data?.hearing_initiated ? result?.data?.hearing_initiated?.toString() : "0",
         changeType: 'negative' as const,
         icon: CheckCheck,
         color: 'green' as const,
@@ -115,7 +115,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Initial Payment Done',
-        value: result?.data?.final_approval_rejected ? result?.data?.final_approval_rejected?.toString() : "0",
+        value: result?.data?.initial_payment_done ? result?.data?.initial_payment_done?.toString() : "0",
         changeType: 'neutral' as const,
         icon: IndianRupee,
         color: 'green' as const,
@@ -132,7 +132,7 @@ const Dashboard: React.FC = () => {
     setStats([
       {
         title: 'Hearing Pending',
-        value: result?.data?.final_approval_pending ? result?.data?.final_approval_pending?.toString() : "0",
+        value: result?.data?.hearing_pending ? result?.data?.hearing_pending?.toString() : "0",
         changeType: 'positive' as const,
         icon: CalendarClock,
         color: 'red' as const,
@@ -159,7 +159,6 @@ const Dashboard: React.FC = () => {
 
 
   // approve officer Dashboard
-
   const getApproveOfficerDashboard = async () => {
     const userDetails = decodeJwtToken();
     const result = await commonApi(`user/getDashboardCountByApprovalOfficerID?ApprovalOfficerID=${userDetails?.UserID}`);

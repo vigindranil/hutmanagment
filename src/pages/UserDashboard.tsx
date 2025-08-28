@@ -112,11 +112,11 @@ const Dashboard: React.FC = () => {
       // },
        {
         title: 'Final Approval Pending',
-        value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",        
+        value: result?.data?.final_approval_pending ? result?.data?.final_approval_pending?.toString() : "0",        
         changeType: 'positive' as const,        
         icon: ClockArrowDownIcon,
         color: 'orange' as const,
-        HaatDashoardStatus: 8
+        HaatDashoardStatus: 11
       },
       {
         title: 'Licence Details',
@@ -128,11 +128,11 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Reject Application',
-        value: result?.data?.final_payment_done ? result?.data?.final_payment_done?.toString() : "0",        
+        value: result?.data?.rejected_applications ? result?.data?.rejected_applications?.toString() : "0",        
         changeType: 'positive' as const,        
         icon: AlertTriangle,
         color: 'red' as const,
-        HaatDashoardStatus: 8
+        HaatDashoardStatus: 10
       },
       
     ])

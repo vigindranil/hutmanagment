@@ -18,6 +18,8 @@ import {
   Check,
   MessageSquare,
   Eye,
+  User2Icon,
+  MessageSquareX,
 } from "lucide-react";
 import { Dialog } from "@headlessui/react";
 import Cookies from "js-cookie";
@@ -37,6 +39,7 @@ interface SurveyData {
   amount: number;
   initial_amount: number;
   final_amount: number;
+  land_valuation: number;
 }
 
 interface viewSurveyData {
@@ -263,8 +266,8 @@ const SurveyTable: React.FC = () => {
         selectedSurvey?.survey_status === "1"
           ? 1
           : selectedSurvey?.survey_status === "5"
-          ? 2
-          : undefined,
+            ? 2
+            : undefined,
       survey_id: selectedSurvey?.survey_id,
       amount: (selectedSurvey?.survey_status === "1" ? selectedSurvey?.initial_amount : selectedSurvey?.final_amount) || 0,
       user_id: userDetails?.UserID,
@@ -293,10 +296,14 @@ const SurveyTable: React.FC = () => {
       to_date: null,
       haatDashoardStatus: haatStatusId,
     };
+    // const response = await commonApi(
+    //   `user/getSurveyDetailsByShopOwnerID?UserDashboardStatus=${haatStatusId}&ShopOwnerID=${userDetails?.UserID}`,
+    //   payload
+    // );
     const response = await commonApi(
-      `user/getSurveyDetailsByShopOwnerID?UserDashboardStatus=${haatStatusId}&ShopOwnerID=${userDetails?.UserID}`,
-      payload
+      `user/getSurveyDetailsByShopOwnerID?UserDashboardStatus=${haatStatusId}&ShopOwnerID=${userDetails?.UserID}`
     );
+
     setData(response?.data || []);
     setCurrentPage(1);
   };
@@ -405,8 +412,8 @@ const SurveyTable: React.FC = () => {
 
       const url =
         userType === 70
-          ? `/user/saveFinalApprovalByApprovalOfficerID`
-          : `/user/updateApprovedHearingDetailsByHearingUserID`;
+          ? `user/saveFinalApprovalByApprovalOfficerID`
+          : `user/updateApprovedHearingDetailsByHearingUserID`;
 
       const response = await commonApi(url, payload);
       console.log(response);
@@ -420,13 +427,11 @@ const SurveyTable: React.FC = () => {
         Swal?.fire({
           icon: "success",
           title: "Success",
-          text: `Survey ${
-            approvalAction === "approve" ? "approved" : "rejected"
-          } successfully!`,
+          text: `Survey ${approvalAction === "approve" ? "approved" : "rejected"
+            } successfully!`,
         }) ||
           alert(
-            `Survey ${
-              approvalAction === "approve" ? "approved" : "rejected"
+            `Survey ${approvalAction === "approve" ? "approved" : "rejected"
             } successfully!`
           );
 
@@ -753,23 +758,43 @@ const SurveyTable: React.FC = () => {
                       <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center">
                         <IndianRupee className="w-4 h-4 text-indigo-400" />
                       </div>
-                      Final Amount 
+                      Final Amount
                     </div>
                   </th>) : (
                     <th className="px-6 py-5 text-left">
-                    <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                      <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center">
-                        <Phone className="w-4 h-4 text-indigo-400" />
+                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                        <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center">
+                          <Phone className="w-4 h-4 text-indigo-400" />
+                        </div>
+                        Mobile
                       </div>
-                      Mobile
-                    </div>
-                  </th>
+                    </th>
+                  )}
+
+                  {userType == 1 && haatStatusId == "10" && (
+                    <>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                            <User className="w-4 h-4 text-cyan-400" />
+                          </div>
+                          Rejected From
+                        </div>
+                      </th>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                            <MessageSquareX className="w-4 h-4 text-cyan-400" />
+                          </div>
+                          Rejection Remarks
+                        </div>
+                      </th>
+                    </>
                   )}
 
                   {userType == 70 && haatStatusId == "1" && (
                     <th className="px-6 py-5 text-left">
                       <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                       
                         Action
                       </div>
                     </th>
@@ -941,7 +966,7 @@ const SurveyTable: React.FC = () => {
                           <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
                             <IndianRupee className="w-4 h-4 text-emerald-400" />
                           </div>
-                          Amount
+                          Initial Payment Amount
                         </div>
                       </th>
                       <th className="px-6 py-5 text-left">
@@ -1079,15 +1104,32 @@ const SurveyTable: React.FC = () => {
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl flex items-center justify-center">
-                           { (userType === 70 && haatStatusId === "2") 
-                             ? <IndianRupee className="w-5 h-5 text-indigo-600" /> 
-                             : <Phone className="w-5 h-5 text-indigo-600" /> }
+                            {(userType === 70 && haatStatusId === "2")
+                              ? <IndianRupee className="w-5 h-5 text-indigo-600" />
+                              : <Phone className="w-5 h-5 text-indigo-600" />}
                           </div>
                           <span className="text-slate-700 font-semibold">
-                            {( userType === 70 && haatStatusId === "2") ? survey?.final_amount : survey?.mobile_number}
+                            {(userType === 70 && haatStatusId === "2") ? survey?.final_amount : survey?.mobile_number}
                           </span>
                         </div>
                       </td>
+
+                      {userType == 1 && haatStatusId == "10" && (
+                        <>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <User2Icon className="w-4 h-4 mr-1" />
+                              {survey?.rejected_by_name}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <MessageSquareX className="w-4 h-4 mr-1" />
+                              {survey?.rejection_remarks}
+                            </div>
+                          </td>
+                        </>
+                      )}
 
                       {/* {userType == 1 && haatStatusId == "1" && (
                         <>
@@ -1153,7 +1195,7 @@ const SurveyTable: React.FC = () => {
                               className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                             >
                               <CreditCard className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200" />
-                              Pay Now
+                              Confirm & Pay
                             </button>
                           </td>
                         </>
@@ -1276,7 +1318,7 @@ const SurveyTable: React.FC = () => {
                               className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                             >
                               <CreditCard className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200" />
-                              Pay Now
+                              Confirm & Pay
                             </button>
                           </td>
                         </>
@@ -1342,10 +1384,10 @@ const SurveyTable: React.FC = () => {
                         Number(haatStatusId) === 4
                           ? 7
                           : showApprovedButton
-                          ? 7
-                          : showViewButton
-                          ? 7
-                          : 6
+                            ? 7
+                            : showViewButton
+                              ? 7
+                              : 6
                       }
                       className="text-center py-16"
                     >
@@ -1410,11 +1452,10 @@ const SurveyTable: React.FC = () => {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                      currentPage === 1
-                        ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                        : "bg-white text-slate-700 hover:bg-slate-50 shadow-md hover:shadow-lg border border-slate-200"
-                    }`}
+                    className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${currentPage === 1
+                      ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                      : "bg-white text-slate-700 hover:bg-slate-50 shadow-md hover:shadow-lg border border-slate-200"
+                      }`}
                   >
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Previous
@@ -1436,11 +1477,10 @@ const SurveyTable: React.FC = () => {
                         <button
                           key={pageNumber}
                           onClick={() => handlePageChange(pageNumber)}
-                          className={`w-10 h-10 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                            currentPage === pageNumber
-                              ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg transform scale-110"
-                              : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 hover:shadow-md"
-                          }`}
+                          className={`w-10 h-10 rounded-xl text-sm font-semibold transition-all duration-200 ${currentPage === pageNumber
+                            ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg transform scale-110"
+                            : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 hover:shadow-md"
+                            }`}
                         >
                           {pageNumber}
                         </button>
@@ -1451,11 +1491,10 @@ const SurveyTable: React.FC = () => {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                      currentPage === totalPages
-                        ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                        : "bg-white text-slate-700 hover:bg-slate-50 shadow-md hover:shadow-lg border border-slate-200"
-                    }`}
+                    className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${currentPage === totalPages
+                      ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                      : "bg-white text-slate-700 hover:bg-slate-50 shadow-md hover:shadow-lg border border-slate-200"
+                      }`}
                   >
                     Next
                     <ChevronRight className="w-4 h-4 ml-1" />
@@ -1521,18 +1560,30 @@ const SurveyTable: React.FC = () => {
                 ) : (
                   <form onSubmit={handlePaymentSubmit} className="space-y-6">
                     {/* Amount Display */}
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-slate-700">
-                          Amount to Pay
+                          Your Land Valuation is
+                        </span>
+                        <span className="text-2xl font-bold text-slate-900">
+                          ₹{selectedSurvey?.land_valuation ?? "0"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-slate-700">
+                          {userType == 1 && haatStatusId == "4"
+                            ? "The initial payment amount calculated as 20% of the valuation and then 25% of that comes to"
+                            : userType == 1 && haatStatusId == "7"
+                              ? "The final payment amount calculated as 20% of the valuation and then rest 75% of that comes to"
+                              : ""}
                         </span>
                         <span className="text-2xl font-bold text-slate-900">
                           ₹
                           {userType == 1 && haatStatusId == "7"
                             ? selectedSurvey?.final_amount
                             : userType == 1 && haatStatusId == "4"
-                            ? selectedSurvey?.initial_amount
-                            : ""}
+                              ? selectedSurvey?.initial_amount
+                              : ""}
                         </span>
                       </div>
                     </div>
@@ -1700,11 +1751,10 @@ const SurveyTable: React.FC = () => {
               <div className="flex items-center justify-between p-6 border-b border-slate-200">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                      approvalAction === "approve"
-                        ? "bg-gradient-to-r from-green-500 to-emerald-600"
-                        : "bg-gradient-to-r from-red-500 to-pink-600"
-                    }`}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center ${approvalAction === "approve"
+                      ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                      : "bg-gradient-to-r from-red-500 to-pink-600"
+                      }`}
                   >
                     <MessageSquare className="w-5 h-5 text-white" />
                   </div>
@@ -1732,22 +1782,20 @@ const SurveyTable: React.FC = () => {
                 <div className="space-y-6">
                   {/* Action Status Display */}
                   <div
-                    className={`rounded-xl p-4 border ${
-                      approvalAction === "approve"
-                        ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-100"
-                        : "bg-gradient-to-r from-red-50 to-pink-50 border-red-100"
-                    }`}
+                    className={`rounded-xl p-4 border ${approvalAction === "approve"
+                      ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-100"
+                      : "bg-gradient-to-r from-red-50 to-pink-50 border-red-100"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-slate-700">
                         Action
                       </span>
                       <span
-                        className={`text-xl font-bold ${
-                          approvalAction === "approve"
-                            ? "text-green-700"
-                            : "text-red-700"
-                        }`}
+                        className={`text-xl font-bold ${approvalAction === "approve"
+                          ? "text-green-700"
+                          : "text-red-700"
+                          }`}
                       >
                         {approvalAction === "approve" ? "APPROVE" : "REJECT"}
                       </span>
@@ -1769,11 +1817,10 @@ const SurveyTable: React.FC = () => {
                     />
                     <div className="flex items-center justify-between mt-2">
                       <span
-                        className={`text-xs ${
-                          remarksText.length >= 10
-                            ? "text-green-600"
-                            : "text-red-500"
-                        }`}
+                        className={`text-xs ${remarksText.length >= 10
+                          ? "text-green-600"
+                          : "text-red-500"
+                          }`}
                       >
                         {remarksText.length >= 10
                           ? "✓ Valid length"
@@ -1798,11 +1845,10 @@ const SurveyTable: React.FC = () => {
                       type="button"
                       onClick={handleRemarksSubmit}
                       disabled={remarksText.length < 10 || loading}
-                      className={`flex-1 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl ${
-                        approvalAction === "approve"
-                          ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-slate-400 disabled:to-slate-500"
-                          : "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 disabled:from-slate-400 disabled:to-slate-500"
-                      }`}
+                      className={`flex-1 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl ${approvalAction === "approve"
+                        ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-slate-400 disabled:to-slate-500"
+                        : "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 disabled:from-slate-400 disabled:to-slate-500"
+                        }`}
                     >
                       {loading ? (
                         <div className="flex items-center justify-center gap-2">

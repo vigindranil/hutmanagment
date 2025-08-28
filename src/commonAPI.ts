@@ -2,40 +2,64 @@ import Cookies from 'js-cookie';
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 
 export const commonApi = async (url: string, body: any = {}) => {
-    const myHeaders = new Headers();
-    myHeaders.append("accept", "*/*");
-    myHeaders.append("Content-Type", "application/json");
-    const token = Cookies.get('token');
-    myHeaders.append("Authorization", `Bearer ${token}`);
+  const myHeaders = new Headers();
+  myHeaders.append("accept", "*/*");
+  myHeaders.append("Content-Type", "application/json");
+  const token = Cookies.get('token');
+  myHeaders.append("Authorization", `Bearer ${token}`);
+  // myHeaders.append("Access-Control-Allow-Origin", "*");
 
-    console.log("body",body);
+  console.log("body", body);
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: JSON.stringify(body)
-    };
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: JSON.stringify(body)
+  };
 
-    const result = await fetch(BASE_API_URL + url , requestOptions);
-    return await result.json();
+  const result = await fetch(BASE_API_URL + url, requestOptions);
+  return await result.json();
 
-  }
+}
 
-  export const getIdentityDocument = async (documentPath: string) => {
-    const token = Cookies.get('token')
-    const url = `${BASE_API_URL}/getImgAsBase64ByFileName/${documentPath}`;
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'accept': '*/*',
-            'Authorization': `Bearer ${token}`,
-        },  
-    });
-    return response.json();
+// export const commonApi = async (url: string, body?: any) => {
+//   const myHeaders = new Headers();
+//   myHeaders.append("accept", "*/*");
+//   const token = Cookies.get("token");
+//   myHeaders.append("Authorization", `Bearer ${token}`);
+
+//   const requestOptions: RequestInit = {
+//     method: "POST",
+//     headers: myHeaders,
+//   };
+
+//   // only add Content-Type + body if actually needed
+//   if (body && Object.keys(body).length > 0) {
+//     myHeaders.append("Content-Type", "application/json");
+//     requestOptions.body = JSON.stringify(body);
+//   }
+
+//   const result = await fetch(BASE_API_URL + url, requestOptions);
+//   return await result.json();
+// };
+
+
+
+export const getIdentityDocument = async (documentPath: string) => {
+  const token = Cookies.get('token')
+  const url = `${BASE_API_URL}/getImgAsBase64ByFileName/${documentPath}`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'accept': '*/*',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  return response.json();
 };
 
 export const commonApiImage = async (file_url: string) => {
-  if(!file_url) return null;
+  if (!file_url) return null;
   const myHeaders = new Headers();
   myHeaders.append("accept", "*/*");
   myHeaders.append("Content-Type", "application/json");
@@ -57,7 +81,7 @@ export const commonApiImage = async (file_url: string) => {
 
   const response = await res.json(); // adjust based on API response
 
-  console.log("response",response);
+  console.log("response", response);
   const base64 = response?.data;
   if (!base64) throw new Error("No base64 data returned from API");
 
@@ -81,8 +105,8 @@ export const commonApiImage = async (file_url: string) => {
   const mimeType = base64.includes("image/jpeg")
     ? "image/jpeg"
     : base64.includes("image/png")
-    ? "image/png"
-    : "application/octet-stream";
+      ? "image/png"
+      : "application/octet-stream";
 
   const blob = new Blob([uint8Array], { type: mimeType });
   return URL.createObjectURL(blob);
