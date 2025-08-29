@@ -13,7 +13,7 @@ import {
 import { FaIdCard } from "react-icons/fa";
 import StatsCard from '../components/StatsCard';
 import { decodeJwtToken } from '../utils/decodeToken';
-import { commonApi } from '../commonAPI';
+import { commonApi } from '../Service/commonAPI';
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);

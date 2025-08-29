@@ -1,8 +1,20 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { commonApi, commonApiImage } from "../commonAPI";
 import { decodeJwtToken } from "../utils/decodeToken";
+import {
+  fetchApplicationDetails,
+  getHaatApplicationDetailsForAdminApi,
+  getCheckerDashboardDetailsApi,
+  savePaymentDetailsApi,
+  getSurveyDetailsByShopOwnerApi,
+  getHearingDetailsByHearingUserApi,
+  getSurveyDetailsByApprovalOfficerApi,
+  saveHearingDateByCheckerApi,
+  updateApprovedHearingDetailsApi,
+  saveFinalApprovalByApprovalOfficerApi,
+  SavePaymentDetailsPayload
+} from "../Service/surveyApi"; // <-- IMPORTED THE NEW SERVICE
 import {
   ChevronLeft,
   ChevronRight,
@@ -22,10 +34,10 @@ import {
   MessageSquareX,
 } from "lucide-react";
 import { Dialog } from "@headlessui/react";
-import Cookies from "js-cookie";
 import Swal from "sweetalert2";
-const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import bgimg from "../../src/assets/table background.jpg";
+
+// region --- Interfaces ---
 
 interface SurveyData {
   survey_id: number;
@@ -103,6 +115,7 @@ interface FullApplicationDetails {
   stall_image2?: string;
   user_id?: number;
 }
+// endregion
 
 const ITEMS_PER_PAGE = 10;
 
@@ -111,157 +124,97 @@ const SurveyTable: React.FC = () => {
   const haatStatusId = searchParams?.get("_hti");
   const title = searchParams?.get("title");
   const dashboardType = searchParams?.get("dashboardType");
-  const [selectedSurvey, setSelectedSurvey] = useState<SurveyData | null>(null);
+
+  const [data, setData] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [loading, setLoading] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [userType, setUserType] = useState(1);
+  const [loads, setLoads] = useState(false);
+
+  // Modal States
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showHearingModal, setShowHearingModal] = useState(false);
   const [showRemarksModal, setShowRemarksModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isImageLoading, setIsImageLoading] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+
+  // Data States
+  const [selectedSurvey, setSelectedSurvey] = useState<SurveyData | null>(null);
   const [selectedDetails, setSelectedDetails] =
     useState<FullApplicationDetails | null>(null);
+  const [selectedSurveys, setSelectedSurveys] = useState<number[]>([]);
+  const [selectedSurveyForRemarks, setSelectedSurveyForRemarks] = useState<
+    number | null
+  >(null);
+
+  // Form & Input States
   const [paymentName, setPaymentName] = useState("");
   const [paymentNumber, setPaymentNumber] = useState("");
   const [paymentEmail, setPaymentEmail] = useState("");
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [userType, setUserType] = useState(1);
-  const [loads, setLoads] = useState(false);
-
   const [hearingDate, setHearingDate] = useState("");
-  const [selectedSurveys, setSelectedSurveys] = useState<number[]>([]);
-  const [approvalLoading, setApprovalLoading] = useState<number | null>(null);
-  const [hearingRemarks, setHearingRemarks] = useState<string>("");
   const [remarksText, setRemarksText] = useState<string>("");
   const [approvalAction, setApprovalAction] = useState<"approve" | "reject">(
     "approve"
   );
-  const [selectedSurveyForRemarks, setSelectedSurveyForRemarks] = useState<
-    number | null
-  >(null);
-  const [viewData, setViewData] = useState<viewSurveyData | null>(null);
-
-  const [isLoadingDetails, setisLoadingDetails] = useState(false);
-
-  const [data, setData] = useState<any>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
   const handleViewClick = async (surveyId: string) => {
     try {
       setIsModalOpen(true);
-      setisLoadingDetails(true);
-      const token = Cookies.get("token"); // get fresh token
-      const myHeaders = new Headers();
-      myHeaders.append("accept", "*/*");
-      myHeaders.append("Authorization", `Bearer ${token}`);
-      myHeaders.append("Content-Type", "application/json");
-
-      const raw = JSON?.stringify({ surveyID: parseInt(surveyId) });
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow" as RequestRedirect,
-      };
-
-      const response: any = await fetch(
-        BASE_API_URL + "user/getHaatApplicationDetailsBySurveyID",
-        requestOptions
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response?.status}: ${await response?.text()}`);
-      }
-      const result = await response.json();
-
-      console.log(result);
-      const stall_image1 = await commonApiImage(
-        result?.data?.stall_image1 || ""
-      );
-      const stall_image2 = await commonApiImage(
-        result?.data?.stall_image2 || ""
-      );
-      const pan_image = await commonApiImage(result?.data?.pan_image || "");
-      const sketch_map_attached = await commonApiImage(
-        result?.data?.sketch_map_attached || ""
-      );
-      const document_image = await commonApiImage(
-        result?.data?.document_image || ""
-      );
-      const residential_certificate_attached = await commonApiImage(
-        result?.data?.residential_certificate_attached || ""
-      );
-      const trade_license_attached = await commonApiImage(
-        result?.data?.trade_license_attached || ""
-      );
-      const affidavit_attached = await commonApiImage(
-        result?.data?.affidavit_attached || ""
-      );
-      const warision_certificate_attached = await commonApiImage(
-        result?.data?.warision_certificate_attached || ""
-      );
-      const death_certificate_attached = await commonApiImage(
-        result?.data?.death_certificate_attached || ""
-      );
-      const noc_legal_heirs_attached = await commonApiImage(
-        result?.data?.noc_legal_heirs_attached || ""
-      );
-
-      setSelectedDetails({
-        ...result?.data,
-        stall_image1,
-        stall_image2,
-        pan_image,
-        sketch_map_attached,
-        residential_certificate_attached,
-        document_image,
-        trade_license_attached,
-        affidavit_attached,
-        warision_certificate_attached,
-        noc_legal_heirs_attached,
-        death_certificate_attached,
-      });
+      setIsLoadingDetails(true);
+      const details = await fetchApplicationDetails(surveyId);
+      setSelectedDetails(details);
     } catch (error) {
       console.error("Error fetching full details:", error);
-      alert(
-        "Failed to fetch application details. Make sure your credentials/token are valid."
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Fetch Error",
+        text: "Failed to fetch application details. Please check your connection and try again.",
+      });
+      setIsModalOpen(false);
     } finally {
-      setisLoadingDetails(false);
+      setIsLoadingDetails(false);
     }
   };
 
-  const getHaatApplicantionDetailsForAdmin = async (haatStatusId: any) => {
+  const fetchDataForDashboard = async () => {
+    if (!haatStatusId || !dashboardType) return;
     const userDetails = decodeJwtToken();
-    const payload = {
-      userID: userDetails?.UserID,
-      from_date: null,
-      to_date: null,
-      haatDashoardStatus: haatStatusId,
-    };
-    const response = await commonApi(
-      `user/getHaatApplicantionDetailsForAdmin`,
-      payload
-    );
-    setData(response?.data || []);
-    setCurrentPage(1);
-  };
+    let response;
 
-  const getCheckerDashboardDetails = async (haatStatusId: any) => {
-    const userDetails = decodeJwtToken();
-
-    const response = await commonApi(
-      `user/getCheckerDashboardDetails?CheckerDashboardStatus=${haatStatusId}&UserID=${userDetails?.UserID}`
-    );
-    setData(response?.data || []);
-    setCurrentPage(1);
+    setLoading(true); // Show loading state for table
+    try {
+      if (dashboardType === "ADMIN" && userDetails?.UserTypeID === 100) {
+        response = await getHaatApplicationDetailsForAdminApi(haatStatusId);
+      } else if (dashboardType === "ADMIN" && userDetails?.UserTypeID === 50) {
+        response = await getCheckerDashboardDetailsApi(haatStatusId);
+      } else if (dashboardType === "USER") {
+        response = await getSurveyDetailsByShopOwnerApi(haatStatusId);
+      } else if (dashboardType === "ADMIN" && userDetails?.UserTypeID === 60) {
+        response = await getHearingDetailsByHearingUserApi(haatStatusId);
+      } else if (dashboardType === "ADMIN" && userDetails?.UserTypeID === 70) {
+        response = await getSurveyDetailsByApprovalOfficerApi(haatStatusId);
+      }
+      setData(response?.data || []);
+      setCurrentPage(1);
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+      setData([]); // Clear data on error
+      Swal.fire({
+        icon: "error",
+        title: "Data Error",
+        text: "Could not load data for the dashboard.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const savePaymentDetailsBySurveyID = async () => {
     setLoading(true);
     const userDetails = decodeJwtToken();
-    const payload = {
-      // initial_or_final_payment_status: selectedSurvey?.survey_status === 'INITIAL' ? 1 : selectedSurvey?.survey_status === 'FINAL' ? 2 : undefined,
+    const payload: SavePaymentDetailsPayload = {
       initial_or_final_payment_status:
         selectedSurvey?.survey_status === "1"
           ? 1
@@ -269,113 +222,33 @@ const SurveyTable: React.FC = () => {
             ? 2
             : undefined,
       survey_id: selectedSurvey?.survey_id,
-      amount: (selectedSurvey?.survey_status === "1" ? selectedSurvey?.initial_amount : selectedSurvey?.final_amount) || 0,
+      amount:
+        (selectedSurvey?.survey_status === "1"
+          ? selectedSurvey?.initial_amount
+          : selectedSurvey?.final_amount) || 0,
       user_id: userDetails?.UserID,
     };
 
-    console.log("selecterd ", selectedSurvey);
-
-    const response = await commonApi(
-      `user/savePaymentDetailsBySurveyID`,
-      payload
-    );
-    if (response?.status == 0) {
-      setPaymentSuccess(true);
-      setShowPaymentModal(false);
-    }
-    setLoading(false);
-  };
-
-  // console.log ("payment",paymentSuccess);
-
-  const getSurveyDetailsByShopOwnerID = async (haatStatusId: any) => {
-    const userDetails = decodeJwtToken();
-    const payload = {
-      userID: userDetails?.UserID,
-      from_date: null,
-      to_date: null,
-      haatDashoardStatus: haatStatusId,
-    };
-    // const response = await commonApi(
-    //   `user/getSurveyDetailsByShopOwnerID?UserDashboardStatus=${haatStatusId}&ShopOwnerID=${userDetails?.UserID}`,
-    //   payload
-    // );
-    const response = await commonApi(
-      `user/getSurveyDetailsByShopOwnerID?UserDashboardStatus=${haatStatusId}&ShopOwnerID=${userDetails?.UserID}`
-    );
-
-    setData(response?.data || []);
-    setCurrentPage(1);
-  };
-
-  const saveFinalApprovalByApprovalOfficerID = async (haatStatusId: any) => {
-    const userDetails = decodeJwtToken();
-    const payload = {
-      survey_id: selectedSurvey?.survey_id,
-      final_approval_status: approvalAction === "approve" ? 1 : 2,
-      remarks: remarksText || "",
-      approval_officer_id: decodeJwtToken()?.UserID,
-    };
-    const response = await commonApi(
-      `user/saveFinalApprovalByApprovalOfficerID`,
-      payload
-    );
-    setData(response?.data || []);
-    setCurrentPage(1);
-  };
-
-  const getHearingDetailsByHearingUserID = async (haatStatusId: any) => {
-    const userDetails = decodeJwtToken();
-
-    const response = await commonApi(
-      `user/getHearingDetailsByHearingUserID?HearingStateStatus=${haatStatusId}&UserID=${userDetails?.UserID}`
-    );
-    setData(response?.data || []);
-    setCurrentPage(1);
-  };
-
-  const getSurveyDetailsByApprovalOfficerID = async (haatStatusId: any) => {
-    const userDetails = decodeJwtToken();
-
-    const response = await commonApi(
-      `user/getSurveyDetailsByApprovalOfficerID?ApprovedDashboardStatus=${haatStatusId}&ApprovalOfficerID=${userDetails?.UserID}`
-    );
-    setData(response?.data || []);
-    setCurrentPage(1);
-  };
-
-  const handleViewDetails = async (surveyId: number) => {
-    setLoading(true);
     try {
-      const response = await commonApi(
-        `user/getHaatApplicationDetailsBySurveyID?survey_id=${surveyId}`,
-        {}
-      );
+      const response = await savePaymentDetailsApi(payload);
       if (response?.status === 0) {
-        setViewData(response.data);
-        setShowViewModal(true);
+        setPaymentSuccess(true);
       } else {
-        // @ts-ignore
-        window.Swal?.fire({
-          icon: "error",
-          title: "Error",
-          text: "Failed to fetch details. Please try again.",
-        }) || alert("Failed to fetch details. Please try again.");
+        setPaymentSuccess(false);
       }
     } catch (error) {
-      console.error("Error fetching survey details:", error);
-      // @ts-ignore
-      window.Swal?.fire({
+      setPaymentSuccess(false);
+      console.error("Error saving payment details:", error);
+      Swal.fire({
         icon: "error",
-        title: "Error",
-        text: "Something went wrong. Please try again.",
-      }) || alert("Something went wrong. Please try again.");
+        title: "Payment Error",
+        text: "Failed to save payment details.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // Function to handle approve/reject button clicks
   const handleApprovalAction = (
     surveyId: number,
     action: "approve" | "reject"
@@ -386,82 +259,61 @@ const SurveyTable: React.FC = () => {
     setShowRemarksModal(true);
   };
 
-  // Function to handle remarks submission
   const handleRemarksSubmit = async () => {
     if (remarksText.length < 10) {
-      // @ts-ignore
-      Swal?.fire({
+      Swal.fire({
         icon: "warning",
         title: "Invalid Input",
         text: "Remarks must be at least 10 characters long!",
-      }) || alert("Remarks must be at least 10 characters long!");
+      });
       return;
     }
-
     if (!selectedSurveyForRemarks) return;
 
     setLoading(true);
     try {
       const userDetails = decodeJwtToken();
-      const payload = {
-        survey_id: selectedSurveyForRemarks,
-        entry_user_id: userDetails?.UserID,
-        remarks: remarksText,
-        approval_status: approvalAction === "approve" ? 1 : 2,
-      };
+      let response;
 
-      const url =
-        userType === 70
-          ? `user/saveFinalApprovalByApprovalOfficerID`
-          : `user/updateApprovedHearingDetailsByHearingUserID`;
-
-      const response = await commonApi(url, payload);
-      console.log(response);
-      if (response?.status == 0) {
-        setPaymentSuccess(true);
+      if (userType === 70) {
+        const payload = {
+          survey_id: selectedSurveyForRemarks,
+          final_approval_status: approvalAction === "approve" ? 1 : 2,
+          remarks: remarksText,
+          approval_officer_id: userDetails?.UserID,
+        };
+        response = await saveFinalApprovalByApprovalOfficerApi(payload);
+      } else {
+        // Assuming userType 60 or others fall here
+        const payload = {
+          survey_id: selectedSurveyForRemarks,
+          entry_user_id: userDetails?.UserID,
+          remarks: remarksText,
+          approval_status: approvalAction === "approve" ? 1 : 2,
+        };
+        response = await updateApprovedHearingDetailsApi(payload);
       }
-      setLoading(false);
 
-      if (response?.status == 0) {
-        // @ts-ignore
-        Swal?.fire({
+      if (response?.status === 0) {
+        Swal.fire({
           icon: "success",
           title: "Success",
-          text: `Survey ${approvalAction === "approve" ? "approved" : "rejected"
-            } successfully!`,
-        }) ||
-          alert(
-            `Survey ${approvalAction === "approve" ? "approved" : "rejected"
-            } successfully!`
-          );
-
-        // Close modal and refresh data
+          text: `Survey ${approvalAction}d successfully!`,
+        });
         setShowRemarksModal(false);
-        setPaymentSuccess(true);
+        setPaymentSuccess(!paymentSuccess); // Trigger data refetch
         setRemarksText("");
         setSelectedSurveyForRemarks(null);
-
-        // Refresh the data
-        const userDetails = decodeJwtToken();
-        if (
-          haatStatusId &&
-          dashboardType == "ADMIN" &&
-          userDetails?.UserTypeID == 50
-        ) {
-          getCheckerDashboardDetails(haatStatusId);
-        }
       } else {
-        // @ts-ignore
-        Swal?.fire({
+        Swal.fire({
           icon: "error",
           title: "Error",
           text: `Failed to ${approvalAction} survey. Please try again.`,
         });
       }
     } catch (error) {
-      alert("Something Went Wrong");
-      // @ts-ignore
-      Swal?.fire({
+      console.error("Error submitting remarks:", error);
+      Swal.fire({
         icon: "error",
         title: "Error",
         text: "Something went wrong. Please try again.",
@@ -474,36 +326,9 @@ const SurveyTable: React.FC = () => {
   useEffect(() => {
     const userDetails = decodeJwtToken();
     setUserType(userDetails?.UserTypeID);
-    if (
-      haatStatusId &&
-      dashboardType == "ADMIN" &&
-      userDetails?.UserTypeID == 100
-    ) {
-      getHaatApplicantionDetailsForAdmin(haatStatusId);
-    } else if (
-      haatStatusId &&
-      dashboardType == "ADMIN" &&
-      userDetails?.UserTypeID == 50
-    ) {
-      getCheckerDashboardDetails(haatStatusId);
-    } else if (haatStatusId && dashboardType == "USER") {
-      getSurveyDetailsByShopOwnerID(haatStatusId);
-    } else if (
-      haatStatusId &&
-      dashboardType == "ADMIN" &&
-      userDetails?.UserTypeID == 60
-    ) {
-      getHearingDetailsByHearingUserID(haatStatusId);
-    } else if (
-      haatStatusId &&
-      dashboardType == "ADMIN" &&
-      userDetails?.UserTypeID == 70
-    ) {
-      getSurveyDetailsByApprovalOfficerID(haatStatusId);
-    }
+    fetchDataForDashboard();
   }, [haatStatusId, paymentSuccess]);
 
-  // Checkbox functionality
   const handleCheckboxChange = (surveyId: number) => {
     setSelectedSurveys((prev) =>
       prev.includes(surveyId)
@@ -513,7 +338,7 @@ const SurveyTable: React.FC = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedSurveys.length === paginatedData.length) {
+    if (paginatedData && selectedSurveys.length === paginatedData.length) {
       setSelectedSurveys([]);
     } else {
       const allIds = paginatedData.map((survey: any) => survey.survey_id);
@@ -533,33 +358,36 @@ const SurveyTable: React.FC = () => {
     setLoading(true);
     try {
       const userDetails = decodeJwtToken();
-      // Add your API call here to update hearing dates for selected surveys
-      console.log("Selected Survey IDs:", selectedSurveys);
-      console.log("Hearing Date:", hearingDate);
-
-      const response = await commonApi("user/saveHearingDateByCheckerID", {
+      const payload = {
         lstSurveyId: selectedSurveys,
         entry_user_id: userDetails?.UserID,
         hearing_date: hearingDate,
-      });
-      if (response?.status == 0) {
-        setPaymentSuccess(true);
+      };
+      const response = await saveHearingDateByCheckerApi(payload);
 
+      if (response?.status === 0) {
+        setPaymentSuccess(!paymentSuccess); // Refetch data
         Swal.fire({
           title: "Hearing Date Initiated Successfully",
-          text: "You clicked the button!",
           icon: "success",
         });
+        setSelectedSurveys([]);
+        setHearingDate("");
+        setShowHearingModal(false);
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: response?.message || "Could not set hearing date.",
+          icon: "error",
+        });
       }
-      setLoading(false);
-
-      // Reset selections and close modal
-      setSelectedSurveys([]);
-      setHearingDate("");
-      setShowHearingModal(false);
     } catch (error) {
-      alert("Something Went Wrong");
       console.error("Error updating hearing date:", error);
+      Swal.fire({
+        title: "Something Went Wrong",
+        text: "An unexpected error occurred.",
+        icon: "error"
+      });
     } finally {
       setLoading(false);
     }
@@ -580,9 +408,8 @@ const SurveyTable: React.FC = () => {
 
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await savePaymentDetailsBySurveyID();
-    setShowPaymentModal(true);
     setLoads(true);
+    await savePaymentDetailsBySurveyID();
   };
 
   const closePaymentModal = () => {
@@ -607,20 +434,13 @@ const SurveyTable: React.FC = () => {
 
   const closeViewModal = () => {
     setShowViewModal(false);
-    setViewData(null);
   };
 
-  console.log("payment succ", typeof paymentSuccess);
-
-  // Check if checkboxes should be shown
+  // Computed Booleans for conditional rendering
   const showCheckboxes = userType == 50 && haatStatusId == "2";
-
-  // Check if approved button should be shown
   const showApprovedButton =
     (userType == 60 && haatStatusId == "1") ||
     (userType == 70 && haatStatusId == "2");
-  // Check if view button should be shown
-  // REWRITE: Show view button for userType 50 and haatStatusId == "2"
   const showViewButton =
     (userType == 60 && haatStatusId == "1") ||
     (userType == 50 && haatStatusId == "2") ||
@@ -664,7 +484,6 @@ const SurveyTable: React.FC = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
-                  {/* Table data count column */}
                   <th className="px-6 py-5 text-left w-12">
                     <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
                       <div className="w-2 h-2 bg-blue-400 rounded-full"></div>#
@@ -677,8 +496,7 @@ const SurveyTable: React.FC = () => {
                           type="checkbox"
                           className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                           checked={
-                            selectedSurveys.length === paginatedData.length &&
-                            paginatedData.length > 0
+                            paginatedData && paginatedData.length > 0 && selectedSurveys.length === paginatedData.length
                           }
                           onChange={handleSelectAll}
                         />
@@ -723,17 +541,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-
-                  {/* {(userType == 60 && haatStatusId == "1") && (
-                    <th className="px-6 py-5 text-left">
-                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                        <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                          <Calendar className="w-4 h-4 text-purple-400" />
-                        </div>
-                        Hearing Date
-                      </div>
-                    </th>
-                  )} */}
 
                   <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
@@ -799,27 +606,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-
-                  {/* {userType == 1 && haatStatusId == "1" && (
-                    <th className="px-6 py-5 text-left">
-                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                          <IndianRupee className="w-4 h-4 text-emerald-400" />
-                        </div>
-                        Initial Amount
-                      </div>
-                    </th>
-                  )}
-                  {userType == 1 && haatStatusId == "1" && (
-                    <th className="px-6 py-5 text-left">
-                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                          <IndianRupee className="w-4 h-4 text-emerald-400" />
-                        </div>
-                        Final Amount
-                      </div>
-                    </th>
-                  )} */}
 
                   {userType == 1 && haatStatusId == "1" && (
                     <th className="px-6 py-5 text-left">
@@ -994,7 +780,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-                  {/* Add Actions column for view button for userType 50 and haatStatusId == 2 */}
                   {showViewButton && !showApprovedButton && (
                     <th className="px-6 py-5 text-left">
                       <div className="text-sm font-bold uppercase tracking-wider  text-center">
@@ -1012,7 +797,6 @@ const SurveyTable: React.FC = () => {
                       key={survey.survey_id}
                       className="group hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/30 transition-all duration-300"
                     >
-                      {/* Table data count cell */}
                       <td className="px-6 py-5">
                         <div className="w-8 h-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center text-slate-700 font-semibold text-sm">
                           {startIdx + index + 1}
@@ -1131,46 +915,28 @@ const SurveyTable: React.FC = () => {
                         </>
                       )}
 
-                      {/* {userType == 1 && haatStatusId == "1" && (
-                        <>
-                          <td className="px-6 py-5">
-                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                              <IndianRupee className="w-4 h-4 mr-1" />
-                              {survey?.initial_amount}
-                            </div>
-                          </td>
-                        </>
-                      )}
-
                       {userType == 1 && haatStatusId == "1" && (
-                        <>
-                          <td className="px-6 py-5">
-                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                              <IndianRupee className="w-4 h-4 mr-1" />
-                              {survey?.final_amount}
-                            </div>
-                          </td>
-                        </>
-                      )} */}
-
-                      {userType == 1 && haatStatusId == "1" && (
-                        <button
-                          onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-6 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View
-                        </button>
+                        <td className="px-6 py-5">
+                          <button
+                            onClick={() => handleViewClick(survey.survey_id)}
+                            className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View
+                          </button>
+                        </td>
                       )}
 
                       {userType == 70 && haatStatusId == "1" && (
-                        <button
-                          onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View
-                        </button>
+                        <td className="px-6 py-5">
+                          <button
+                            onClick={() => handleViewClick(survey.survey_id)}
+                            className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View
+                          </button>
+                        </td>
                       )}
 
                       {userType == 1 && haatStatusId == "7" && (
@@ -1292,13 +1058,15 @@ const SurveyTable: React.FC = () => {
                         </>
                       )}
                       {userType == 50 && haatStatusId == "1" && (
-                        <button
-                          onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-8 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View
-                        </button>
+                        <td className="px-6 py-5">
+                          <button
+                            onClick={() => handleViewClick(survey.survey_id)}
+                            className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View
+                          </button>
+                        </td>
                       )}
 
                       {haatStatusId == "4" && userType == 1 && (
@@ -1363,7 +1131,6 @@ const SurveyTable: React.FC = () => {
                         </td>
                       )}
 
-                      {/* Show view button for userType 50 and haatStatusId == 2, if not already shown in showApprovedButton */}
                       {!showApprovedButton && showViewButton && (
                         <td className="px-6 py-5">
                           <button
@@ -1380,26 +1147,22 @@ const SurveyTable: React.FC = () => {
                 ) : (
                   <tr>
                     <td
-                      colSpan={
-                        Number(haatStatusId) === 4
-                          ? 7
-                          : showApprovedButton
-                            ? 7
-                            : showViewButton
-                              ? 7
-                              : 6
-                      }
+                      colSpan={15}
                       className="text-center py-16"
                     >
                       <div className="flex flex-col items-center">
                         <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mb-6">
-                          <Building className="w-10 h-10 text-slate-400" />
+                          {loading ? (
+                            <div className="w-10 h-10 border-4 border-slate-300 border-t-slate-500 rounded-full animate-spin"></div>
+                          ) : (
+                            <Building className="w-10 h-10 text-slate-400" />
+                          )}
                         </div>
                         <h3 className="text-xl font-bold text-slate-900 mb-3">
-                          No Data Available
+                          {loading ? "Loading Data..." : "No Data Available"}
                         </h3>
                         <p className="text-slate-500 text-lg">
-                          No survey records found for the selected criteria.
+                          {loading ? "Please wait a moment." : "No survey records found for the selected criteria."}
                         </p>
                       </div>
                     </td>
@@ -1409,7 +1172,6 @@ const SurveyTable: React.FC = () => {
             </table>
           </div>
 
-          {/* Submit Button for Selected Items */}
           {showCheckboxes && selectedSurveys.length > 0 && (
             <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-t border-slate-200">
               <div className="flex items-center justify-between">
@@ -1430,7 +1192,6 @@ const SurveyTable: React.FC = () => {
             </div>
           )}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-t border-slate-200">
               <div className="flex items-center justify-between">
@@ -1505,11 +1266,9 @@ const SurveyTable: React.FC = () => {
           )}
         </div>
 
-        {/* Payment Modal */}
         {showPaymentModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform animate-in slide-in-from-bottom-4 duration-300">
-              {/* Modal Header */}
               <div className="flex items-center justify-between p-6 border-b border-slate-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
@@ -1529,7 +1288,6 @@ const SurveyTable: React.FC = () => {
                 </button>
               </div>
 
-              {/* PAyment Modal Content */}
               <div className="p-6">
                 {loads && typeof paymentSuccess === "boolean" ? (
                   paymentSuccess === true ? (
@@ -1559,7 +1317,6 @@ const SurveyTable: React.FC = () => {
                   )
                 ) : (
                   <form onSubmit={handlePaymentSubmit} className="space-y-6">
-                    {/* Amount Display */}
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-slate-700">
@@ -1588,7 +1345,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Form Fields */}
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -1633,7 +1389,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Submit Button */}
                     <button
                       type="submit"
                       disabled={loading}
@@ -1655,11 +1410,9 @@ const SurveyTable: React.FC = () => {
           </div>
         )}
 
-        {/* Hearing Date Modal */}
         {showHearingModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform animate-in slide-in-from-bottom-4 duration-300">
-              {/* Modal Header */}
               <div className="flex items-center justify-between p-6 border-b border-slate-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
@@ -1682,10 +1435,8 @@ const SurveyTable: React.FC = () => {
                 </button>
               </div>
 
-              {/* Modal Content */}
               <div className="p-6">
                 <div className="space-y-6">
-                  {/* Selected Count Display */}
                   <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-slate-700">
@@ -1697,7 +1448,6 @@ const SurveyTable: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Date Input */}
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
                       Hearing Date
@@ -1708,11 +1458,10 @@ const SurveyTable: React.FC = () => {
                       value={hearingDate}
                       onChange={(e) => setHearingDate(e.target.value)}
                       required
-                      min={new Date().toISOString().split("T")[0]} // Set minimum date to today
+                      min={new Date().toISOString().split("T")[0]}
                     />
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -1743,11 +1492,9 @@ const SurveyTable: React.FC = () => {
           </div>
         )}
 
-        {/* Remarks Modal */}
         {showRemarksModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform animate-in slide-in-from-bottom-4 duration-300">
-              {/* Modal Header */}
               <div className="flex items-center justify-between p-6 border-b border-slate-200">
                 <div className="flex items-center gap-3">
                   <div
@@ -1777,10 +1524,8 @@ const SurveyTable: React.FC = () => {
                 </button>
               </div>
 
-              {/* Modal Content */}
               <div className="p-6">
                 <div className="space-y-6">
-                  {/* Action Status Display */}
                   <div
                     className={`rounded-xl p-4 border ${approvalAction === "approve"
                       ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-100"
@@ -1802,7 +1547,6 @@ const SurveyTable: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Remarks Input */}
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
                       Remarks <span className="text-red-500">*</span>
@@ -1832,7 +1576,6 @@ const SurveyTable: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -1866,11 +1609,9 @@ const SurveyTable: React.FC = () => {
           </div>
         )}
 
-        {/* View Modal */}
         {showViewModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform animate-in slide-in-from-bottom-4 duration-300">
-              {/* Modal Header */}
               <div className="flex items-center justify-between p-6 border-b border-slate-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center">
@@ -1896,8 +1637,6 @@ const SurveyTable: React.FC = () => {
           </div>
         )}
 
-        {/* MODAL */}
-
         <Dialog
           open={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -1922,7 +1661,6 @@ const SurveyTable: React.FC = () => {
                 </button>
               </div>
 
-              {/* Loader when data is loading */}
               {isLoadingDetails ? (
                 <div className="flex flex-col items-center justify-center py-16">
                   <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
@@ -1932,7 +1670,6 @@ const SurveyTable: React.FC = () => {
                 </div>
               ) : selectedDetails ? (
                 <div className="space-y-8">
-                  {/* Reusable Table Rendering */}
                   {[
                     {
                       title: "Basic Information",
@@ -2147,17 +1884,15 @@ const SurveyTable: React.FC = () => {
                                 </td>
                                 <td className="px-4 py-2 border-b text-gray-900">
                                   {item.isImage && item.value ? (
-                                    // Open image in new tab on click
                                     <img
-                                      src={item.value}
+                                      src={item.value as string}
                                       alt={item.label}
                                       className="w-32 h-auto rounded border cursor-pointer"
                                       style={{ cursor: "pointer" }}
                                       onClick={() => {
-                                        // Open image in a new tab
                                         const newTab = window.open();
                                         if (newTab) {
-                                          newTab?.document.write(`
+                                          newTab.document.write(`
                                           <!DOCTYPE html>
                                           <html>
                                           <head>
@@ -2172,7 +1907,7 @@ const SurveyTable: React.FC = () => {
                                           </body>
                                           </html>
                                         `);
-                                          newTab?.document?.close();
+                                          newTab.document.close();
                                         }
                                       }}
                                     />
