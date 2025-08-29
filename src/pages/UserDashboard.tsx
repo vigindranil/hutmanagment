@@ -37,14 +37,14 @@ const Dashboard: React.FC = () => {
       <path d="M18 14v8" />
     </svg>
   );
-  
+
 
   const UserdashboardApiCall = async () => {
     const userDetails = decodeJwtToken();
 
     const result = await commonApi(`user/getDashboardDetailsByShopOwnerID?ShopOwnerID=${userDetails?.UserID}`);
     console.log(result);
-    
+
     setStats([
       {
         title: 'Total Shop',
@@ -88,16 +88,16 @@ const Dashboard: React.FC = () => {
       // },
       {
         title: 'Hearing Date Pending',
-        value: result?.data?.hearing_done ? result?.data?.hearing_done?.toString() : "0",        
-        changeType: 'positive' as const,     
+        value: result?.data?.hearing_done ? result?.data?.hearing_done?.toString() : "0",
+        changeType: 'positive' as const,
         icon: CalendarClock,
         color: 'orange' as const,
         HaatDashoardStatus: 6
       },
       {
         title: 'Final Payment Pending',
-        value: result?.data?.final_payment_pending ? result?.data?.final_payment_pending?.toString() : "0",  
-        changeType: 'positive' as const,        
+        value: result?.data?.final_payment_pending ? result?.data?.final_payment_pending?.toString() : "0",
+        changeType: 'positive' as const,
         icon: IndianRupee,
         color: 'orange' as const,
         HaatDashoardStatus: 7
@@ -110,10 +110,10 @@ const Dashboard: React.FC = () => {
       //   color: 'green' as const,
       //   HaatDashoardStatus: 8
       // },
-       {
+      {
         title: 'Final Approval Pending',
-        value: result?.data?.final_approval_pending ? result?.data?.final_approval_pending?.toString() : "0",        
-        changeType: 'positive' as const,        
+        value: result?.data?.final_approval_pending ? result?.data?.final_approval_pending?.toString() : "0",
+        changeType: 'positive' as const,
         icon: ClockArrowDownIcon,
         color: 'orange' as const,
         HaatDashoardStatus: 11
@@ -128,13 +128,13 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Reject Application',
-        value: result?.data?.rejected_applications ? result?.data?.rejected_applications?.toString() : "0",        
-        changeType: 'positive' as const,        
+        value: result?.data?.rejected_applications ? result?.data?.rejected_applications?.toString() : "0",
+        changeType: 'positive' as const,
         icon: AlertTriangle,
         color: 'red' as const,
         HaatDashoardStatus: 10
       },
-      
+
     ])
   }
 
@@ -186,7 +186,7 @@ const Dashboard: React.FC = () => {
           <p className="text-gray-600 font-medium">Welcome back to Haat Management System</p>
         </div>
         <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-        <div className="flex items-center space-x-2 text-sm text-gray-500 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-white/20">
+          <div className="flex items-center space-x-2 text-sm text-gray-500 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-white/20">
             <Calendar className="w-4 h-4 text-blue-500" />
             <span className="font-medium">
               Last updated: {

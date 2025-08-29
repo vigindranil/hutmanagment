@@ -1,6 +1,7 @@
 import React from 'react';
 import { DivideIcon as LucideIcon } from 'lucide-react';
-const app_base_url = import.meta.env.VITE_APP_URL;
+import { Link } from 'react-router-dom';
+// const app_base_url = import.meta.env.VITE_APP_URL;
 
 interface StatsCardProps {
   title: string;
@@ -63,11 +64,15 @@ const StatsCard: React.FC<StatsCardProps> = ({
   }[changeType];
 
   const colorConfig = colorClasses[color];
+  const destinationPath = `/survey-details?_hti=${HaatDashoardStatus}&title=${title}&dashboardType=${dashboardType}`;
 
   return (
-    <a href={`${app_base_url}survey-details?_hti=${HaatDashoardStatus}&title=${title}&dashboardType=${dashboardType}`} className={`relative bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl ${colorConfig.shadow} border border-white/20 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 group overflow-hidden`}>
+    <Link
+      to={destinationPath}
+      className={`relative bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl ${colorConfig.shadow} border border-white/20 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 group overflow-hidden`}
+    >
       {/* Background gradient overlay */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${colorConfig.bg} opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>      
+      <div className={`absolute inset-0 bg-gradient-to-br ${colorConfig.bg} opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>
       <div className="relative z-10 flex items-center justify-between">
         <div className="flex-1">
           <p className="text-sm font-semibold text-gray-600 mb-1">{title}</p>
@@ -83,7 +88,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
           <Icon className="w-8 h-8 text-white" />
         </div>
       </div>
-    </a>
+    </Link>
   );
 };
 
