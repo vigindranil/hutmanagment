@@ -34,6 +34,12 @@ This document outlines the user roles and their corresponding `UserTypeID`s, alo
 | `8001104376`| Shop/User login     |
 
 ---
-
 ## Common Password
+
+\`\`\`
+admin@123
+\`\`\`
+
+> ⚠️ **Note:** These credentials are for testing purposes only. Do not use them in production environments.
+EOL
 
