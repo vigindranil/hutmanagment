@@ -1,3 +1,65 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+}
+
+/* Print styles for official document formatting */
+@media print {
+  body {
+    background: white !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break {
+    page-break-after: always;
+  }
+  
+  .shadow-lg {
+    box-shadow: none !important;
+  }
+  
+  .rounded-lg {
+    border-radius: 0 !important;
+  }
+  
+  .bg-gradient-to-r {
+    background: #f0f9ff !important;
+  }
+  
+  button {
+    display: none !important;
+  }
+  
+  .max-h-96 {
+    max-height: none !important;
+  }
+  
+  .overflow-y-auto {
+    overflow: visible !important;
+  }
+}
+
+/* Custom focus styles for government form aesthetics */
+input:focus {
+  outline: none;
+  border-bottom-color: #059669;
+  box-shadow: 0 1px 0 0 #059669;
+}
+
+/* Smooth transitions for form elements */
+.form-input {
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  transform: translateY(-1px);
+}
