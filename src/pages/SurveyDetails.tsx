@@ -403,12 +403,19 @@ const SurveyTable: React.FC = () => {
     setLoading(true);
     try {
       const userDetails = decodeJwtToken();
-      const payload = {
-        survey_id: selectedSurveyForRemarks,
-        entry_user_id: userDetails?.UserID,
-        remarks: remarksText,
-        approval_status: approvalAction === "approve" ? 1 : 2,
-      };
+      const payload: Record<string, any> = {};
+      payload[
+        userType === 70 ? "survey_id" : "survey_id"
+      ] = selectedSurveyForRemarks;
+      payload[
+        userType === 70 ? "approval_officer_id" : "entry_user_id"
+      ] = userDetails?.UserID;
+      payload[
+        userType === 70 ? "remarks" : "remarks"
+      ] = remarksText;
+      payload[
+        userType === 70 ? "final_approval_status" : "approval_status"
+      ] = approvalAction === "approve" ? 1 : 2;
 
       const url =
         userType === 70
@@ -771,6 +778,72 @@ const SurveyTable: React.FC = () => {
                     </th>
                   )}
 
+                  {userType == 70 && haatStatusId == "4" && (
+                    <>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-4 h-4 text-purple-400" />
+                          </div>
+                          Final Payment Date
+                        </div>
+                      </th>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                            <IndianRupee className="w-4 h-4 text-indigo-400" />
+                          </div>
+                          Initial Amount
+                        </div>
+                      </th>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                            <IndianRupee className="w-4 h-4 text-indigo-400" />
+                          </div>
+                          Final Amount
+                        </div>
+                      </th>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                            <MessageSquareX className="w-4 h-4 text-cyan-400" />
+                          </div>
+                          Remarks
+                        </div>
+                      </th>
+                    </>
+                  )}
+
+                  {userType == 70 && haatStatusId == "3" && (
+                    <>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                            <IndianRupee className="w-4 h-4 text-indigo-400" />
+                          </div>
+                          Initial Amount
+                        </div>
+                      </th>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                            <IndianRupee className="w-4 h-4 text-indigo-400" />
+                          </div>
+                          Final Amount
+                        </div>
+                      </th>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                            <MessageSquareX className="w-4 h-4 text-cyan-400" />
+                          </div>
+                          Remarks
+                        </div>
+                      </th>
+                    </>
+                  )}
+
                   {userType == 1 && haatStatusId == "10" && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -799,27 +872,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-
-                  {/* {userType == 1 && haatStatusId == "1" && (
-                    <th className="px-6 py-5 text-left">
-                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                          <IndianRupee className="w-4 h-4 text-emerald-400" />
-                        </div>
-                        Initial Amount
-                      </div>
-                    </th>
-                  )}
-                  {userType == 1 && haatStatusId == "1" && (
-                    <th className="px-6 py-5 text-left">
-                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                          <IndianRupee className="w-4 h-4 text-emerald-400" />
-                        </div>
-                        Final Amount
-                      </div>
-                    </th>
-                  )} */}
 
                   {userType == 1 && haatStatusId == "1" && (
                     <th className="px-6 py-5 text-left">
@@ -904,6 +956,53 @@ const SurveyTable: React.FC = () => {
                             <IndianRupee className="w-4 h-4 text-emerald-400" />
                           </div>
                           Initial Amount
+                        </div>
+                      </th>
+                    </>
+                  )}
+
+                  {userType == 60 && haatStatusId == "3" && (
+                    <>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-rose-500/20 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-4 h-4 text-rose-400" />
+                          </div>
+                          Initial Payment Date
+                        </div>
+                      </th>
+
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-violet-500/20 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-4 h-4 text-violet-400" />
+                          </div>
+                          Hearing Date
+                        </div>
+                      </th>
+
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center">
+                            <MessageSquare className="w-4 h-4 text-amber-400" />
+                          </div>
+                          Hearing Remarks
+                        </div>
+                      </th>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                            <IndianRupee className="w-4 h-4 text-emerald-400" />
+                          </div>
+                          Initial Amount
+                        </div>
+                      </th>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                            <IndianRupee className="w-4 h-4 text-emerald-400" />
+                          </div>
+                          Final Amount
                         </div>
                       </th>
                     </>
@@ -1114,6 +1213,58 @@ const SurveyTable: React.FC = () => {
                         </div>
                       </td>
 
+                      {userType == 70 && haatStatusId == "3" && (
+                        <>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.initial_amount}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.final_amount}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <MessageSquare className="w-4 h-4 mr-1" />
+                              {survey?.remarks}
+                            </div>
+                          </td>
+                        </>
+                      )}
+
+                      {userType == 70 && haatStatusId == "4" && (
+                        <>
+                        <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              {survey?.final_payment_date}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.initial_amount}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.final_amount}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <MessageSquare className="w-4 h-4 mr-1" />
+                              {survey?.remarks}
+                            </div>
+                          </td>
+                        </>
+                      )}
+
                       {userType == 1 && haatStatusId == "10" && (
                         <>
                           <td className="px-6 py-5">
@@ -1130,28 +1281,6 @@ const SurveyTable: React.FC = () => {
                           </td>
                         </>
                       )}
-
-                      {/* {userType == 1 && haatStatusId == "1" && (
-                        <>
-                          <td className="px-6 py-5">
-                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                              <IndianRupee className="w-4 h-4 mr-1" />
-                              {survey?.initial_amount}
-                            </div>
-                          </td>
-                        </>
-                      )}
-
-                      {userType == 1 && haatStatusId == "1" && (
-                        <>
-                          <td className="px-6 py-5">
-                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                              <IndianRupee className="w-4 h-4 mr-1" />
-                              {survey?.final_amount}
-                            </div>
-                          </td>
-                        </>
-                      )} */}
 
                       {userType == 1 && haatStatusId == "1" && (
                         <button
@@ -1249,6 +1378,46 @@ const SurveyTable: React.FC = () => {
                             <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
                               <IndianRupee className="w-4 h-4 mr-1" />
                               {survey?.initial_amount}
+                            </div>
+                          </td>
+                        </>
+                      )}
+
+                      {userType == 60 && haatStatusId == "3" && (
+                        <>
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-rose-400 rounded-full"></div>
+                              <span className="text-slate-900 font-semibold">
+                                {survey?.initial_paymentdate}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-violet-400 rounded-full"></div>
+                              <span className="text-slate-900 font-semibold">
+                                {survey?.hearing_date}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="max-w-xs truncate">
+                              <span className="text-slate-900 font-semibold bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">
+                                {survey?.hearing_remarks}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.initial_amount}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.final_amount}
                             </div>
                           </td>
                         </>
