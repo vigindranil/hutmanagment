@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { commonApi, commonApiImage } from "../commonAPI";
+import { commonApi, commonApiImage } from "../Service/commonAPI";
 import { decodeJwtToken } from "../utils/decodeToken";
 import {
   ChevronLeft,

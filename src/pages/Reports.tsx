@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { decodeJwtToken } from "../utils/decodeToken";
-import { commonApi, commonApiImage } from "../commonAPI";
+import { commonApi, commonApiImage } from "../Service/commonAPI";
 import moment from "moment";
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import Cookies from "js-cookie";
@@ -117,8 +117,8 @@ const Reports: React.FC = () => {
       const warision_certificate_attached = await commonApiImage(result?.data?.warision_certificate_attached);
       const death_certificate_attached = await commonApiImage(result?.data?.death_certificate_attached);
       const noc_legal_heirs_attached = await commonApiImage(result?.data?.noc_legal_heirs_attached);
-      
-      setSelectedDetails({...result?.data, stall_image1, stall_image2, pan_image, sketch_map_attached, residential_certificate_attached, document_image, trade_license_attached, affidavit_attached, warision_certificate_attached, noc_legal_heirs_attached, death_certificate_attached});
+
+      setSelectedDetails({ ...result?.data, stall_image1, stall_image2, pan_image, sketch_map_attached, residential_certificate_attached, document_image, trade_license_attached, affidavit_attached, warision_certificate_attached, noc_legal_heirs_attached, death_certificate_attached });
       setIsModalOpen(true);
     } catch (error) {
       console.error("Error fetching full details:", error);
