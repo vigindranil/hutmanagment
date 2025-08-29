@@ -23,10 +23,10 @@ const Dashboard: React.FC = () => {
   const dashboardApiCall = async () => {
     const userDetails = decodeJwtToken();
 
-  
-  //Admin Dashboard
-  const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
-  setStats([
+
+    //Admin Dashboard
+    const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
+    setStats([
       {
         title: 'Total Vendors',
         value: result?.data?.total_survey ? result?.data?.total_survey?.toString() : "0",
@@ -83,7 +83,7 @@ const Dashboard: React.FC = () => {
       }
     ])
   }
-  
+
   //Checker Dashboard
   const getDashBoardDetailsByCheckerID = async () => {
     const userDetails = decodeJwtToken();
@@ -209,7 +209,7 @@ const Dashboard: React.FC = () => {
       dashboardApiCall();
     } else if (user_details?.UserTypeID === 50) {
       getDashBoardDetailsByCheckerID();
-    }else if (user_details?.UserTypeID === 60) {
+    } else if (user_details?.UserTypeID === 60) {
       getHearingCountByHearingUserID();
     }
     else if (user_details?.UserTypeID === 70) {
