@@ -14,7 +14,6 @@ import UserDashboard from './pages/UserDashboard';
 import SurveyTable from './pages/SurveyDetails';
 import ApprovalOfficerReports from './pages/ApprovalOfficerReports';
 import { Navigate, useLocation } from 'react-router-dom';
-import { LicenseForm } from './components/LicenseComponents/LicenseForm';
 
 
 function isAuthenticated() {
@@ -110,7 +109,11 @@ function App() {
             </Layout>
           </ProtectedRoute>
         } />
+
+      
       </Routes>
+
+
     </BrowserRouter>
   );
 }

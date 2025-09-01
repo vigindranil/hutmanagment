@@ -153,7 +153,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
         )
       );
     }
-    
+
 
     // if (searchTerm) {
     //   const term = searchTerm.toLowerCase();
@@ -225,7 +225,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
               <h2 className="text-lg font-semibold text-white">Filter Reports</h2>
             </div>
           </div>
-          
+
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div className="space-y-2">
@@ -240,7 +240,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 focus:bg-white"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
@@ -253,7 +253,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 focus:bg-white"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                   <Search className="w-4 h-4" />
@@ -267,7 +267,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 focus:bg-white"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Action</label>
                 <button
@@ -303,7 +303,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-blue-500 rounded-lg">
@@ -317,7 +317,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-gradient-to-br from-purple-50 to-violet-50 p-4 rounded-lg border border-purple-100">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-purple-500 rounded-lg">

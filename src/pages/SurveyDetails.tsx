@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { commonApi, commonApiImage } from "../Service/commonAPI";
 import { decodeJwtToken } from "../utils/decodeToken";
+import { createRoot } from "react-dom/client";
 import {
   ChevronLeft,
   ChevronRight,
@@ -20,12 +21,15 @@ import {
   Eye,
   User2Icon,
   MessageSquareX,
+  Download,
 } from "lucide-react";
 import { Dialog } from "@headlessui/react";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import bgimg from "../../src/assets/table background.jpg";
+import { CertificateTemplate } from "../components/Certificate";
+import html2pdf from "html2pdf.js";
 
 interface SurveyData {
   survey_id: number;
@@ -140,6 +144,9 @@ const SurveyTable: React.FC = () => {
     number | null
   >(null);
   const [viewData, setViewData] = useState<viewSurveyData | null>(null);
+  const [showPdfPreviewModal, setShowPdfPreviewModal] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfFilename, setPdfFilename] = useState<string>('');
 
   const [isLoadingDetails, setisLoadingDetails] = useState(false);
 
@@ -230,6 +237,135 @@ const SurveyTable: React.FC = () => {
       setisLoadingDetails(false);
     }
   };
+  const handleDownloadClick = async (survey: any) => {
+    if (!survey || !survey.application_number) {
+      Swal.fire({
+        icon: "error",
+        title: "Missing Information",
+        text: "Application details not found. Cannot generate the certificate.",
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Generating Certificate...",
+      text: "Please wait while we prepare your document.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    try {
+      // 1. Fetch API Data
+      const url = `user/getShopOwnerCertificateDetails?ApplicationNumber=${survey.application_number}`;
+      const response = await commonApi(url, {});
+
+      if (response?.status !== 0 || !response?.data) {
+        throw new Error(response?.message || 'Failed to fetch certificate details.');
+      }
+      const apiData = response.data;
+
+      // 2. Map API data to the structure CertificateTemplate expects
+      const formatDate = (dateString: string | null) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'N/A';
+        return date.toLocaleDateString('en-GB'); // Format: DD/MM/YYYY
+      };
+
+      const fromDate = new Date(apiData.payment_date);
+      const toDate = new Date(fromDate.getFullYear() + 10, fromDate.getMonth(), fromDate.getDate());
+
+      const mappedData = {
+        licenseNo: apiData.application_number?.toString() || 'N/A',
+        licenseeName: apiData.shopowner_name || 'N/A',
+        relativeName: apiData.guardian_name || 'N/A',
+        addressLine1: `Stall No: ${apiData.holdingno_or_stall_no || 'N/A'}`,
+        po: apiData.haat_name || 'Not Provided',
+        dist: "JALPAIGURI",
+        ps: apiData.police_station_name || 'N/A',
+        block: apiData.block_name || 'Not Provided',
+        licenseType: apiData.type_of_license === '1' ? 'Commercial Only' : 'Commercial with Residential',
+        rent: new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(apiData.amount || 0),
+        fromDate: formatDate(apiData.payment_date),
+        toDate: formatDate(toDate.toISOString()),
+        landDetails: {
+          mouza: apiData.mouza_name || 'N/A',
+          khatianNo: apiData.khatian_no?.toString() || 'N/A',
+          jlNo: apiData.jl_no?.toString() || 'N/A',
+          plotNo: apiData.plot_no?.toString() || 'N/A',
+          boundaries: { // Mapping the single boundary string
+            east: apiData.boundaries_of_plot || 'As per Survey Records',
+            west: 'As per Survey Records',
+            north: 'As per Survey Records',
+            south: 'As per Survey Records',
+          },
+          holdingNo: apiData.holdingno_or_stall_no?.toString() || 'N/A',
+          area: apiData.area_of_holding_or_land?.toString() || 'N/A',
+          inLocation: apiData.haat_name || 'N/A',
+          policeStation: apiData.police_station_name || 'N/A',
+        }
+      };
+
+      // 3. Render component invisibly to get HTML
+      const certificateElement = document.createElement('div');
+      // Style to keep it out of sight but in the DOM for rendering
+      certificateElement.style.position = 'absolute';
+      certificateElement.style.left = '0';
+      certificateElement.style.top = '0';
+      certificateElement.style.width = '210mm'; // A4 width
+      certificateElement.style.minHeight = '297mm'; // A4 height
+      certificateElement.style.backgroundColor = 'white';
+      certificateElement.style.zIndex = '-1000';
+      certificateElement.style.visibility = 'hidden';
+      document.body.appendChild(certificateElement);
+
+      const root = createRoot(certificateElement);
+      root.render(<CertificateTemplate data={mappedData} />);
+
+      // Wait for fonts/images to load (important for PDF accuracy)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // 4. Configure and Generate PDF
+      const pdfOptions = {
+        margin: [0.5, 0.5, 0.5, 0.5],
+        filename: `License-${mappedData.licenseNo}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      const pdfDataUri = await html2pdf()
+        .from(certificateElement)
+        .set(pdfOptions)
+        .output('datauristring');
+
+      // 5. Update state to show the modal with the PDF
+      setPdfUrl(pdfDataUri);
+      setPdfFilename(pdfOptions.filename);
+      setShowPdfPreviewModal(true);
+
+      Swal.close();
+
+      // 6. Cleanup the invisible element
+      root.unmount();
+      if (certificateElement.parentNode) {
+        document.body.removeChild(certificateElement);
+      }
+
+    } catch (error) {
+      console.error("Certificate generation failed:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not generate the certificate.";
+      Swal.fire({
+        icon: "error",
+        title: "Generation Failed",
+        text: errorMessage,
+      });
+    }
+  };
+
+
 
   const getHaatApplicantionDetailsForAdmin = async (haatStatusId: any) => {
     const userDetails = decodeJwtToken();
@@ -778,6 +914,16 @@ const SurveyTable: React.FC = () => {
                     </th>
                   )}
 
+                  {haatStatusId == "9" && userType == 1 && (
+                    <>
+                      <th className="px-6 py-5 text-left">
+                        <div className="text-sm font-bold uppercase tracking-wider text-center">
+                          Action
+                        </div>
+                      </th>
+                    </>
+                  )}
+
                   {userType == 70 && haatStatusId == "4" && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -1102,6 +1248,8 @@ const SurveyTable: React.FC = () => {
                     </th>
                   )}
                 </tr>
+
+
               </thead>
 
               <tbody className="divide-y divide-slate-100">
@@ -1211,7 +1359,21 @@ const SurveyTable: React.FC = () => {
                             {(userType === 70 && haatStatusId === "2") ? survey?.final_amount : survey?.mobile_number}
                           </span>
                         </div>
+
+
                       </td>
+
+                      {haatStatusId == "9" && userType == 1 && (
+                        <td className="px-6 py-5 text-center">
+                          <button
+                            onClick={() => handleDownloadClick(survey)} // Apply the fix from point 1 here as well
+                            className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Generate 
+                          </button>
+                        </td>
+                      )}
 
                       {userType == 70 && haatStatusId == "3" && (
                         <>
@@ -1238,7 +1400,7 @@ const SurveyTable: React.FC = () => {
 
                       {userType == 70 && haatStatusId == "4" && (
                         <>
-                        <td className="px-6 py-5">
+                          <td className="px-6 py-5">
                             <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
                               <Calendar className="w-4 h-4 mr-1" />
                               {survey?.final_payment_date}
@@ -2376,6 +2538,66 @@ const SurveyTable: React.FC = () => {
             </Dialog.Panel>
           </div>
         </Dialog>
+
+
+        <Dialog
+          open={showPdfPreviewModal}
+          onClose={() => {
+            setShowPdfPreviewModal(false);
+            setPdfUrl(null); // Clean up URL to free memory
+          }}
+          className="relative z-[9999]"
+        >
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <Dialog.Panel className="mx-auto flex flex-col w-full max-w-4xl h-[90vh] rounded-2xl bg-gray-100 shadow-2xl">
+              {/* Modal Header */}
+              <div className="flex-shrink-0 flex items-center justify-between p-4 border-b bg-white/80 backdrop-blur-sm rounded-t-2xl">
+                <Dialog.Title className="text-xl font-bold text-gray-800">
+                  Certificate Preview
+                </Dialog.Title>
+                <div className="flex items-center gap-4">
+                  {pdfUrl && (
+                    <a
+                      href={pdfUrl}
+                      download={pdfFilename}
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-md transition-all duration-200"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download
+                    </a>
+                  )}
+                  <button
+                    onClick={() => setShowPdfPreviewModal(false)}
+                    className="text-gray-500 hover:text-red-600 focus:outline-none transition-colors"
+                    aria-label="Close"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              {/* PDF Viewer Area */}
+              <div className="flex-grow p-2 bg-gray-200">
+                {pdfUrl ? (
+                  <iframe
+                    src={pdfUrl}
+                    title="Certificate Preview"
+                    className="w-full h-full border-2 border-gray-300 rounded-lg"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-lg font-semibold text-gray-600">
+                      Loading PDF preview...
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Dialog.Panel>
+          </div>
+        </Dialog>
+
+
       </div>
     </div>
   );
