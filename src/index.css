@@ -63,3 +63,20 @@ input:focus {
 .form-input:focus {
   transform: translateY(-1px);
 }
+
+
+.dropdown-container {
+  position: relative;
+  z-index: 100;
+}
+
+.dropdown-container button {
+  position: relative;
+  z-index: 101;
+}
+
+.dropdown-menu {
+  position: absolute;
+  z-index: 102;
+  pointer-events: auto;
+}

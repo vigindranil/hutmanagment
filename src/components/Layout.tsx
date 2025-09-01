@@ -82,12 +82,13 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
     // TODO: Replace with your logout logic
     // For example, clear auth tokens, redirect, etc.
     Cookies.remove('token');
+    console.log("Logout button triggered")
     navigate('/login');
   }
 
   const toggleSubmenu = (menuName: string) => {
-    setExpandedMenus(prev => 
-      prev.includes(menuName) 
+    setExpandedMenus(prev =>
+      prev.includes(menuName)
         ? prev.filter(name => name !== menuName)
         : [...prev, menuName]
     );
@@ -105,7 +106,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
       icon: FileText,
       color: 'from-blue-500 to-purple-600 hover:from-green-600 hover:to-indigo-700',
       subMenu: [
-        { name: 'First Payment Completed', href: '/approvalofficerreport'},
+        { name: 'First Payment Completed', href: '/approvalofficerreport' },
         { name: 'Final Payment Completed', href: '/reports/initial-payment-done' },
         { name: 'Completed Hearing', href: '/reports/initial-payment-done' },
         { name: 'License Generated', href: '/reports/initial-payment-done' },
@@ -116,8 +117,8 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
     // { name: 'Tax Management', href: '/tax-management', icon: Calculator, color: 'from-orange-500 to-red-600' },
     { name: 'Payments', user_type_id: 100, href: '/payments', icon: CreditCard, color: 'from-emerald-500 to-cyan-600' },
     // { name: 'Defaulters', href: '/defaulters', icon: AlertTriangle, color: 'from-red-500 to-pink-600' },
-    
-    
+
+
     // { name: 'Settings', href: '/settings', icon: Settings, color: 'from-gray-500 to-slate-600' },
   ];
 
@@ -170,7 +171,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                 const active = item.href ? isActivePath(item.href) : false;
                 const hasSubmenuActive = item.subMenu ? hasActiveSubmenu(item.subMenu) : false;
                 const isExpanded = expandedMenus.includes(item.name);
-                
+
                 return (
                   item?.user_type_id == userDetails?.UserTypeID && (
                     <li key={item.name}>
@@ -180,29 +181,25 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                         <div>
                           <button
                             onClick={() => toggleSubmenu(item.name)}
-                            className={`group w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${
-                              hasSubmenuActive
-                                ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
-                                : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
-                            }`}
+                            className={`group w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${hasSubmenuActive
+                              ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
+                              : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
+                              }`}
                           >
                             <div className="flex items-center">
-                              <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${
-                                hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
-                              }`} />
+                              <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                                }`} />
                               {item.name}
                             </div>
                             {isExpanded ? (
-                              <ChevronDown className={`w-4 h-4 transition-all duration-200 ${
-                                hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
-                              }`} />
+                              <ChevronDown className={`w-4 h-4 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                                }`} />
                             ) : (
-                              <ChevronRight className={`w-4 h-4 transition-all duration-200 ${
-                                hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
-                              }`} />
+                              <ChevronRight className={`w-4 h-4 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                                }`} />
                             )}
                           </button>
-                          
+
                           {/* Enhanced Submenu with Professional Hover Effects */}
                           {isExpanded && (
                             <ul className="mt-2 ml-6 space-y-1">
@@ -212,19 +209,17 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                                   <li key={subItem.name}>
                                     <Link
                                       to={subItem.href}
-                                      className={`group block px-4 py-3 text-sm rounded-lg transition-all duration-300 transform hover:translate-x-1 ${
-                                        subActive
-                                          ? 'bg-gradient-to-r from-teal-500 to-indigo-600 text-white shadow-lg shadow-teal-500/25'
-                                          : 'text-gray-600 hover:bg-gradient-to-r hover:from-teal-50 hover:via-blue-50 hover:to-indigo-50 hover:text-teal-700 hover:shadow-md hover:border-l-4 hover:border-teal-400'
-                                      }`}
+                                      className={`group block px-4 py-3 text-sm rounded-lg transition-all duration-300 transform hover:translate-x-1 ${subActive
+                                        ? 'bg-gradient-to-r from-teal-500 to-indigo-600 text-white shadow-lg shadow-teal-500/25'
+                                        : 'text-gray-600 hover:bg-gradient-to-r hover:from-teal-50 hover:via-blue-50 hover:to-indigo-50 hover:text-teal-700 hover:shadow-md hover:border-l-4 hover:border-teal-400'
+                                        }`}
                                       onClick={() => setSidebarOpen(false)}
                                     >
                                       <span className="flex items-center">
-                                        <span className={`w-2 h-2 rounded-full mr-3 transition-all duration-200 ${
-                                          subActive 
-                                            ? 'bg-white shadow-sm' 
-                                            : 'bg-gray-300 group-hover:bg-teal-400 group-hover:scale-125'
-                                        }`}></span>
+                                        <span className={`w-2 h-2 rounded-full mr-3 transition-all duration-200 ${subActive
+                                          ? 'bg-white shadow-sm'
+                                          : 'bg-gray-300 group-hover:bg-teal-400 group-hover:scale-125'
+                                          }`}></span>
                                         <span className="relative">
                                           {subItem.name}
                                           {!subActive && (
@@ -243,16 +238,14 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                         // Regular menu item
                         <Link
                           to={item.href}
-                          className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${
-                            active
-                              ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
-                              : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
-                          }`}
+                          className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${active
+                            ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
+                            : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
+                            }`}
                           onClick={() => setSidebarOpen(false)}
                         >
-                          <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${
-                            active ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
-                          }`} />
+                          <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${active ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                            }`} />
                           {item.name}
                         </Link>
                       )}
@@ -268,7 +261,8 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0 lg:ml-0 ">
         {/* Top header */}
-        <header className="bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20 flex-shrink-0 relative z-10">
+        <header className="bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20 flex-shrink-0 relative z-50">
+
           <div className="flex items-center justify-between h-16 px-4 sm:px-6">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -277,7 +271,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
               <Menu className="w-6 h-6" />
             </button>
             {/* Enhanced Dropdown section */}
-            <div className="flex items-center space-x-4 ml-auto relative " ref={dropdownRef}>
+            <div className="flex items-center space-x-4 ml-auto relative z-[100]" ref={dropdownRef}>
               <div className="relative">
                 <button
                   className="flex items-center space-x-3 focus:outline-none hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-xl px-3 py-2 transition-all duration-200 hover:shadow-md"
@@ -301,14 +295,15 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                
+
                 {/* Enhanced Dropdown Menu */}
                 {dropdownOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-64 max-w-xs bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl ring-1 ring-black/5 border border-white/20 "
+                    className="absolute right-0 mt-2 w-64 max-w-xs bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl ring-1 ring-black/5 border border-white/20 z-[101]"
                     style={{
                       minWidth: '12rem',
                       top: '100%',
+                      position: 'absolute', // Ensure it's explicitly positioned
                     }}
                   >
                     <div className="p-2">
@@ -321,6 +316,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                       <button
                         onClick={handleLogout}
                         className="group w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-600 rounded-lg transition-all duration-200 transform hover:scale-105"
+                        style={{ zIndex: 102 }} // Explicit z-index for the button
                       >
                         <LogOut className="w-4 h-4 mr-3 transition-all duration-200 text-gray-400 group-hover:text-red-500" />
                         <span className="relative">
