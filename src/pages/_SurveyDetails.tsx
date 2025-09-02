@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { commonApi, commonApiImage } from "../Service/commonAPI";
 import { decodeJwtToken } from "../utils/decodeToken";
@@ -28,7 +28,7 @@ import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import bgimg from "../../src/assets/table background.jpg";
-import { CertificateTemplate } from "../components/Certificate"; // Corrected import path
+import { CertificateTemplate } from "../components/Certificate";
 import html2pdf from "html2pdf.js";
 
 interface SurveyData {
@@ -106,14 +106,6 @@ interface FullApplicationDetails {
   stall_image1?: string;
   stall_image2?: string;
   user_id?: number;
-  hearing_date?: string;
-  hearing_time?: string;
-  hearing_venue?: string;
-  hearing_remarks?: string;
-  hearing_approved_by?: string;
-  approval_remarks?: string;
-  approval_date?: string;
-  survey_approved_by?: string;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -160,9 +152,6 @@ const SurveyTable: React.FC = () => {
 
   const [data, setData] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  
-  const certificateRef = useRef<HTMLDivElement>(null);
-
 
   const handleViewClick = async (surveyId: string) => {
     try {
@@ -306,7 +295,7 @@ const SurveyTable: React.FC = () => {
           khatianNo: apiData.khatian_no?.toString() || 'N/A',
           jlNo: apiData.jl_no?.toString() || 'N/A',
           plotNo: apiData.plot_no?.toString() || 'N/A',
-          boundaries: {
+          boundaries: { // Mapping the single boundary string
             east: apiData.boundaries_of_plot || 'As per Survey Records',
             west: 'As per Survey Records',
             north: 'As per Survey Records',
@@ -320,29 +309,35 @@ const SurveyTable: React.FC = () => {
       };
 
       // 3. Render component invisibly to get HTML
-      const certificateContainer = document.createElement('div');
-      certificateContainer.style.position = 'fixed';
-      certificateContainer.style.left = '-9999px';
-      certificateContainer.style.top = '-9999px';
-      document.body.appendChild(certificateContainer);
+      const certificateElement = document.createElement('div');
+      // Style to keep it out of sight but in the DOM for rendering
+      certificateElement.style.position = 'absolute';
+      certificateElement.style.left = '0';
+      certificateElement.style.top = '0';
+      certificateElement.style.width = '210mm'; // A4 width
+      certificateElement.style.minHeight = '297mm'; // A4 height
+      certificateElement.style.backgroundColor = 'white';
+      certificateElement.style.zIndex = '-1000';
+      certificateElement.style.visibility = 'hidden';
+      document.body.appendChild(certificateElement);
 
-      const root = createRoot(certificateContainer);
+      const root = createRoot(certificateElement);
       root.render(<CertificateTemplate data={mappedData} />);
 
-      // A short delay to ensure the component is fully rendered in the DOM.
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Wait for fonts/images to load (important for PDF accuracy)
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // 4. Configure and Generate PDF
       const pdfOptions = {
-        margin:       [0, 0, 0, 0],
-        filename:     `License-${mappedData.licenseNo}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, letterRendering: true, logging: true },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        margin: [0.5, 0.5, 0.5, 0.5],
+        filename: `License-${mappedData.licenseNo}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
 
       const pdfDataUri = await html2pdf()
-        .from(certificateContainer.children[0]) // Target the actual rendered component
+        .from(certificateElement)
         .set(pdfOptions)
         .output('datauristring');
 
@@ -355,7 +350,9 @@ const SurveyTable: React.FC = () => {
 
       // 6. Cleanup the invisible element
       root.unmount();
-      document.body.removeChild(certificateContainer);
+      if (certificateElement.parentNode) {
+        document.body.removeChild(certificateElement);
+      }
 
     } catch (error) {
       console.error("Certificate generation failed:", error);
@@ -937,7 +934,7 @@ const SurveyTable: React.FC = () => {
                           Final Payment Date
                         </div>
                       </th>
-                      {/* <th className="px-6 py-5 text-left">
+                      <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                           <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
                             <IndianRupee className="w-4 h-4 text-indigo-400" />
@@ -960,13 +957,13 @@ const SurveyTable: React.FC = () => {
                           </div>
                           Remarks
                         </div>
-                      </th> */}
+                      </th>
                     </>
                   )}
 
                   {userType == 70 && haatStatusId == "3" && (
                     <>
-                      {/* <th className="px-6 py-5 text-left">
+                      <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                           <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
                             <IndianRupee className="w-4 h-4 text-indigo-400" />
@@ -988,11 +985,6 @@ const SurveyTable: React.FC = () => {
                             <MessageSquareX className="w-4 h-4 text-cyan-400" />
                           </div>
                           Remarks
-                        </div>
-                      </th> */}
-                      <th className="px-6 py-5 text-left">
-                        <div className="text-sm font-bold uppercase tracking-wider text-center">
-                          Action
                         </div>
                       </th>
                     </>
@@ -1385,7 +1377,7 @@ const SurveyTable: React.FC = () => {
 
                       {userType == 70 && haatStatusId == "3" && (
                         <>
-                          {/* <td className="px-6 py-5">
+                          <td className="px-6 py-5">
                             <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
                               <IndianRupee className="w-4 h-4 mr-1" />
                               {survey?.initial_amount}
@@ -1402,13 +1394,7 @@ const SurveyTable: React.FC = () => {
                               <MessageSquare className="w-4 h-4 mr-1" />
                               {survey?.remarks}
                             </div>
-                          </td> */}
-                          <button
-                          onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-6 ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                        </button>
+                          </td>
                         </>
                       )}
 
@@ -1461,18 +1447,20 @@ const SurveyTable: React.FC = () => {
                       {userType == 1 && haatStatusId == "1" && (
                         <button
                           onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-6 ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                          className="group inline-flex items-center px-5 py-2.5 mt-6 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                         >
                           <Eye className="w-4 h-4 mr-2" />
+                          View
                         </button>
                       )}
 
                       {userType == 70 && haatStatusId == "1" && (
                         <button
                           onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-5 ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                          className="group inline-flex items-center px-5 py-2.5 mt-5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                         >
                           <Eye className="w-4 h-4 mr-2" />
+                          View
                         </button>
                       )}
 
@@ -1640,7 +1628,7 @@ const SurveyTable: React.FC = () => {
                           className="group inline-flex items-center px-5 py-2.5 mt-8 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                         >
                           <Eye className="w-4 h-4 mr-2" />
-                          
+                          View
                         </button>
                       )}
 
@@ -1699,7 +1687,7 @@ const SurveyTable: React.FC = () => {
                                 className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                               >
                                 <Eye className="w-4 h-4 mr-2" />
-                                
+                                View
                               </button>
                             )}
                           </div>
@@ -1714,7 +1702,7 @@ const SurveyTable: React.FC = () => {
                             className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                           >
                             <Eye className="w-4 h-4 mr-2" />
-                            
+                            View
                           </button>
                         </td>
                       )}
@@ -2464,19 +2452,6 @@ const SurveyTable: React.FC = () => {
                         },
                       ],
                     },
-                    {
-                      title: "Hearing Details",
-                      icon: "📅",
-                      color: "red",
-                      data: [
-                        { label: "Hearing Date", value: selectedDetails?.hearing_date, isDate: true },
-                      { label: "Hearing Remarks", value: selectedDetails?.hearing_remarks },
-                      { label: "Hearing Approved By", value: selectedDetails?.hearing_approved_by},
-                      { label: "Approval Remarks", value: selectedDetails?.approval_remarks },
-                      { label: "Approval Date", value: selectedDetails?.approval_date, isDate: true },
-                      { label: "Survey Approved By", value: selectedDetails?.survey_approved_by },
-                    ]
-                  },
                   ].map((section, idx) => (
                     <div
                       key={idx}

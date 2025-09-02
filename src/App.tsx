@@ -12,7 +12,10 @@ import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import UserDashboard from './pages/UserDashboard';
 import SurveyTable from './pages/SurveyDetails';
-import ApprovalOfficerReports from './pages/ApprovalOfficerReports';
+import Firstpayment from './pages/ApprovalOfficerReports/Firstpayment';
+import Finalpayment from './pages/ApprovalOfficerReports/Finalpayment';
+import Completedhearing from './pages/ApprovalOfficerReports/Completedhearing';
+import Licensegenerated from './pages/ApprovalOfficerReports/Licensegenerated';
 import { Navigate, useLocation } from 'react-router-dom';
 
 
@@ -28,7 +31,7 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
 
 function App() {
   return (
-    <BrowserRouter basename='/HaatManagement'>
+    <BrowserRouter basename='/'>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
@@ -102,18 +105,35 @@ function App() {
             </Layout>
           </ProtectedRoute>
         } />
-        <Route path="/approvalofficerreport" element={
+        <Route path="/firstpayment" element={
           <ProtectedRoute>
             <Layout>
-              <ApprovalOfficerReports />
+              <Firstpayment />
             </Layout>
           </ProtectedRoute>
         } />
-
-      
+        <Route path="/finalpayment" element={
+          <ProtectedRoute>
+            <Layout>
+              <Finalpayment />
+            </Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/completedhearing" element={
+          <ProtectedRoute>
+            <Layout>
+              <Completedhearing />
+            </Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/licensegenerated" element={
+          <ProtectedRoute>
+            <Layout>
+              <Licensegenerated />
+            </Layout>
+          </ProtectedRoute>
+        } />
       </Routes>
-
-
     </BrowserRouter>
   );
 }

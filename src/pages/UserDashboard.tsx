@@ -88,7 +88,7 @@ const Dashboard: React.FC = () => {
       // },
       {
         title: 'Hearing Date Pending',
-        value: result?.data?.hearing_done ? result?.data?.hearing_done?.toString() : "0",
+        value: result?.data?.hearing_initiated ? result?.data?.hearing_initiated?.toString() : "0",
         changeType: 'positive' as const,
         icon: CalendarClock,
         color: 'orange' as const,

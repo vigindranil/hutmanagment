@@ -72,6 +72,14 @@ interface FullApplicationDetails {
   stall_image1?: string;
   stall_image2?: string;
   user_id?: number;
+  hearing_date?: string;
+  hearing_time?: string;
+  hearing_venue?: string;
+  hearing_remarks?: string;
+  hearing_approved_by?: string;
+  approval_remarks?: string;
+  approval_date?: string;
+  survey_approved_by?: string;
 }
 
 const Reports: React.FC = () => {
@@ -437,6 +445,20 @@ const Reports: React.FC = () => {
                       { label: "Warision Certificate Attached", value: selectedDetails?.warision_certificate_attached, isImage: true },
                       { label: "Death Certificate Attached", value: selectedDetails?.death_certificate_attached, isImage: true },
                       { label: "NOC Legal Heirs Attached", value: selectedDetails?.noc_legal_heirs_attached, isImage: true },
+                      
+                    ]
+                  },
+                  {
+                    title: "Hearing Details",
+                    icon: "📅",
+                    color: "red",
+                    data: [
+                      { label: "Hearing Date", value: selectedDetails?.hearing_date, isDate: true },
+                      { label: "Hearing Remarks", value: selectedDetails?.hearing_remarks },
+                      { label: "Hearing Approved By", value: selectedDetails?.hearing_approved_by},
+                      { label: "Approval Remarks", value: selectedDetails?.approval_remarks },
+                      { label: "Approval Date", value: selectedDetails?.approval_date, isDate: true },
+                      { label: "Survey Approved By", value: selectedDetails?.survey_approved_by },
                     ]
                   }
                 ].map((section, idx) => (
@@ -455,10 +477,10 @@ const Reports: React.FC = () => {
                             <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                               <td className="px-4 py-2 border-b font-semibold text-gray-700 w-1/3">{item.label}</td>
                               <td className="px-4 py-2 border-b text-gray-900">
-                                {item.isImage && item.value ? (
+                                {(item as any).isImage && item.value ? (
                                   // Open image in new tab on click
                                   <img
-                                    src={item.value}
+                                    src={String(item.value)}
                                     alt={item.label}
                                     className="w-32 h-auto rounded border cursor-pointer"
                                     style={{ cursor: "pointer" }}

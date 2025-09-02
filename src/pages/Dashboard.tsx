@@ -107,7 +107,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Hearing Date Initiated',
-        value: result?.data?.hearing_initiated ? result?.data?.hearing_initiated?.toString() : "0",
+        value: result?.data?.hearing_approved ? result?.data?.hearing_approved?.toString() : "0",
         changeType: 'negative' as const,
         icon: CheckCheck,
         color: 'green' as const,

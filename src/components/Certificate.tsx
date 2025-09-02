@@ -1,4 +1,6 @@
 import React from 'react';
+import biswaBangla from '../assets/biswaBangla.png';
+import zillaParishadLogo from '../assets/JPLogo.png';
 
 // Define a type for the data prop to ensure type safety.
 interface CertificateData {
@@ -287,69 +289,180 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
                 `}
             </style>
 
-            <header className="header">
-                <div className="header-top">
-                    <div className="header-col left">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjM2E5MTM5IiBzdHJva2Utd2lkdGg9IjQiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIzMiIgZmlsbD0iI2VkZjg3NSIvPjxwYXRoIGZpbGw9IiMzYTkxMzkiIGQ9Ik01MCAxN2MtMTQuMzU5IDAtMjYgMTEuNjQxLTI2IDI2czExLjY0MSAyNiAyNiAyNiAyNi0xMS42NDEgMjYtMjYtMTEuNjQxLTI2LTI2LTI2em0wIDQ4Yy0xMi4xNSAwLTIyLTkuODUtMjItMjJzOS44NS0yMiAyMi0yMiAyMiA9Ljg1IDIyIDIyLTkuODUgMjItMjIgMjJ6Ii8+PHBhdGggZmlsbD0iIzNhOTEzOSIgZD0iTTUwIDM1Yy0zLjg2NiAwLTctMy4xMzQtNy03czMuMTM0LTcgNy03IDcgMy4xMzQgNyA3LTMuMTM0IDctNyA3em0tNyA4aDE0djE0aC0xNHYtMTR6Ii8+PC9zdmc+" alt="Govt. of West Bengal Logo" />
-                        <p className="bengali-title" style={{ margin: '5px 0 0 0' }}>পশ্চিমবঙ্গ সরকার</p>
-                        <p style={{ fontSize: '10px', margin: 0 }}>GOVT. OF WEST BENGAL</p>
+            <header className="header p-6 border-b-4 border-green-600" style={{ backgroundColor: '#C7D2B4' }}>
+                <div className="header-top flex items-center justify-between">
+                    <div className="header-col left flex flex-col items-center" style={{ minWidth: 0 }}>
+                        <img
+                            src={biswaBangla}
+                            alt="Govt. of West Bengal Logo"
+                            style={{ width: 110, height: 110, objectFit: 'contain', marginBottom: 4 }}
+                        />
+                        {/* <p className="bengali-title" style={{ margin: '5px 0 0 0' }}>পশ্চিমবঙ্গ সরকার</p>
+                        <p style={{ fontSize: '10px', margin: 0 }}>GOVT. OF WEST BENGAL</p> */}
                     </div>
-                    <div className="header-col center">
-                        <h1 className="header-title">JALPAIGURI ZILLA PARISHAD</h1>
-                        <p className="bengali-title">জলপাইগুড়ি জেলা পরিষদ</p>
+                    <div className="header-col center flex-1 flex items-center justify-center">
+                        <h1
+                            className="header-title"
+                            style={{
+                                fontFamily: "'ITC Garamond Std Bold Narrow', Garamond, 'Times New Roman', serif",
+                                color: ' #333399',
+                                fontSize: '2rem',
+                                fontWeight: 700,
+                                margin: 0,
+                                letterSpacing: 1,
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            JALPAIGURI ZILLA PARISHAD
+                        </h1>
                     </div>
-                    <div className="header-col right">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTI1Ij48cGF0aCBmaWxsPSIjNzRjNGFkIiBkPSJNMCA5MGgyMDB2MzVIMHoiLz48cGF0aCBmaWxsPSIjYjJkZmI3IiBkPSJNMCA3MGgyMDB2MjBIMHoiLz48cGF0aCBmaWxsPSIjYTVkY2UxIiBkPSJNMCAwaDIwMHY3MEgweiIvPjxwYXRoIGZpbGw9IiNmZmU1ODAiIGQ9Ik0xNzAgNDBjLTUuNTIzIDAtMTAgNC40NzctMTAgMTBzNC40NzcgMTAgMTAgMTAgMTAtNC40NzcgMTAtMTAtNC40NzctMTAtMTAtMTB6Ii8+PHBhdGggZmlsbD0iIzM5YTY0OSIgZD0iTTYyIDcwaDQwbC01IDIwSDY3eiIvPjxwYXRoIGZpbGw9IiM2YWI5NzUiIGQ9Ik02NyA5MGg0MHYxNUg2N3oiLz48cGF0aCBmaWxsPSIjNTU5YzU0IiBkPSJNODEgNTBoMTJ2NDBIODF6Ii8+PHBhdGggZmlsbD0iIzFkNjYyYiIgZD0iTTM1IDcwaDEwMGw1IDE1SDRwbDUtMTV6bTQwIDE1aDE1bDEwIDE1SDgweiIvPjxwYXRoIGZpbGw9IiM0YWE3NGIiIGQ9Ik02MiA3MGgtMTJsMTAgMTVoMTBsLTgtMTV6bTgwIDBoLTEybDggMTVoMTBsLTgtMTV6Ii8+PC9zdmc+" alt="Zilla Parishad Logo" />
+                    <div className="header-col right flex flex-col items-center" style={{ minWidth: 0 }}>
+                        <img
+                            src={zillaParishadLogo}
+                            alt="Zilla Parishad Logo"
+                            style={{ width: 110, height: 110, objectFit: 'contain', marginBottom: 4 }}
+                        />
                     </div>
                 </div>
-                <div className="contact-info">
-                    <span>@ aeo.jalzp@gmail.com</span>
+                <div className="contact-info flex justify-center gap-8 mt-2 text-sm font-semibold text-gray-700">
+                    <span>aeo.jalzp@gmail.com</span>
                     <span>www.jalpaigurizp.in</span>
                 </div>
             </header>
 
             <section className="license-no-box">
-                LICENSE No. <span className="data-field">{safeDisplay(data.licenseNo)}</span>
+                LICENSE No. <span className="">{safeDisplay(data.licenseNo)}</span>
             </section>
 
-            <section className="section-title-box">
+            <section className="section-title-box" style={{ backgroundColor: '#C7D2B4' }}>
                 LICENSE FOR SHOP KEEPERS ON THE ZILLA PARISHAD LAND
             </section>
 
             <section className="details-section">
                 <p>License for Commercial Activity for Shopkeepers on the land of Jalpaiguri Zilla Parishad is hereby issued to:</p>
-                <div className="detail-line">
-                    <span className="detail-label">Sri/Smt.</span>
-                    <span className="data-field">{safeDisplay(data.licenseeName)}</span>
+                <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span className="detail-label" style={{ minWidth: 80 }}>Sri/Smt.</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 120,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.licenseeName)}
+                    </span>
                 </div>
-                <div className="detail-line">
-                    <span className="detail-label">S/o or W/o or D/o Sri/Smt.</span>
-                    <span className="data-field">{safeDisplay(data.relativeName)}</span>
+                <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span className="detail-label" style={{ minWidth: 160 }}>S/o or W/o or D/o Sri/Smt.</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 120,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.relativeName)}
+                    </span>
                 </div>
-                <div className="detail-line">
-                    <span className="data-field">{safeDisplay(data.addressLine1)}</span>
+                <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 120,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.addressLine1)}
+                    </span>
                 </div>
-                <div className="detail-line">
-                    <span className="detail-label">Hat, P.O. :</span>
-                    <span className="data-field">{safeDisplay(data.po)}</span>
-                    <span className="detail-label" style={{ marginLeft: '20px' }}>P.S. :</span>
-                    <span className="data-field">{safeDisplay(data.ps)}</span>
+                <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span className="detail-label" style={{ minWidth: 80 }}>Hat, P.O. :</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 80,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.po)}
+                    </span>
+                    <span className="detail-label" style={{ marginLeft: 20, minWidth: 40 }}>P.S. :</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 80,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.ps)}
+                    </span>
                 </div>
-                <div className="detail-line">
-                    <span className="detail-label">Block :</span>
-                    <span className="data-field">{safeDisplay(data.block)}</span>
-                    <span className="detail-label" style={{ marginLeft: '20px' }}>Dist. :</span>
-                    <span className="data-field">{safeDisplay(data.dist)}</span>
+                <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span className="detail-label" style={{ minWidth: 60 }}>Block :</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 80,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.block)}
+                    </span>
+                    <span className="detail-label" style={{ marginLeft: 20, minWidth: 50 }}>Dist. :</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 80,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.dist)}
+                    </span>
                 </div>
-                <div className="license-type-container">
+                <div className="license-type-container" style={{ marginTop: 16 }}>
                     <strong>Type of License :</strong>
-                    <div className="license-type-option">
+                    <div className="license-type-option" style={{ display: 'inline-flex', alignItems: 'center', marginLeft: 16 }}>
                         <div className={`circle ${licenseTypeCommercialClass}`}></div>
-                        <span>Commercial Only</span>
+                        <span style={{ marginLeft: 6 }}>Commercial Only</span>
                     </div>
-                    <div className="license-type-option">
+                    <div className="license-type-option" style={{ display: 'inline-flex', alignItems: 'center', marginLeft: 16 }}>
                         <div className={`circle ${licenseTypeResidentialClass}`}></div>
-                        <span>Commercial with Residential</span>
+                        <span style={{ marginLeft: 6 }}>Commercial with Residential</span>
                     </div>
                 </div>
             </section>
@@ -357,7 +470,49 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
             <section className="terms-section">
                 <h3>Subject to the following terms and Conditions :</h3>
                 <ol className="terms-list">
-                    <li>The Zilla Parishad authority hereby issues this 'License' only for conducting his/her shop/business including his/her dwelling house and for no other purpose whatever it may be at an annual rent of <span className="data-field">{safeDisplay(data.rent)}</span> for a period of ten (10) years with effect from <span className="data-field">{safeDisplay(data.fromDate)}</span> to <span className="data-field">{safeDisplay(data.toDate)}</span>, subject to renewal of this 'License' before the date of expiry.</li>
+                    <li>
+                        The Zilla Parishad authority hereby issues this 'License' only for conducting his/her shop/business including his/her dwelling house and for no other purpose whatever it may be at an annual rent of
+                        <span
+                            style={{
+                                borderBottom: '1px dotted #333',
+                                display: 'inline-block',
+                                minWidth: 80,
+                                padding: '0 8px',
+                                fontWeight: 600,
+                                margin: '0 4px'
+                            }}
+                        >
+                            {safeDisplay(data.rent)}
+                        </span>
+                        for a period of ten (10) years with effect from
+                        <span
+                            style={{
+                                borderBottom: '1px dotted #333',
+                                display: 'inline-block',
+                                minWidth: 80,
+                                padding: '0 8px',
+                                fontWeight: 600,
+                                margin: '0 4px'
+                            }}
+                        >
+                            {safeDisplay(data.fromDate)}
+                        </span>
+                        to
+                        <span
+                            style={{
+                                borderBottom: '1px dotted #333',
+                                display: 'inline-block',
+                                minWidth: 80,
+                                padding: '0 8px',
+                                fontWeight: 600,
+                                margin: '0 4px'
+                            }}
+                        >
+                            {safeDisplay(data.toDate)}
+                        </span>
+                        , subject to renewal of this 'License' before the date of expiry.
+                    </li>
+                    {/* The rest of the terms remain unchanged */}
                     <li>The 'Licensee' shall pay the Annual Fees as per the Amended Bye-Law, 2021 of Jalpaiguri Zilla Parishad. Such yearly rent/fees will be payable / fixed from the 1st April of each year to the 31st March of the following year. Yearly rent /fees may be increased from time to time as per the decision of the Jalpaiguri Zilla Parishad. The 'Licensee' shall pay this rent/fees to the Jalpaiguri Zilla Parishad in time, failing which a delayed penalty will be imposed. The Zilla Parishad reserves the right to cancel the license if the rent/ dues remain pending for more than six months.</li>
                     <li>The 'Licensee' shall not transfer the land (as scheduled in the overleaf) under this 'License' or any part thereof to any other person without the previous sanction/permission of the Zilla Parishad authority in writing.</li>
                     <li>The 'Licensee' shall build/construct his / her pucca house/building after getting prior approval from the Zilla Parishad authority in writing. For getting such approval, he/she has to apply before the Zilla Parishad authority for getting building plan approval with necessary documents. For Municipal areas the building plan shall be approved by the concerned municipality subject to No Objection Certificate from the Jalpaiguri Zilla Parishad.</li>
@@ -380,59 +535,186 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
                 <div className="schedule-title">: SCHEDULE OF THE LAND :</div>
                 <p><strong>PARTICULARS OF THE HOLDING / LAND :</strong></p>
                 <div className="grid-layout">
-                    <div className="grid-item">
-                        <span className="detail-label">MOUZA:</span>
-                        <span className="data-field">{safeDisplay(data.landDetails.mouza)}</span>
+                    <div className="grid-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span className="detail-label" style={{ minWidth: 80 }}>MOUZA:</span>
+                        <span
+                            style={{
+                                flex: 1,
+                                borderBottom: '1px dotted #333',
+                                minWidth: 80,
+                                display: 'inline-block',
+                                padding: '0 8px',
+                                fontWeight: 600,
+                                textAlign: 'left'
+                            }}
+                        >
+                            {safeDisplay(data.landDetails.mouza)}
+                        </span>
                     </div>
-                    <div className="grid-item">
-                        <span className="detail-label">KHATIAN NO:</span>
-                        <span className="data-field">{safeDisplay(data.landDetails.khatianNo)}</span>
+                    <div className="grid-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span className="detail-label" style={{ minWidth: 100 }}>KHATIAN NO:</span>
+                        <span
+                            style={{
+                                flex: 1,
+                                borderBottom: '1px dotted #333',
+                                minWidth: 80,
+                                display: 'inline-block',
+                                padding: '0 8px',
+                                fontWeight: 600,
+                                textAlign: 'left'
+                            }}
+                        >
+                            {safeDisplay(data.landDetails.khatianNo)}
+                        </span>
                     </div>
-                    <div className="grid-item">
-                        <span className="detail-label">JL. NO.:</span>
-                        <span className="data-field">{safeDisplay(data.landDetails.jlNo)}</span>
+                    <div className="grid-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span className="detail-label" style={{ minWidth: 80 }}>JL. NO.:</span>
+                        <span
+                            style={{
+                                flex: 1,
+                                borderBottom: '1px dotted #333',
+                                minWidth: 80,
+                                display: 'inline-block',
+                                padding: '0 8px',
+                                fontWeight: 600,
+                                textAlign: 'left'
+                            }}
+                        >
+                            {safeDisplay(data.landDetails.jlNo)}
+                        </span>
                     </div>
-                    <div className="grid-item">
-                        <span className="detail-label">PLOTNO/s:</span>
-                        <span className="data-field">{safeDisplay(data.landDetails.plotNo)}</span>
+                    <div className="grid-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span className="detail-label" style={{ minWidth: 90 }}>PLOTNO/s:</span>
+                        <span
+                            style={{
+                                flex: 1,
+                                borderBottom: '1px dotted #333',
+                                minWidth: 80,
+                                display: 'inline-block',
+                                padding: '0 8px',
+                                fontWeight: 600,
+                                textAlign: 'left'
+                            }}
+                        >
+                            {safeDisplay(data.landDetails.plotNo)}
+                        </span>
                     </div>
                 </div>
 
                 <p><strong>BOUNDARIES OF PLOT :</strong></p>
-                <div className="detail-line">
-                    <span className="detail-label" style={{ minWidth: '80px' }}>EAST :</span>
-                    <span className="data-field">{safeDisplay(data.landDetails.boundaries.east)}</span>
-                </div>
-                <div className="detail-line">
-                    <span className="detail-label" style={{ minWidth: '80px' }}>WEST :</span>
-                    <span className="data-field">{safeDisplay(data.landDetails.boundaries.west)}</span>
-                </div>
-                <div className="detail-line">
-                    <span className="detail-label" style={{ minWidth: '80px' }}>NORTH :</span>
-                    <span className="data-field">{safeDisplay(data.landDetails.boundaries.north)}</span>
-                </div>
-                <div className="detail-line">
-                    <span className="detail-label" style={{ minWidth: '80px' }}>SOUTH :</span>
-                    <span className="data-field">{safeDisplay(data.landDetails.boundaries.south)}</span>
-                </div>
+                {(() => {
+                    // Safely grab boundaries object
+                    const raw = (data?.landDetails?.boundaries ?? {});
 
-                <div className="detail-line" style={{ marginTop: '20px' }}>
-                    <span className="detail-label">HOLDING NO/STALL NO :</span>
-                    <span className="data-field">{safeDisplay(data.landDetails.holdingNo)}</span>
+                    // Normalize a key to one of: 'north' | 'south' | 'east' | 'west' | null
+                    const normalizeDir = (key) => {
+                        const s = String(key).toLowerCase().trim().replace(/[_-]+/g, ' ');
+                        if (/\bnorth\b/.test(s) || /^n$/.test(s)) return 'north';
+                        if (/\bsouth\b/.test(s) || /^s$/.test(s)) return 'south';
+                        if (/\beast\b/.test(s) || /^e$/.test(s)) return 'east';
+                        if (/\bwest\b/.test(s) || /^w$/.test(s)) return 'west';
+                        return null;
+                    };
+
+                    // Build a normalized map like { north: '...', south: '...', ... }
+                    const dirMap = Object.entries(raw).reduce((acc, [k, v]) => {
+                        const n = normalizeDir(k);
+                        if (n) acc[n] = v ?? ''; // last one wins if duplicates
+                        return acc;
+                    }, /** @type {Record<'north'|'south'|'east'|'west', any>} */({}));
+
+                    const directions = ['north', 'south', 'east', 'west'];
+
+                    // Use existing safeDisplay if available; otherwise a simple fallback
+                    const show = (val) =>
+                        typeof safeDisplay === 'function' ? safeDisplay(val) : (val ?? '');
+
+                    return directions.map((dir) => (
+                        <div className="detail-line" key={dir} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span className="detail-label" style={{ minWidth: 80 }}>{dir.toUpperCase()} :</span>
+                            <span
+                                style={{
+                                    flex: 1,
+                                    borderBottom: '1px dotted #333',
+                                    minWidth: 80,
+                                    display: 'inline-block',
+                                    padding: '0 8px',
+                                    fontWeight: 600,
+                                    textAlign: 'left'
+                                }}
+                            >
+                                {show(dirMap[dir] ?? '')}
+                            </span>
+                        </div>
+                    ));
+                })()}
+
+
+                <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 20 }}>
+                    <span className="detail-label" style={{ minWidth: 160 }}>HOLDING NO/STALL NO :</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 80,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.landDetails.holdingNo)}
+                    </span>
                 </div>
-                <div className="detail-line">
-                    <span className="detail-label">AREA OF THE HOLDING/LAND :</span>
-                    <span className="data-field">{safeDisplay(data.landDetails.area)} Acres/Sq. Ft.</span>
+                <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span className="detail-label" style={{ minWidth: 180 }}>AREA OF THE HOLDING/LAND :</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 80,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.landDetails.area)} Acres/Sq. Ft.
+                    </span>
                 </div>
-                <div className="detail-line">
-                    <span className="detail-label">in</span>
-                    <span className="data-field">{safeDisplay(data.landDetails.inLocation)}</span>
-                    <span className="detail-label" style={{ marginLeft: '20px' }}>Hat</span>
+                <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span className="detail-label" style={{ minWidth: 30 }}>in</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 80,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.landDetails.inLocation)}
+                    </span>
+                    <span className="detail-label" style={{ marginLeft: 20, minWidth: 30 }}>Hat</span>
                 </div>
-                <div className="detail-line">
-                    <span className="detail-label">POLICE STATION :</span>
-                    <span className="data-field">{safeDisplay(data.landDetails.policeStation)}</span>
-                    <span className="detail-label" style={{ marginLeft: '20px' }}>DISTRICT : JALPAIGURI</span>
+                <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span className="detail-label" style={{ minWidth: 120 }}>POLICE STATION :</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 80,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.landDetails.policeStation)}
+                    </span>
+                    <span className="detail-label" style={{ marginLeft: 20, minWidth: 120 }}>DISTRICT : JALPAIGURI</span>
                 </div>
             </section>
 
@@ -449,6 +731,5 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
                 </div>
             </footer>
         </div>
-
     );
 };
