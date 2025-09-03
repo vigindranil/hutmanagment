@@ -307,10 +307,10 @@ const SurveyTable: React.FC = () => {
           jlNo: apiData.jl_no?.toString() || 'N/A',
           plotNo: apiData.plot_no?.toString() || 'N/A',
           boundaries: {
-            east: apiData.boundaries_of_plot || 'As per Survey Records',
-            west: 'As per Survey Records',
-            north: 'As per Survey Records',
-            south: 'As per Survey Records',
+            East: apiData.boundaries_of_plot || 'As per Survey Records',
+            West: 'As per Survey Records',
+            North: 'As per Survey Records',
+            South: 'As per Survey Records',
           },
           holdingNo: apiData.holdingno_or_stall_no?.toString() || 'N/A',
           area: apiData.area_of_holding_or_land?.toString() || 'N/A',
@@ -1405,7 +1405,7 @@ const SurveyTable: React.FC = () => {
                           </td> */}
                           <button
                           onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-6 ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                          className="group inline-flex items-center px-4 py-2 mt-6 ml-2 sm:px-5 sm:py-2.5 sm:mt-7 sm:ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 w-full sm:w-auto text-sm sm:text-base"
                         >
                           <Eye className="w-4 h-4 mr-2" />
                         </button>
@@ -1637,10 +1637,9 @@ const SurveyTable: React.FC = () => {
                       {userType == 50 && haatStatusId == "1" && (
                         <button
                           onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-8 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                          className="group inline-flex items-center px-5 py-2.5 mt-10 ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                         >
                           <Eye className="w-4 h-4 mr-2" />
-                          
                         </button>
                       )}
 

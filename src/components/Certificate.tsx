@@ -21,42 +21,34 @@ interface CertificateData {
         khatianNo: string;
         jlNo: string;
         plotNo: string;
-        boundaries: {
-            east: string;
-            west: string;
-            north: string;
-            south: string;
-        };
+        boundaries: string;
         holdingNo: string;
         area: string;
         inLocation: string;
         policeStation: string;
     };
 }
-
 interface CertificateTemplateProps {
     data: CertificateData;
 }
 
 export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }) => {
-    // Helper function to safely display data with fallback
+    // Helper function to safely display data
     const safeDisplay = (value: any) => {
-        // if (value === null || value === undefined || value === '') {
-        //     return fallback;
-        // }
-        return value;
+        if (value === null || value === undefined || value === '') {
+            return '';
+        }
+        return String(value);
     };
-
-
-    console.log("I am here in the Certificate template", data)
 
     // Helper to add the 'selected' class for the license type radio button simulation
     const licenseTypeCommercialClass = data.licenseType === 'Commercial Only' ? 'selected' : '';
     const licenseTypeResidentialClass = data.licenseType === 'Commercial with Residential' ? 'selected' : '';
+    console.log("data", data);
 
     return (
         <div id="certificate-to-print" className="certificate-container">
-            <style>
+           <style>
                 {`
                     @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Roboto:wght@400;700&display=swap');
 
@@ -297,8 +289,6 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
                             alt="Govt. of West Bengal Logo"
                             style={{ width: 110, height: 110, objectFit: 'contain', marginBottom: 4 }}
                         />
-                        {/* <p className="bengali-title" style={{ margin: '5px 0 0 0' }}>পশ্চিমবঙ্গ সরকার</p>
-                        <p style={{ fontSize: '10px', margin: 0 }}>GOVT. OF WEST BENGAL</p> */}
                     </div>
                     <div className="header-col center flex-1 flex items-center justify-center">
                         <h1
@@ -362,13 +352,14 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
                     <span
                         style={{
                             flex: 1,
-                            borderBottom: '1px dotted #333',
+                            display: 'inline-flex',
+                            alignItems: 'center',
                             minWidth: 120,
-                            display: 'inline-block',
                             padding: '0 8px',
                             fontWeight: 600,
                             letterSpacing: 1,
-                            textAlign: 'left'
+                            textAlign: 'left',
+                            borderBottom: '1px dotted #333',
                         }}
                     >
                         {safeDisplay(data.relativeName)}
@@ -510,9 +501,8 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
                         >
                             {safeDisplay(data.toDate)}
                         </span>
-                        , subject to renewal of this 'License' before the date of expiry.
+                        , subject to renewal of this 'License\' before the date of expiry.
                     </li>
-                    {/* The rest of the terms remain unchanged */}
                     <li>The 'Licensee' shall pay the Annual Fees as per the Amended Bye-Law, 2021 of Jalpaiguri Zilla Parishad. Such yearly rent/fees will be payable / fixed from the 1st April of each year to the 31st March of the following year. Yearly rent /fees may be increased from time to time as per the decision of the Jalpaiguri Zilla Parishad. The 'Licensee' shall pay this rent/fees to the Jalpaiguri Zilla Parishad in time, failing which a delayed penalty will be imposed. The Zilla Parishad reserves the right to cancel the license if the rent/ dues remain pending for more than six months.</li>
                     <li>The 'Licensee' shall not transfer the land (as scheduled in the overleaf) under this 'License' or any part thereof to any other person without the previous sanction/permission of the Zilla Parishad authority in writing.</li>
                     <li>The 'Licensee' shall build/construct his / her pucca house/building after getting prior approval from the Zilla Parishad authority in writing. For getting such approval, he/she has to apply before the Zilla Parishad authority for getting building plan approval with necessary documents. For Municipal areas the building plan shall be approved by the concerned municipality subject to No Objection Certificate from the Jalpaiguri Zilla Parishad.</li>
@@ -602,53 +592,22 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
                 </div>
 
                 <p><strong>BOUNDARIES OF PLOT :</strong></p>
-                {(() => {
-                    // Safely grab boundaries object
-                    const raw = (data?.landDetails?.boundaries ?? {});
-
-                    // Normalize a key to one of: 'north' | 'south' | 'east' | 'west' | null
-                    const normalizeDir = (key) => {
-                        const s = String(key).toLowerCase().trim().replace(/[_-]+/g, ' ');
-                        if (/\bnorth\b/.test(s) || /^n$/.test(s)) return 'north';
-                        if (/\bsouth\b/.test(s) || /^s$/.test(s)) return 'south';
-                        if (/\beast\b/.test(s) || /^e$/.test(s)) return 'east';
-                        if (/\bwest\b/.test(s) || /^w$/.test(s)) return 'west';
-                        return null;
-                    };
-
-                    // Build a normalized map like { north: '...', south: '...', ... }
-                    const dirMap = Object.entries(raw).reduce((acc, [k, v]) => {
-                        const n = normalizeDir(k);
-                        if (n) acc[n] = v ?? ''; // last one wins if duplicates
-                        return acc;
-                    }, /** @type {Record<'north'|'south'|'east'|'west', any>} */({}));
-
-                    const directions = ['north', 'south', 'east', 'west'];
-
-                    // Use existing safeDisplay if available; otherwise a simple fallback
-                    const show = (val) =>
-                        typeof safeDisplay === 'function' ? safeDisplay(val) : (val ?? '');
-
-                    return directions.map((dir) => (
-                        <div className="detail-line" key={dir} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span className="detail-label" style={{ minWidth: 80 }}>{dir.toUpperCase()} :</span>
-                            <span
-                                style={{
-                                    flex: 1,
-                                    borderBottom: '1px dotted #333',
-                                    minWidth: 80,
-                                    display: 'inline-block',
-                                    padding: '0 8px',
-                                    fontWeight: 600,
-                                    textAlign: 'left'
-                                }}
-                            >
-                                {show(dirMap[dir] ?? '')}
-                            </span>
-                        </div>
-                    ));
-                })()}
-
+                <div className="grid-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span className="detail-label" style={{ minWidth: 80 }}>MOUZA:</span>
+                        <span
+                            style={{
+                                flex: 1,
+                                borderBottom: '1px dotted #333',
+                                minWidth: 80,
+                                display: 'inline-block',
+                                padding: '0 8px',
+                                fontWeight: 600,
+                                textAlign: 'left'
+                            }}
+                        >
+                            {safeDisplay(data.landDetails.boundaries)}
+                        </span>
+                    </div>
 
                 <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 20 }}>
                     <span className="detail-label" style={{ minWidth: 160 }}>HOLDING NO/STALL NO :</span>
@@ -679,7 +638,7 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
                             textAlign: 'left'
                         }}
                     >
-                        {safeDisplay(data.landDetails.area)} Acres/Sq. Ft.
+                        {safeDisplay(data.landDetails.area)} Sq. Ft.
                     </span>
                 </div>
                 <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -733,3 +692,5 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
         </div>
     );
 };
+
+
