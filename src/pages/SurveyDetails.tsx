@@ -307,10 +307,7 @@ const SurveyTable: React.FC = () => {
           jlNo: apiData.jl_no?.toString() || 'N/A',
           plotNo: apiData.plot_no?.toString() || 'N/A',
           boundaries: {
-            East: apiData.boundaries_of_plot || 'As per Survey Records',
-            West: 'As per Survey Records',
-            North: 'As per Survey Records',
-            South: 'As per Survey Records',
+            direction: apiData.boundaries_of_plot || 'As per Survey Records'
           },
           holdingNo: apiData.holdingno_or_stall_no?.toString() || 'N/A',
           area: apiData.area_of_holding_or_land?.toString() || 'N/A',
@@ -318,6 +315,8 @@ const SurveyTable: React.FC = () => {
           policeStation: apiData.police_station_name || 'N/A',
         }
       };
+
+      console.log("here is the mappedData", mappedData);
 
       // 3. Render component invisibly to get HTML
       const certificateContainer = document.createElement('div');

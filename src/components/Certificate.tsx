@@ -21,7 +21,9 @@ interface CertificateData {
         khatianNo: string;
         jlNo: string;
         plotNo: string;
-        boundaries: string;
+        boundaries: {
+            direction: string;
+        };
         holdingNo: string;
         area: string;
         inLocation: string;
@@ -48,7 +50,7 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
 
     return (
         <div id="certificate-to-print" className="certificate-container">
-           <style>
+            <style>
                 {`
                     @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Roboto:wght@400;700&display=swap');
 
@@ -593,21 +595,21 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
 
                 <p><strong>BOUNDARIES OF PLOT :</strong></p>
                 <div className="grid-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span className="detail-label" style={{ minWidth: 80 }}>MOUZA:</span>
-                        <span
-                            style={{
-                                flex: 1,
-                                borderBottom: '1px dotted #333',
-                                minWidth: 80,
-                                display: 'inline-block',
-                                padding: '0 8px',
-                                fontWeight: 600,
-                                textAlign: 'left'
-                            }}
-                        >
-                            {safeDisplay(data.landDetails.boundaries)}
-                        </span>
-                    </div>
+                    <span className="detail-label" style={{ minWidth: 80 }}>MOUZA:</span>
+                    <span
+                        style={{
+                            flex: 1,
+                            borderBottom: '1px dotted #333',
+                            minWidth: 80,
+                            display: 'inline-block',
+                            padding: '0 8px',
+                            fontWeight: 600,
+                            textAlign: 'left'
+                        }}
+                    >
+                        {safeDisplay(data.landDetails.boundaries.direction)}
+                    </span>
+                </div>
 
                 <div className="detail-line" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 20 }}>
                     <span className="detail-label" style={{ minWidth: 160 }}>HOLDING NO/STALL NO :</span>
