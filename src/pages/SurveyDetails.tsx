@@ -160,7 +160,7 @@ const SurveyTable: React.FC = () => {
 
   const [data, setData] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  
+
   const certificateRef = useRef<HTMLDivElement>(null);
 
 
@@ -334,11 +334,11 @@ const SurveyTable: React.FC = () => {
 
       // 4. Configure and Generate PDF
       const pdfOptions = {
-        margin:       [0, 0, 0, 0],
-        filename:     `License-${mappedData.licenseNo}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, letterRendering: true, logging: true },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        margin: [0, 0, 0, 0],
+        filename: `License-${mappedData.licenseNo}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true, logging: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
 
       const pdfDataUri = await html2pdf()
@@ -1378,38 +1378,21 @@ const SurveyTable: React.FC = () => {
                             className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                           >
                             <Download className="w-4 h-4 mr-2" />
-                            Generate 
+                            Generate
                           </button>
                         </td>
                       )}
 
                       {userType == 70 && haatStatusId == "3" && (
-                        <>
-                          {/* <td className="px-6 py-5">
-                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                              <IndianRupee className="w-4 h-4 mr-1" />
-                              {survey?.initial_amount}
-                            </div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                              <IndianRupee className="w-4 h-4 mr-1" />
-                              {survey?.final_amount}
-                            </div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                              <MessageSquare className="w-4 h-4 mr-1" />
-                              {survey?.remarks}
-                            </div>
-                          </td> */}
+                        <td className="px-6 py-5 text-center">
                           <button
-                          onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-4 py-2 mt-6 ml-2 sm:px-5 sm:py-2.5 sm:mt-7 sm:ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 w-full sm:w-auto text-sm sm:text-base"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                        </button>
-                        </>
+                            onClick={() => handleViewClick(survey.survey_id)}
+                            className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+
+                          </button>
+                        </td>
                       )}
 
                       {userType == 70 && haatStatusId == "4" && (
@@ -1459,21 +1442,27 @@ const SurveyTable: React.FC = () => {
                       )}
 
                       {userType == 1 && haatStatusId == "1" && (
-                        <button
-                          onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-6 ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                        </button>
+                        <td className="px-6 py-5 text-center">
+                          <button
+                            onClick={() => handleViewClick(survey.survey_id)}
+                            className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+
+                          </button>
+                        </td>
                       )}
 
                       {userType == 70 && haatStatusId == "1" && (
-                        <button
-                          onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-5 ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                        </button>
+                        <td className="px-6 py-5 text-center">
+                          <button
+                            onClick={() => handleViewClick(survey.survey_id)}
+                            className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+
+                          </button>
+                        </td>
                       )}
 
                       {userType == 1 && haatStatusId == "7" && (
@@ -1635,12 +1624,15 @@ const SurveyTable: React.FC = () => {
                         </>
                       )}
                       {userType == 50 && haatStatusId == "1" && (
-                        <button
-                          onClick={() => handleViewClick(survey.survey_id)}
-                          className="group inline-flex items-center px-5 py-2.5 mt-10 ml-4 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                        </button>
+                        <td className="px-6 py-5 text-center">
+                          <button
+                            onClick={() => handleViewClick(survey.survey_id)}
+                            className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+
+                          </button>
+                        </td>
                       )}
 
                       {haatStatusId == "4" && userType == 1 && (
@@ -1692,13 +1684,11 @@ const SurveyTable: React.FC = () => {
                             </button>
                             {showViewButton && (
                               <button
-                                onClick={() =>
-                                  handleViewClick(survey.survey_id)
-                                }
-                                className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                                onClick={() => handleViewClick(survey.survey_id)}
+                                className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
                               >
-                                <Eye className="w-4 h-4 mr-2" />
-                                
+                                <Eye className="mr-2 h-4 w-4" />
+
                               </button>
                             )}
                           </div>
@@ -1707,13 +1697,13 @@ const SurveyTable: React.FC = () => {
 
                       {/* Show view button for userType 50 and haatStatusId == 2, if not already shown in showApprovedButton */}
                       {!showApprovedButton && showViewButton && (
-                        <td className="px-6 py-5">
+                        <td className="px-6 py-5 text-center">
                           <button
                             onClick={() => handleViewClick(survey.survey_id)}
-                            className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                            className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
                           >
-                            <Eye className="w-4 h-4 mr-2" />
-                            
+                            <Eye className="mr-2 h-4 w-4" />
+                            View
                           </button>
                         </td>
                       )}
@@ -2469,13 +2459,13 @@ const SurveyTable: React.FC = () => {
                       color: "red",
                       data: [
                         { label: "Hearing Date", value: selectedDetails?.hearing_date, isDate: true },
-                      { label: "Hearing Remarks", value: selectedDetails?.hearing_remarks },
-                      { label: "Hearing Approved By", value: selectedDetails?.hearing_approved_by},
-                      { label: "Approval Remarks", value: selectedDetails?.approval_remarks },
-                      { label: "Approval Date", value: selectedDetails?.approval_date, isDate: true },
-                      { label: "Survey Approved By", value: selectedDetails?.survey_approved_by },
-                    ]
-                  },
+                        { label: "Hearing Remarks", value: selectedDetails?.hearing_remarks },
+                        { label: "Hearing Approved By", value: selectedDetails?.hearing_approved_by },
+                        { label: "Approval Remarks", value: selectedDetails?.approval_remarks },
+                        { label: "Approval Date", value: selectedDetails?.approval_date, isDate: true },
+                        { label: "Survey Approved By", value: selectedDetails?.survey_approved_by },
+                      ]
+                    },
                   ].map((section, idx) => (
                     <div
                       key={idx}
