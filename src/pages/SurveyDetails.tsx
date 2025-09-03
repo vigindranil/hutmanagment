@@ -1377,7 +1377,7 @@ const SurveyTable: React.FC = () => {
                             className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                           >
                             <Download className="w-4 h-4 mr-2" />
-                            Generate
+                            Certificate
                           </button>
                         </td>
                       )}
@@ -1722,7 +1722,7 @@ const SurveyTable: React.FC = () => {
                       }
                       className="text-center py-16"
                     >
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center justify-center h-full w-full">
                         <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mb-6">
                           <Building className="w-10 h-10 text-slate-400" />
                         </div>
@@ -2457,12 +2457,19 @@ const SurveyTable: React.FC = () => {
                       icon: "📅",
                       color: "red",
                       data: [
-                        { label: "Hearing Date", value: selectedDetails?.hearing_date, isDate: true },
+                        { label: "Hearing Approved Date", value: selectedDetails?.hearing_date, isDate: true },
                         { label: "Hearing Remarks", value: selectedDetails?.hearing_remarks },
                         { label: "Hearing Approved By", value: selectedDetails?.hearing_approved_by },
-                        { label: "Approval Remarks", value: selectedDetails?.approval_remarks },
-                        { label: "Approval Date", value: selectedDetails?.approval_date, isDate: true },
-                        { label: "Survey Approved By", value: selectedDetails?.survey_approved_by },
+                      ]
+                    },
+                    {
+                      title: "Approval Officer Remark",
+                      icon: "👤",
+                      color: "green",
+                      data: [
+                        { label: "Final Approval Date", value: selectedDetails?.approval_date, isDate: true },
+                        { label: "Final Approval Remarks", value: selectedDetails?.approval_remarks },
+                        { label: "Lisence Approved By", value: selectedDetails?.survey_approved_by },
                       ]
                     },
                   ].map((section, idx) => (

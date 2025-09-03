@@ -595,7 +595,7 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
 
                 <p><strong>BOUNDARIES OF PLOT :</strong></p>
                 <div className="grid-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span className="detail-label" style={{ minWidth: 80 }}>MOUZA:</span>
+                    <span className="detail-label" style={{ minWidth: 80 }}>Boundary:</span>
                     <span
                         style={{
                             flex: 1,
