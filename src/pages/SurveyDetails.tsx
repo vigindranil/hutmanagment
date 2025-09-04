@@ -114,6 +114,8 @@ interface FullApplicationDetails {
   approval_remarks?: string;
   approval_date?: string;
   survey_approved_by?: string;
+  initial_payment_amount?: string;
+  final_payment_amount?: string;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -424,7 +426,6 @@ const SurveyTable: React.FC = () => {
     setLoading(false);
   };
 
-  // console.log ("payment",paymentSuccess);
 
   const getSurveyDetailsByShopOwnerID = async (haatStatusId: any) => {
     const userDetails = decodeJwtToken();
@@ -434,10 +435,6 @@ const SurveyTable: React.FC = () => {
       to_date: null,
       haatDashoardStatus: haatStatusId,
     };
-    // const response = await commonApi(
-    //   `user/getSurveyDetailsByShopOwnerID?UserDashboardStatus=${haatStatusId}&ShopOwnerID=${userDetails?.UserID}`,
-    //   payload
-    // );
     const response = await commonApi(
       `user/getSurveyDetailsByShopOwnerID?UserDashboardStatus=${haatStatusId}&ShopOwnerID=${userDetails?.UserID}`
     );
@@ -477,6 +474,16 @@ const SurveyTable: React.FC = () => {
 
     const response = await commonApi(
       `user/getSurveyDetailsByApprovalOfficerID?ApprovedDashboardStatus=${haatStatusId}&ApprovalOfficerID=${userDetails?.UserID}`
+    );
+    setData(response?.data || []);
+    setCurrentPage(1);
+  };
+
+  const getHaatManagerDashboardDtlsByHaatManagerID = async (haatStatusId: any) => {
+    const userDetails = decodeJwtToken();
+
+    const response = await commonApi(
+      `user/getHaatManagerDashboardDtlsByHaatManagerID?HaatManagerStatus=${haatStatusId}&HaatManagerID=${userDetails?.UserID}`
     );
     setData(response?.data || []);
     setCurrentPage(1);
@@ -645,6 +652,12 @@ const SurveyTable: React.FC = () => {
       userDetails?.UserTypeID == 70
     ) {
       getSurveyDetailsByApprovalOfficerID(haatStatusId);
+    } else if (
+      haatStatusId &&
+      dashboardType == "ADMIN" &&
+      userDetails?.UserTypeID == 10
+    ) {
+      getHaatManagerDashboardDtlsByHaatManagerID(haatStatusId);
     }
   }, [haatStatusId, paymentSuccess]);
 
@@ -915,6 +928,16 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
+                  {userType == 10 && (
+                    <th className="px-6 py-5 text-left">
+                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                          <IndianRupee className="w-4 h-4 text-green-400" />
+                        </div>
+                        Amount
+                      </div>
+                    </th>
+                  )}
 
                   {haatStatusId == "9" && userType == 1 && (
                     <>
@@ -1161,7 +1184,7 @@ const SurveyTable: React.FC = () => {
                     </>
                   )}
 
-                  {haatStatusId == "5" && (
+                  {/* {haatStatusId == "5" && (
                     <>
                       <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
@@ -1172,7 +1195,7 @@ const SurveyTable: React.FC = () => {
                         </div>
                       </th>
                     </>
-                  )}
+                  )} */}
                   {userType == 50 && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -1237,6 +1260,13 @@ const SurveyTable: React.FC = () => {
                         </div>
                       </th>
                     </>
+                  )}
+                  {userType == 10 && (
+                    <th className="px-6 py-5 text-left">
+                      <div className="text-sm font-bold uppercase tracking-wider text-center">
+                        Action
+                      </div>
+                    </th>
                   )}
 
                   {showApprovedButton && !(userType === 70) && (
@@ -1331,7 +1361,7 @@ const SurveyTable: React.FC = () => {
                         </div>
                       </td>
 
-                      {userType == 50 ? (
+                      {(userType == 50 || userType == 10) ? (
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-xl flex items-center justify-center">
@@ -1366,9 +1396,53 @@ const SurveyTable: React.FC = () => {
                             {(userType === 70 && haatStatusId === "2") ? survey?.final_amount : survey?.mobile_number}
                           </span>
                         </div>
-
-
                       </td>
+                      {(userType == 10 && haatStatusId == "1" || haatStatusId == "4") && (
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
+                              <IndianRupee className="w-5 h-5 text-green-600" />
+                            </div>
+                            <span className="text-slate-900 font-semibold">
+                              {survey?.amount}
+                            </span>
+                          </div>
+                        </td>
+                      )}
+                      {(userType == 10 && haatStatusId == "2") && (
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
+                              <IndianRupee className="w-5 h-5 text-green-600" />
+                            </div>
+                            <span className="text-slate-900 font-semibold">
+                              {survey?.initial_payment_amount}
+                            </span>
+                          </div>
+                        </td>
+                      )}
+                      {(userType == 10 && haatStatusId == "3") && (
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
+                              <IndianRupee className="w-5 h-5 text-green-600" />
+                            </div>
+                            <span className="text-slate-900 font-semibold">
+                              {survey?.final_payment_amount}
+                            </span>
+                          </div>
+                        </td>
+                      )}
+                      {userType == 10 && (
+                        <td className="px-6 py-5 text-center">
+                          <button
+                            onClick={() => handleViewClick(survey.survey_id)}
+                            className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                          </button>
+                        </td>
+                      )}
 
                       {haatStatusId == "9" && userType == 1 && (
                         <td className="px-6 py-5 text-center">
@@ -1389,7 +1463,6 @@ const SurveyTable: React.FC = () => {
                             className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
                           >
                             <Eye className="mr-2 h-4 w-4" />
-
                           </button>
                         </td>
                       )}

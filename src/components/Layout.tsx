@@ -97,6 +97,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
   const navigation = [
     { name: 'Dashboard', user_type_id: 100, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Shop Owner Dashboard', user_type_id: 1, href: '/user-dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+    { name: 'Haat Manager Dashboard', user_type_id: 10, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Checker Dashboard', user_type_id: 50, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Hearing Officer Dasboard', user_type_id: 60, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Approval Officer Dasboard', user_type_id: 70, href: '/dashboard', icon: FileText, color: 'from-purple-500 to-indigo-600' },

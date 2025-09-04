@@ -199,6 +199,54 @@ const Dashboard: React.FC = () => {
     ]);
   };
 
+  //Haat Manager Dashboard
+  const getDashboardDtlsCountByHaatManagerID = async () => {
+    const userDetails = decodeJwtToken();
+    const result = await commonApi(`user/getDashboardDetailsCountByHaatManagerID?HaatManagerID=${userDetails?.UserID}`);
+
+    setStats([
+      {
+        title: 'Total Survey',
+        value: result?.data?.total_survey ? result?.data?.total_survey?.toString() : "0",
+        changeType: 'positive' as const,
+        icon: Users,
+        color: 'blue' as const,
+        HaatDashoardStatus: 1
+      },
+      {
+        title: 'Completed Initial Payment',
+        value: result?.data?.completed_initial_payment? result?.data?.completed_initial_payment?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: CheckCheck,
+        color: 'green' as const,
+        HaatDashoardStatus: 2
+      },
+      {
+        title: 'Completed Final Payment',
+        value: result?.data?.completed_final_payment ? result?.data?.completed_final_payment?.toString() : "0",
+        changeType: 'negative' as const,
+        icon: CheckCheck,
+        color: 'green' as const,
+        HaatDashoardStatus: 3
+      },
+      {
+        title: 'Licensed Survey',
+        value: result?.data?.licensed_survey? result?.data?.licensed_survey?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: FaIdCard,
+        color: 'green' as const,
+        HaatDashoardStatus: 4
+      },
+      {
+        title: 'Rejected Survey',
+        value: result?.data?.rejected_survey ? result?.data?.rejected_survey?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: AlertTriangle,
+        color: 'red' as const,
+        HaatDashoardStatus: 5
+      }
+    ]);
+  };
 
 
   useEffect(() => {
@@ -215,7 +263,11 @@ const Dashboard: React.FC = () => {
     else if (user_details?.UserTypeID === 70) {
       getApproveOfficerDashboard();
     }
+    else if (user_details?.UserTypeID === 10){
+      getDashboardDtlsCountByHaatManagerID();
+    }
   }, []);
+
 
   return (
     <div className="space-y-8">
