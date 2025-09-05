@@ -3,11 +3,11 @@
 @tailwind components;
 @tailwind utilities;
 
-
 body {
   font-family: 'Inter', sans-serif;
   line-height: 1.6;
 }
+
 
 /* Print styles for official document formatting */
 @media print {
@@ -63,7 +63,6 @@ input:focus {
 .form-input:focus {
   transform: translateY(-1px);
 }
-
 
 .dropdown-container {
   position: relative;

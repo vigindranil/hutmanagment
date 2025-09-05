@@ -31,6 +31,7 @@ import bgimg from "../../src/assets/table background.jpg";
 import { CertificateTemplate } from "../components/Certificate"; // Corrected import path
 import html2pdf from "html2pdf.js";
 
+
 interface SurveyData {
   survey_id: number;
   survey_date: string;
@@ -2631,30 +2632,29 @@ const SurveyTable: React.FC = () => {
             </Dialog.Panel>
           </div>
         </Dialog>
-
-
+        
         <Dialog
           open={showPdfPreviewModal}
           onClose={() => {
             setShowPdfPreviewModal(false);
-            setPdfUrl(null); // Clean up URL to free memory
+            setPdfUrl(null);
           }}
           className="relative z-[9999]"
         >
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
-          <div className="fixed inset-0 flex items-center justify-center p-4">
-            <Dialog.Panel className="mx-auto flex flex-col w-full max-w-4xl h-[90vh] rounded-2xl bg-gray-100 shadow-2xl">
+          <div className="fixed inset-0 flex items-center justify-center p-0 sm:p-4">
+            <Dialog.Panel className="mx-auto flex flex-col w-full max-w-full sm:max-w-4xl h-screen sm:h-[90vh] rounded-none sm:rounded-2xl bg-gray-100 shadow-2xl max-h-screen sm:max-h-[90vh]">
               {/* Modal Header */}
-              <div className="flex-shrink-0 flex items-center justify-between p-4 border-b bg-white/80 backdrop-blur-sm rounded-t-2xl">
-                <Dialog.Title className="text-xl font-bold text-gray-800">
+              <div className="flex-shrink-0 flex items-center justify-between p-2 sm:p-4 border-b bg-white/80 backdrop-blur-sm rounded-none sm:rounded-t-2xl">
+                <Dialog.Title className="text-base sm:text-xl font-bold text-gray-800">
                   Certificate Preview
                 </Dialog.Title>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                   {pdfUrl && (
                     <a
                       href={pdfUrl}
                       download={pdfFilename}
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-md transition-all duration-200"
+                      className="inline-flex items-center px-2 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-md transition-all duration-200 text-xs sm:text-base"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Download
@@ -2671,16 +2671,21 @@ const SurveyTable: React.FC = () => {
               </div>
 
               {/* PDF Viewer Area */}
-              <div className="flex-grow p-2 bg-gray-200">
+              <div className="flex-grow p-0 sm:p-2 bg-gray-200 overflow-auto">
                 {pdfUrl ? (
                   <iframe
                     src={pdfUrl}
                     title="Certificate Preview"
-                    className="w-full h-full border-2 border-gray-300 rounded-lg"
+                    className="w-full h-[calc(100vh-56px)] sm:h-full border-0 sm:border-2 border-gray-300 rounded-none sm:rounded-lg"
+                    style={{
+                      minHeight: '60vh',
+                      height: 'calc(100vh - 56px)',
+                      maxHeight: '100vh',
+                    }}
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <div className="text-lg font-semibold text-gray-600">
+                    <div className="text-base sm:text-lg font-semibold text-gray-600">
                       Loading PDF preview...
                     </div>
                   </div>

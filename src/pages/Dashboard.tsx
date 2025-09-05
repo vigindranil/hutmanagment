@@ -230,7 +230,7 @@ const Dashboard: React.FC = () => {
         HaatDashoardStatus: 3
       },
       {
-        title: 'Licensed Survey',
+        title: 'Issued Lisence',
         value: result?.data?.licensed_survey? result?.data?.licensed_survey?.toString() : "0",
         changeType: 'neutral' as const,
         icon: FaIdCard,
