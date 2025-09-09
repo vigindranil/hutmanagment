@@ -8,7 +8,8 @@ import {
   Sparkles,
   Home,
   CheckCheck,
-  CalendarClock
+  CalendarClock,
+  Edit
 } from 'lucide-react';
 import { FaIdCard } from "react-icons/fa";
 import StatsCard from '../components/StatsCard';
@@ -24,9 +25,9 @@ const Dashboard: React.FC = () => {
     const userDetails = decodeJwtToken();
 
 
-    //Admin Dashboard
-    const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
-    setStats([
+  //Admin Dashboard
+  const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
+  setStats([
       {
         title: 'Total Vendors',
         value: result?.data?.total_survey ? result?.data?.total_survey?.toString() : "0",
@@ -81,7 +82,7 @@ const Dashboard: React.FC = () => {
         color: 'purple' as const,
         HaatDashoardStatus: 6
       }
-    ])
+  ])
   }
 
   //Checker Dashboard
@@ -157,7 +158,6 @@ const Dashboard: React.FC = () => {
     ]);
   };
 
-
   // approve officer Dashboard
   const getApproveOfficerDashboard = async () => {
     const userDetails = decodeJwtToken();
@@ -203,7 +203,6 @@ const Dashboard: React.FC = () => {
   const getDashboardDtlsCountByHaatManagerID = async () => {
     const userDetails = decodeJwtToken();
     const result = await commonApi(`user/getDashboardDetailsCountByHaatManagerID?HaatManagerID=${userDetails?.UserID}`);
-
     setStats([
       {
         title: 'Total Survey',
@@ -214,19 +213,19 @@ const Dashboard: React.FC = () => {
         HaatDashoardStatus: 1
       },
       {
-        title: 'Completed Initial Payment',
+        title: 'Initial Payment Pending',
         value: result?.data?.completed_initial_payment? result?.data?.completed_initial_payment?.toString() : "0",
         changeType: 'neutral' as const,
-        icon: CheckCheck,
-        color: 'green' as const,
+        icon: CalendarClock,
+        color: 'orange' as const,
         HaatDashoardStatus: 2
       },
       {
-        title: 'Completed Final Payment',
+        title: 'Final Payment Pending',
         value: result?.data?.completed_final_payment ? result?.data?.completed_final_payment?.toString() : "0",
         changeType: 'negative' as const,
-        icon: CheckCheck,
-        color: 'green' as const,
+        icon: CalendarClock,
+        color: 'orange' as const,
         HaatDashoardStatus: 3
       },
       {
@@ -244,6 +243,22 @@ const Dashboard: React.FC = () => {
         icon: AlertTriangle,
         color: 'red' as const,
         HaatDashoardStatus: 5
+      },
+      {
+        title: 'Renewal License Pending',
+        value: result?.data?.license_renewal_pending ? result?.data?.license_renewal_pending?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: AlertTriangle,
+        color: 'orange' as const,
+        HaatDashoardStatus: 6
+      },
+      {
+        title: 'Change Request',
+        value: result?.data?.changing_request ? result?.data?.changing_request?.toString() : "0",
+        changeType: 'neutral' as const,
+        icon: Edit,
+        color: 'red' as const,
+        HaatDashoardStatus: 7
       }
     ]);
   };

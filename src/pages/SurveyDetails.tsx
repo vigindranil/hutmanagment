@@ -960,59 +960,11 @@ const SurveyTable: React.FC = () => {
                           Final Payment Date
                         </div>
                       </th>
-                      {/* <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                            <IndianRupee className="w-4 h-4 text-indigo-400" />
-                          </div>
-                          Initial Amount
-                        </div>
-                      </th>
-                      <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                            <IndianRupee className="w-4 h-4 text-indigo-400" />
-                          </div>
-                          Final Amount
-                        </div>
-                      </th>
-                      <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                            <MessageSquareX className="w-4 h-4 text-cyan-400" />
-                          </div>
-                          Remarks
-                        </div>
-                      </th> */}
                     </>
                   )}
 
                   {userType == 70 && haatStatusId == "3" && (
                     <>
-                      {/* <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                            <IndianRupee className="w-4 h-4 text-indigo-400" />
-                          </div>
-                          Initial Amount
-                        </div>
-                      </th>
-                      <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                            <IndianRupee className="w-4 h-4 text-indigo-400" />
-                          </div>
-                          Final Amount
-                        </div>
-                      </th>
-                      <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                          <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                            <MessageSquareX className="w-4 h-4 text-cyan-400" />
-                          </div>
-                          Remarks
-                        </div>
-                      </th> */}
                       <th className="px-6 py-5 text-left">
                         <div className="text-sm font-bold uppercase tracking-wider text-center">
                           Action
@@ -1184,19 +1136,6 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
-
-                  {/* {haatStatusId == "5" && (
-                    <>
-                      <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                          <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                            <IndianRupee className="w-4 h-4 text-emerald-400" />
-                          </div>
-                          Amount
-                        </div>
-                      </th>
-                    </>
-                  )} */}
                   {userType == 50 && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -1440,7 +1379,7 @@ const SurveyTable: React.FC = () => {
                             onClick={() => handleViewClick(survey.survey_id)}
                             className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
                           >
-                            <Eye className="mr-2 h-4 w-4" />
+                            <Eye className="mr-2 h-4 w-4"/>
                           </button>
                         </td>
                       )}
@@ -1520,7 +1459,7 @@ const SurveyTable: React.FC = () => {
                             onClick={() => handleViewClick(survey.survey_id)}
                             className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
                           >
-                            <Eye className="mr-2 h-4 w-4" />
+                            <Eye className="h-4 w-4" />
 
                           </button>
                         </td>
@@ -2361,6 +2300,18 @@ const SurveyTable: React.FC = () => {
                           label: "PAN Image",
                           value: selectedDetails?.pan_image,
                           isImage: true,
+                        },
+                        {
+                          label: "Land Valuation",
+                          value: `₹ ${selectedDetails?.land_valuation_amount}`,
+                        },
+                        {
+                          label: "Initial Payment Amount",
+                          value: `₹ ${selectedDetails?.initial_amount}`,
+                        },
+                        {
+                          label: "Final Payment Amount",
+                          value: `₹ ${selectedDetails?.final_amount}`,
                         },
                       ],
                     },
