@@ -936,7 +936,7 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-                  {userType == 10 && (
+                  {(userType == 10 && (haatStatusId =="2"|| haatStatusId == "3")) && (
                     <th className="px-6 py-5 text-left">
                       <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                         <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
@@ -1350,15 +1350,6 @@ const SurveyTable: React.FC = () => {
                             </button>
                           </td>
                         </>
-                      )}
-                      {(userType == 10 && haatStatusId == "1") && (
-                        <td className="px-6 py-5">
-                          <div className="flex items-center gap-3">
-                            <span className="text-slate-900 font-semibold">
-                              {survey?.amount}
-                            </span>
-                          </div>
-                        </td>
                       )}
                       {(userType == 10 && haatStatusId == "2") && (
                         <td className="px-6 py-5">
