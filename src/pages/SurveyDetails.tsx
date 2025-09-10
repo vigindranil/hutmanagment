@@ -117,6 +117,13 @@ interface FullApplicationDetails {
   survey_approved_by?: string;
   initial_payment_amount?: string;
   final_payment_amount?: string;
+  land_valuation_amount?: string;
+  initial_amount?: string;
+  final_amount?: string;
+  initial_payment_status?: number;
+  final_payment_status?: number;
+  hearing_approved_date?:string;
+
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -1030,18 +1037,6 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
-
-                  {userType == 60 && haatStatusId == "1" && (
-                    <th className="px-6 py-5 text-left">
-                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                          <IndianRupee className="w-4 h-4 text-emerald-400" />
-                        </div>
-                        Amount
-                      </div>
-                    </th>
-                  )}
-
                   {userType == 60 && haatStatusId == "2" && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -1080,11 +1075,8 @@ const SurveyTable: React.FC = () => {
                         </div>
                       </th>
                       <th className="px-6 py-5 text-left">
-                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                          <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                            <IndianRupee className="w-4 h-4 text-emerald-400" />
-                          </div>
-                          Initial Amount
+                        <div className="text-sm font-bold uppercase tracking-wider  text-center">
+                          Actions
                         </div>
                       </th>
                     </>
@@ -1184,7 +1176,7 @@ const SurveyTable: React.FC = () => {
                           Initial Payment Amount
                         </div>
                       </th>
-                      <th className="px-6 py-5 text-left">
+                      <th className="px-6 py-5 text-left ">
                         <div className="text-sm font-bold uppercase tracking-wider  text-center">
                           Actions
                         </div>
@@ -1337,12 +1329,31 @@ const SurveyTable: React.FC = () => {
                           </span>
                         </div>
                       </td>
-                      {(userType == 10 && haatStatusId == "1" || haatStatusId == "4") && (
+                      {haatStatusId == "4" && userType == 1 && (
+                        <>
+                          <td className="px-6 py-5">
+                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              <IndianRupee className="w-4 h-4 mr-1" />
+                              {survey?.initial_amount}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <button
+                              onClick={() => {
+                                setShowPaymentModal(true);
+                                setSelectedSurvey(survey);
+                              }}
+                              className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                            >
+                              <CreditCard className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200" />
+                              Confirm & Pay
+                            </button>
+                          </td>
+                        </>
+                      )}
+                      {(userType == 10 && haatStatusId == "1") && (
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
-                              <IndianRupee className="w-5 h-5 text-green-600" />
-                            </div>
                             <span className="text-slate-900 font-semibold">
                               {survey?.amount}
                             </span>
@@ -1504,16 +1515,6 @@ const SurveyTable: React.FC = () => {
                           </td>
                         </>
                       )}
-
-                      {userType == 60 && haatStatusId == "1" && (
-                        <td className="px-6 py-5">
-                          <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                            <IndianRupee className="w-4 h-4 mr-1" />
-                            {survey?.initial_amount}
-                          </div>
-                        </td>
-                      )}
-
                       {userType == 60 && haatStatusId == "2" && (
                         <>
                           <td className="px-6 py-5">
@@ -1549,12 +1550,15 @@ const SurveyTable: React.FC = () => {
                               </span>
                             </div>
                           </td>
-                          <td className="px-6 py-5">
-                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                              <IndianRupee className="w-4 h-4 mr-1" />
-                              {survey?.initial_amount}
-                            </div>
-                          </td>
+                          <td className="px-6 py-5 text-center">
+                          <button
+                            onClick={() => handleViewClick(survey.survey_id)}
+                            className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                          >
+                            <Eye className="h-4 w-4" />
+
+                          </button>
+                        </td>
                         </>
                       )}
 
@@ -1642,34 +1646,9 @@ const SurveyTable: React.FC = () => {
                             className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
                           >
                             <Eye className="mr-2 h-4 w-4" />
-
                           </button>
                         </td>
                       )}
-
-                      {haatStatusId == "4" && userType == 1 && (
-                        <>
-                          <td className="px-6 py-5">
-                            <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                              <IndianRupee className="w-4 h-4 mr-1" />
-                              {survey?.initial_amount}
-                            </div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <button
-                              onClick={() => {
-                                setShowPaymentModal(true);
-                                setSelectedSurvey(survey);
-                              }}
-                              className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                            >
-                              <CreditCard className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200" />
-                              Confirm & Pay
-                            </button>
-                          </td>
-                        </>
-                      )}
-
                       {showApprovedButton && (
                         <td className="px-6 py-5">
                           <div className="flex gap-3">
@@ -2307,11 +2286,43 @@ const SurveyTable: React.FC = () => {
                         },
                         {
                           label: "Initial Payment Amount",
-                          value: `₹ ${selectedDetails?.initial_amount}`,
+                          value: selectedDetails?.initial_amount != null ? (
+                            <span>
+                              ₹ {selectedDetails.initial_amount}
+                              {selectedDetails.initial_payment_status == 1 && (
+                                <span className="ml-2 px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-semibold">
+                                  Completed
+                                </span>
+                              )}
+                              {selectedDetails.initial_payment_status == 0 && (
+                                <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold">
+                                  Pending
+                                </span>
+                              )}
+                            </span>
+                          ) : (
+                            <span className="font-bold text-red-600">Pending</span>
+                          ),
                         },
                         {
                           label: "Final Payment Amount",
-                          value: `₹ ${selectedDetails?.final_amount}`,
+                          value: selectedDetails?.final_amount != null ? (
+                            <span>
+                              ₹ {selectedDetails.final_amount}
+                              {selectedDetails.final_payment_status == 1 && (
+                                <span className="ml-2 px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-semibold">
+                                  Completed
+                                </span>
+                              )}
+                              {selectedDetails.final_payment_status == 0 && (
+                                <span className="ml-2 px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold">
+                                  Pending
+                                </span>
+                              )}
+                            </span>
+                          ) : (
+                            <span className="font-bold text-red-600">Pending</span>
+                          ),
                         },
                       ],
                     },
@@ -2480,9 +2491,10 @@ const SurveyTable: React.FC = () => {
                     {
                       title: "Hearing Details",
                       icon: "📅",
-                      color: "red",
+                      color: "orange",
                       data: [
-                        { label: "Hearing Approved Date", value: selectedDetails?.hearing_date, isDate: true },
+                        { label: "Hearing Date", value: selectedDetails?.hearing_date, isDate: true },
+                        { label: "Hearing Approved Date", value: selectedDetails?.hearing_approved_date, isDate: true },
                         { label: "Hearing Remarks", value: selectedDetails?.hearing_remarks },
                         { label: "Hearing Approved By", value: selectedDetails?.hearing_approved_by },
                       ]
