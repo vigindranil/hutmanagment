@@ -2343,7 +2343,12 @@ const SurveyTable: React.FC = () => {
                         },
                         {
                           label: "Document Type",
-                          value: selectedDetails?.document_type,
+                          value:
+                            selectedDetails?.document_type == "1"
+                              ? "Aadhar"
+                              : selectedDetails?.document_type == "2"
+                              ? "Voter"
+                              : selectedDetails?.document_type || "",
                         },
                         {
                           label: "Document Image",
