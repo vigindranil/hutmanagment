@@ -64,7 +64,7 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/payments" element={
-          <ProtectedRoute>
+          <ProtectedRoute>  
             <Layout>
               <Payments />
             </Layout>

@@ -2259,7 +2259,7 @@ const SurveyTable: React.FC = () => {
                           value: selectedDetails?.guardian_name,
                         },
                         { label: "Address", value: selectedDetails?.address },
-                        { label: "Mobile", value: selectedDetails?.mobile },
+                        { label: "Mobile", value: selectedDetails?.mobile },  
                         {
                           label: "Citizenship",
                           value: selectedDetails?.citizenship,

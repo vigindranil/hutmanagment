@@ -65,7 +65,7 @@ export const CertificateTemplate: React.FC<CertificateTemplateProps> = ({ data }
                         line-height: 1.5;
                         box-sizing: border-box;
                     }
-
+  
                     .certificate-container * {
                         box-sizing: border-box;
                     }
