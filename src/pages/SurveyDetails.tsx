@@ -45,6 +45,7 @@ interface SurveyData {
   initial_amount: number;
   final_amount: number;
   land_valuation: number;
+  application_status?: number;
 }
 
 interface viewSurveyData {
@@ -123,7 +124,6 @@ interface FullApplicationDetails {
   initial_payment_status?: number;
   final_payment_status?: number;
   hearing_approved_date?:string;
-
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -1010,11 +1010,21 @@ const SurveyTable: React.FC = () => {
                   )}
 
                   {userType == 1 && haatStatusId == "1" && (
-                    <th className="px-6 py-5 text-left">
-                      <div className="text-sm font-bold uppercase tracking-wider text-center">
-                        Actions
-                      </div>
-                    </th>
+                    <>
+                      <th className="px-6 py-5 text-left">
+                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                          <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                            <User className="w-4 h-4 text-blue-400" />
+                          </div>
+                          Application Status
+                        </div>
+                      </th>
+                      <th className="px-6 py-5 text-left">
+                        <div className="text-sm font-bold uppercase tracking-wider text-center">
+                          Actions
+                        </div>
+                      </th>
+                    </>
                   )}
 
                   {userType == 1 && haatStatusId == "7" && (
@@ -1265,10 +1275,21 @@ const SurveyTable: React.FC = () => {
                       ) : (userType === 1 && haatStatusId == "6") ? (
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <span className="text-slate-900 font-semibold">
-                              {survey?.hearing_date}
-                            </span>
+                            {survey?.hearing_date ? (
+                              <>
+                                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                <span className="text-slate-900 font-semibold">
+                                  {survey.hearing_date}
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                                <span className="bg-red-100 text-red-800 border border-red-200 rounded-lg px-3 py-1">
+                                  Pending
+                                </span>
+                              </>
+                            )}
                           </div>
                         </td>
                       ) : (
@@ -1456,15 +1477,36 @@ const SurveyTable: React.FC = () => {
                       )}
 
                       {userType == 1 && haatStatusId == "1" && (
-                        <td className="px-6 py-5 text-center">
-                          <button
-                            onClick={() => handleViewClick(survey.survey_id)}
-                            className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
-                          >
-                            <Eye className="h-4 w-4" />
-
-                          </button>
-                        </td>
+                        <>
+                          <td className="px-6 py-5">
+                            <div className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold border ${
+                              survey?.application_status == 1 || survey?.application_status == 2 || survey?.application_status == 3
+                                ? 'bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border-red-200'
+                                : 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200'
+                            }`}>
+                              <div className={`w-3 h-3 rounded-full mr-2 ${
+                                survey?.application_status == 1 || survey?.application_status == 2 || survey?.application_status == 3
+                                  ? 'bg-red-500'
+                                  : 'bg-green-500'
+                              }`} />
+                              {survey?.application_status == 1 && 'Initial Payment Pending'}
+                              {survey?.application_status == 2 && 'Change Request'}
+                              {survey?.application_status == 3 && 'Hearing Pending'}
+                              {survey?.application_status == 4 && 'Hearing Scheduled'}
+                              {survey?.application_status == 5 && 'Hearing Approved'}
+                              {survey?.application_status == 6 && 'Final Payment Done'}
+                              {survey?.application_status == 7 && 'License Issued'}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 text-center">
+                            <button
+                              onClick={() => handleViewClick(survey.survey_id)}
+                              className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                          </td>
+                        </>
                       )}
 
                       {userType == 70 && haatStatusId == "1" && (
