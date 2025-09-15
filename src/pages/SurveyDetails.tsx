@@ -377,8 +377,6 @@ const SurveyTable: React.FC = () => {
     }
   };
 
-
-
   const getHaatApplicantionDetailsForAdmin = async (haatStatusId: any) => {
     const userDetails = decodeJwtToken();
     const payload = {
@@ -433,7 +431,6 @@ const SurveyTable: React.FC = () => {
     }
     setLoading(false);
   };
-
 
   const getSurveyDetailsByShopOwnerID = async (haatStatusId: any) => {
     const userDetails = decodeJwtToken();
@@ -889,18 +886,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-
-                  {/* {(userType == 60 && haatStatusId == "1") && (
-                    <th className="px-6 py-5 text-left">
-                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
-                        <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                          <Calendar className="w-4 h-4 text-purple-400" />
-                        </div>
-                        Hearing Date
-                      </div>
-                    </th>
-                  )} */}
-
                   <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                       <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
@@ -909,7 +894,6 @@ const SurveyTable: React.FC = () => {
                       Haat Name
                     </div>
                   </th>
-
                   <th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                       <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center">
@@ -918,7 +902,6 @@ const SurveyTable: React.FC = () => {
                       Shop Owner Name
                     </div>
                   </th>
-
                   {(userType === 70 && haatStatusId === "2") ? (<th className="px-6 py-5 text-left">
                     <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                       <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center">
@@ -946,7 +929,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-
                   {haatStatusId == "9" && userType == 1 && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -956,7 +938,6 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
-
                   {userType == 70 && haatStatusId == "4" && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -969,7 +950,6 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
-
                   {userType == 70 && haatStatusId == "3" && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -979,7 +959,6 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
-
                   {userType == 1 && haatStatusId == "10" && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -1000,7 +979,6 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
-
                   {userType == 70 && haatStatusId == "1" && (
                     <th className="px-6 py-5 text-left">
                       <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
@@ -1008,7 +986,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-
                   {userType == 1 && haatStatusId == "1" && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -1026,7 +1003,6 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
-
                   {userType == 1 && haatStatusId == "7" && (
                     <th className="px-6 py-5 text-left">
                       <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
@@ -1037,7 +1013,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-
                   {haatStatusId == "7" && userType == 1 && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -1057,7 +1032,6 @@ const SurveyTable: React.FC = () => {
                           Initial Payment Date
                         </div>
                       </th>
-
                       <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                           <div className="w-8 h-8 bg-teal-500/20 rounded-lg flex items-center justify-center">
@@ -1066,7 +1040,6 @@ const SurveyTable: React.FC = () => {
                           Hearing Officer
                         </div>
                       </th>
-
                       <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                           <div className="w-8 h-8 bg-violet-500/20 rounded-lg flex items-center justify-center">
@@ -1075,7 +1048,6 @@ const SurveyTable: React.FC = () => {
                           Hearing Date
                         </div>
                       </th>
-
                       <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                           <div className="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center">
@@ -1091,7 +1063,6 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
-
                   {userType == 60 && haatStatusId == "3" && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -1102,7 +1073,6 @@ const SurveyTable: React.FC = () => {
                           Initial Payment Date
                         </div>
                       </th>
-
                       <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                           <div className="w-8 h-8 bg-violet-500/20 rounded-lg flex items-center justify-center">
@@ -1111,7 +1081,6 @@ const SurveyTable: React.FC = () => {
                           Hearing Date
                         </div>
                       </th>
-
                       <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                           <div className="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center">
@@ -1175,7 +1144,6 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
-
                   {haatStatusId == "4" && userType == 1 && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -1193,7 +1161,6 @@ const SurveyTable: React.FC = () => {
                       </th>
                     </>
                   )}
-
                   {haatStatusId == "2" && userType == 70 && (
                     <>
                       <th className="px-6 py-5 text-left">
@@ -1210,7 +1177,6 @@ const SurveyTable: React.FC = () => {
                       </div>
                     </th>
                   )}
-
                   {showApprovedButton && !(userType === 70) && (
                     <th className="px-6 py-5 text-left">
                       <div className="text-sm font-bold uppercase tracking-wider  text-center">
@@ -1227,10 +1193,7 @@ const SurveyTable: React.FC = () => {
                     </th>
                   )}
                 </tr>
-
-
               </thead>
-
               <tbody className="divide-y divide-slate-100">
                 {paginatedData && paginatedData.length > 0 ? (
                   paginatedData.map((survey: any, index: number) => (
@@ -1256,13 +1219,11 @@ const SurveyTable: React.FC = () => {
                           />
                         </td>
                       )}
-
                       <td className="px-6 py-5">
                         <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border border-blue-200">
                           {survey?.application_number}
                         </div>
                       </td>
-
                       {(userType === 70 && haatStatusId == "2") ? (
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-2">
