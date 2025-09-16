@@ -46,6 +46,7 @@ interface SurveyData {
   final_amount: number;
   land_valuation: number;
   application_status?: number;
+  relation_status?: number;
 }
 
 interface viewSurveyData {
@@ -1889,9 +1890,17 @@ const SurveyTable: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-slate-700">
                           {userType == 1 && haatStatusId == "4"
-                            ? "The initial payment amount calculated as 20% of the valuation and then 25% of that comes to"
+                            ? ([1,2,3,4,5].includes(selectedSurvey?.relation_status)
+                                ? "The initial amount payable is calculated as 10% of 25% of the land’s valuation."
+                                : selectedSurvey?.relation_status == 6
+                                  ? "The initial amount payable is calculated as 20% of 25% of the land’s valuation." 
+                                  : "")
                             : userType == 1 && haatStatusId == "7"
-                              ? "The final payment amount calculated as 20% of the valuation and then rest 75% of that comes to"
+                              ? ([1,2,3,4,5].includes(selectedSurvey?.relation_status)
+                                  ? "The Final amount payable is calculated as 10% of 75% of the land’s valuation."
+                                  : selectedSurvey?.relation_status == 6
+                                    ? "The Final amount payable is calculated as 0% of 75% of the land’s valuation."
+                                    : "")
                               : ""}
                         </span>
                         <span className="text-2xl font-bold text-slate-900">

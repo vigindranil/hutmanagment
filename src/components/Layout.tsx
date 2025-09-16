@@ -102,7 +102,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
     { name: 'Hearing Officer Dasboard', user_type_id: 60, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Approval Officer Dasboard', user_type_id: 70, href: '/dashboard', icon: FileText, color: 'from-purple-500 to-indigo-600' },
     {
-      name: 'Reports',
+      name: 'Survey Reports',
       user_type_id: 70,
       icon: FileText,
       color: 'from-blue-500 to-purple-600 hover:from-green-600 hover:to-indigo-700',
@@ -113,13 +113,27 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
         { name: 'License Generated', href: '/licensegenerated'},
       ],
     },
-    { name: 'Survey', user_type_id: 100, href: '/survey', icon: ClipboardList, color: 'from-teal-500 to-cyan-600' },
+    {
+      name: 'Survey Reports',
+      user_type_id: 100,
+      icon: FileText,
+      color: 'from-blue-500 to-purple-600 hover:from-green-600 hover:to-indigo-700',
+      subMenu: [
+        { name: 'First Payment Completed', href: '/firstpayment'},
+        { name: 'Final Payment Completed', href: '/finalpayment'},
+        { name: 'Completed Hearing', href: '/completedhearing'},
+        { name: 'License Generated', href: '/licensegenerated'},
+      ],
+    },
+    { name: 'Create User', user_type_id: 100, href: '/createuser', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+
+
+
+    // { name: 'Survey', user_type_id: 100, href: '/survey', icon: ClipboardList, color: 'from-teal-500 to-cyan-600' },
     // { name: 'Vendors', href: '/vendors', icon: Users, color: 'from-green-500 to-teal-600' },
     // { name: 'Tax Management', href: '/tax-management', icon: Calculator, color: 'from-orange-500 to-red-600' },
-    { name: 'Payments', user_type_id: 100, href: '/payments', icon: CreditCard, color: 'from-emerald-500 to-cyan-600' },
+    // { name: 'Payments', user_type_id: 100, href: '/payments', icon: CreditCard, color: 'from-emerald-500 to-cyan-600' },
     // { name: 'Defaulters', href: '/defaulters', icon: AlertTriangle, color: 'from-red-500 to-pink-600' },
-
-
     // { name: 'Settings', href: '/settings', icon: Settings, color: 'from-gray-500 to-slate-600' },
   ];
 
