@@ -2333,7 +2333,20 @@ const SurveyTable: React.FC = () => {
                         },
                         {
                           label: "Transfer Relationship",
-                          value: selectedDetails?.transfer_relationship,
+                          value:
+                            selectedDetails?.transfer_relationship == "1"
+                              ? "Wife"
+                              : selectedDetails?.transfer_relationship == "2"
+                              ? "Daughter"
+                              : selectedDetails?.transfer_relationship == "3"
+                              ? "Son"
+                              : selectedDetails?.transfer_relationship == "4"
+                              ? "Father"
+                              : selectedDetails?.transfer_relationship == "5"
+                              ? "Mother"
+                              : selectedDetails?.transfer_relationship == "6"
+                              ? "Other"
+                              : selectedDetails?.transfer_relationship || "",
                         },
                         {
                           label: "Document Type",
