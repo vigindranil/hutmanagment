@@ -16,7 +16,7 @@ import Firstpayment from './pages/ApprovalOfficerReports/Firstpayment';
 import Finalpayment from './pages/ApprovalOfficerReports/Finalpayment';
 import Completedhearing from './pages/ApprovalOfficerReports/Completedhearing';
 import Licensegenerated from './pages/ApprovalOfficerReports/Licensegenerated';
-import CreateUser from './pages/CreateUserforAdmin/CreateUser';
+import CreateAdminUser from './pages/CreateUserforAdmin/CreateAdminUser';
 import { Navigate, useLocation } from 'react-router-dom';
 
 
@@ -134,10 +134,10 @@ function App() {
             </Layout>
           </ProtectedRoute>
         } />
-      <Route path="/createuser" element={
+      <Route path="/create-admin-user" element={
         <ProtectedRoute>
           <Layout>
-            <CreateUser />
+            <CreateAdminUser />
           </Layout>
         </ProtectedRoute>
       } />

@@ -125,7 +125,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
         { name: 'License Generated', href: '/licensegenerated'},
       ],
     },
-    { name: 'Create User', user_type_id: 100, href: '/createuser', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+    { name: 'Create User', user_type_id: 100, href: '/create-admin-user', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
 
 
 

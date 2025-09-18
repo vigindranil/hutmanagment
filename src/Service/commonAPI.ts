@@ -1,49 +1,26 @@
 import Cookies from 'js-cookie';
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 
-export const commonApi = async (url: string, body: any = {}) => {
+export const commonApi = async (url: string, body: any = {}, type="POST") => {
   const myHeaders = new Headers();
   myHeaders.append("accept", "*/*");
   myHeaders.append("Content-Type", "application/json");
   const token = Cookies.get('token');
   myHeaders.append("Authorization", `Bearer ${token}`);
-  // myHeaders.append("Access-Control-Allow-Origin", "*");
 
-  console.log("body", body);
-
-  const requestOptions = {
-    method: "POST",
+  const requestOptions = 
+  type == "POST" ? 
+   {
+    method: type,
     headers: myHeaders,
     body: JSON.stringify(body)
+  } : {
+    method: type,
+    headers: myHeaders
   };
-
   const result = await fetch(BASE_API_URL + url, requestOptions);
   return await result.json();
-
 }
-
-// export const commonApi = async (url: string, body?: any) => {
-//   const myHeaders = new Headers();
-//   myHeaders.append("accept", "*/*");
-//   const token = Cookies.get("token");
-//   myHeaders.append("Authorization", `Bearer ${token}`);
-
-//   const requestOptions: RequestInit = {
-//     method: "POST",
-//     headers: myHeaders,
-//   };
-
-//   // only add Content-Type + body if actually needed
-//   if (body && Object.keys(body).length > 0) {
-//     myHeaders.append("Content-Type", "application/json");
-//     requestOptions.body = JSON.stringify(body);
-//   }
-
-//   const result = await fetch(BASE_API_URL + url, requestOptions);
-//   return await result.json();
-// };
-
-
 
 export const getIdentityDocument = async (documentPath: string) => {
   const token = Cookies.get('token')
