@@ -37,31 +37,6 @@ const CreateAdminUser = () => {
   const [haatOptions, setHaatOptions] = useState([]);
   const [userTypeID, setUserTypeID] = useState(0);
 
-  // Calculate form progress
-  // const formProgress = useMemo(() => {
-  //   const requiredFields = [
-  //     "user_type_id",
-  //     "district_id",
-  //     "ps_id",
-  //     "haat_id",
-  //     "full_name",
-  //     "contact_number",
-  //     "email_address",
-  //     "username",
-  //   ];
-  //   let filled = 0;
-  //   requiredFields.forEach((field) => {
-  //     if (
-  //       form[field] !== "" &&
-  //       form[field] !== 0 &&
-  //       form[field] !== null &&
-  //       typeof form[field] !== "undefined"
-  //     ) {
-  //       filled += 1;
-  //     }
-  //   });
-  //   return (filled / requiredFields.length) * 100;
-  // }, [form]);
 
   // Use the correct API for user creation
   const handleSubmit = async (e: React.FormEvent) => {
@@ -265,7 +240,7 @@ const CreateAdminUser = () => {
           margin: 4vh auto;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           border-radius: 24px;
-          padding: 2px;
+          padding: 1px;
           box-shadow: 0 10px 24px -8px rgba(0,0,0,0.08);
           transition: all 0.3s ease;
           display: flex;
@@ -276,7 +251,7 @@ const CreateAdminUser = () => {
         .form-table-inner {
           background: white;
           border-radius: 22px;
-          padding: 1.5rem 1.25rem;
+          padding: 1.5rem 1rem;
           position: relative;
           flex: 1 1 0;
           display: flex;
@@ -285,10 +260,10 @@ const CreateAdminUser = () => {
         }
         .form-header {
           text-align: left;
-          margin-bottom: 1rem;
+          margin-bottom: 1.5rem;
         }
         .form-title {
-          font-size: 1.4rem;
+          font-size: 1.7rem;
           font-weight: 800;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           -webkit-background-clip: text;
@@ -297,26 +272,18 @@ const CreateAdminUser = () => {
         }
         .form-subtitle {
           color: #64748b;
-          font-size: 1rem;
+          font-size: 1.1rem;
           margin: 0;
         }
-        /* ✅ Responsive table wrapper */
         .table-wrapper {
           width: 100%;
           overflow-x: auto;
-        }
-        .form-table {
-          width: 100%;
-          min-width: 600px; /* keeps columns readable */
-          border-collapse: separate;
-          border-spacing: 0 1rem;
-          margin-bottom: 1rem;
         }
         .form-table th, .form-table td {
           padding: 0.5rem 0.75rem;
           text-align: left;
           vertical-align: middle;
-          white-space: nowrap; /* prevents ugly wrapping */
+          white-space: nowrap;
         }
         .form-table th {
           background: #f3f4f6;
@@ -329,17 +296,58 @@ const CreateAdminUser = () => {
         }
         .submit-button {
           width: 100%;
-          padding: 0.8rem 1.2rem;
+          padding: 1rem 1.2rem;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
           border: none;
           border-radius: 10px;
           font-weight: 700;
+          font-size: 1.1rem;
           cursor: pointer;
+          margin-top: 1.5rem;
         }
         .submit-button:disabled {
           opacity: 0.6;
           cursor: not-allowed;
+        }
+        .form-input, .form-select {
+          padding: 0.75rem 1rem;
+          border: 1.5px solid #cbd5e1;
+          border-radius: 8px;
+          font-size: 1.05rem;
+          background: #f8fafc;
+          margin-top: 0.2rem;
+          margin-bottom: 0.2rem;
+          transition: border 0.2s;
+        }
+        .form-input:focus, .form-select:focus {
+          border-color: #667eea;
+          outline: none;
+          background: #fff;
+        }
+        .form-group {
+          padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+        }
+        .form-group label {
+          font-weight: 600;
+          margin-bottom: 0.3rem;
+          color: #373737;
+          font-size: 1.05rem;
+        }
+        .message {
+          margin-top: 1rem;
+          padding: 0.8rem 1rem;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 1rem;
+        }
+        .success-message {
+          background: #e6fffa;
+          color: #059669;
+        }
+        .error-message {
+          background: #fef2f2;
+          color: #dc2626;
         }
         @media (max-width: 700px) {
           .form-table-card {
@@ -352,8 +360,8 @@ const CreateAdminUser = () => {
             border-radius: 0;
           }
         }
-      `}</style>
-
+      `}
+      </style>
       <div className="landscape-table-container">
         <div className="form-table-card">
           <div className="form-table-inner">
@@ -363,90 +371,130 @@ const CreateAdminUser = () => {
                 Add a new user to the administrative system
               </p>
             </div>
-
             <form onSubmit={handleSubmit}>
-              {/* ✅ Wrapped table in scrollable div */}
               <div className="table-wrapper">
-                <table className="form-table">
-                  <tbody>
-                    <tr>
-                      <th>User Type <span className="text-red-600">*</span></th>
-                      <td>
-                        <SelectField name="user_type_id" options={userTypeOptions} required />
-                      </td>
-                      <th>District <span className="text-red-600">*</span></th>
-                      <td>
-                        <SelectField name="district_id" options={districtOptions} required />
-                      </td>
-                    </tr>
-                    {userTypeID == 10 && <tr>
-                      <th>Police Station <span className="text-red-600">*</span></th>
-                      <td>
+                <div className="responsive-form-table">
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>
+                        User Type <span className="text-red-600">*</span>
+                      </label>
+                      <SelectField name="user_type_id" options={userTypeOptions} required />
+                    </div>
+                    <div className="form-group">
+                      <label>
+                        District <span className="text-red-600">*</span>
+                      </label>
+                      <SelectField name="district_id" options={districtOptions} required />
+                    </div>
+                  </div>
+                  {userTypeID == 10 && (
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>
+                          Police Station <span className="text-red-600">*</span>
+                        </label>
                         <SelectField name="ps_id" options={psOptions} required />
-                      </td>
-                      <th>Haat <span className="text-red-600">*</span></th>
-                      <td>
+                      </div>
+                      <div className="form-group">
+                        <label>
+                          Haat <span className="text-red-600">*</span>
+                        </label>
                         <SelectField name="haat_id" options={haatOptions} required />
-                      </td>
-                    </tr>}
-                    <tr>
-                      <th>Full Name <span className="text-red-600">*</span></th>
-                      <td>
-                        <div className="form-field">
-                          <input
-                            type="text"
-                            name="full_name"
-                            value={form.full_name}
-                            onChange={(e: any) => setForm({...form, [e.target.name] : e.target.value})}
-                            required={true}
-                            className="form-input"
-                          />
-                        </div>
-                      </td>
-                      <th>Contact Number <span className="text-red-600">*</span></th>
-                      <td>
-                        <div className="form-field">
-                          <input
-                            type="tel"
-                            name="contact_number"
-                            value={form.contact_number}
-                            onChange={(e: any) => setForm({...form, [e.target.name] : e.target.value})}
-                            required={true}
-                            className="form-input"
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>Email <span className="text-red-600">*</span></th>
-                      <td>
-                        <div className="form-field">
-                          <input
-                            type="email"
-                            name="email_address"
-                            value={form.email_address}
-                            onChange={(e: any) => setForm({...form, [e.target.name] : e.target.value})}
-                            required={true}
-                            className="form-input"
-                          />
-                        </div>
-                      </td>
-                      <th>Username <span className="text-red-600">*</span></th>
-                      <td>
-                        <div className="form-field">
-                          <input
-                            type="text"
-                            name="username"
-                            value={form.username}
-                            onChange={(e: any) => setForm({...form, [e.target.name] : e.target.value})}
-                            required={true}
-                            className="form-input"
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                      </div>
+                    </div>
+                  )}
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>
+                        Full Name <span className="text-red-600">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="full_name"
+                        value={form.full_name}
+                        onChange={(e: any) => setForm({ ...form, [e.target.name]: e.target.value })}
+                        required
+                        className="form-input"
+                        placeholder="Enter full name"
+                        autoComplete="off"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>
+                        Contact Number <span className="text-red-600">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        name="contact_number"
+                        value={form.contact_number}
+                        onChange={(e: any) => setForm({ ...form, [e.target.name]: e.target.value })}
+                        required
+                        className="form-input"
+                        placeholder="Enter contact number"
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>
+                        Email <span className="text-red-600">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        name="email_address"
+                        value={form.email_address}
+                        onChange={(e: any) => setForm({ ...form, [e.target.name]: e.target.value })}
+                        required
+                        className="form-input"
+                        placeholder="Enter email address"
+                        autoComplete="off"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>
+                        Username <span className="text-red-600">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="username"
+                        value={form.username}
+                        onChange={(e: any) => setForm({ ...form, [e.target.name]: e.target.value })}
+                        required
+                        className="form-input"
+                        placeholder="Enter username"
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <style>{`
+                  .responsive-form-table {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.2rem;
+                  }
+                  .form-row {
+                    display: flex;
+                    gap: 1.2rem;
+                  }
+                  .form-group {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                  }
+                  .form-group label {
+                    font-weight: 600;
+                    margin-bottom: 0.3rem;
+                  }
+                  @media (max-width: 700px) {
+                    .form-row {
+                      flex-direction: column;
+                      gap: 0.8rem;
+                    }
+                  }
+                `}</style>
               </div>
 
               <button
