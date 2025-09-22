@@ -220,7 +220,6 @@ const CreateAdminUser = () => {
       </select>
     </FormField>
   );
-
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-0 px-0">
       <style>{`
@@ -495,7 +494,6 @@ const CreateAdminUser = () => {
                   }
                 `}</style>
               </div>
-
               <button
                 type="submit"
                 disabled={loading}
@@ -503,7 +501,6 @@ const CreateAdminUser = () => {
               >
                 {loading ? "Creating User..." : "Create User"}
               </button>
-
               {success && <div className="message success-message">{success}</div>}
               {error && <div className="message error-message">{error}</div>}
             </form>

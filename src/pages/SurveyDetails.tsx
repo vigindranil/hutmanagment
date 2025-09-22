@@ -1755,7 +1755,7 @@ const SurveyTable: React.FC = () => {
             </div>
           )}
 
-          {/* Pagination */}
+          {/* Pagination */}          
           {totalPages > 1 && (
             <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-t border-slate-200">
               <div className="flex items-center justify-between">
@@ -1772,7 +1772,6 @@ const SurveyTable: React.FC = () => {
                   <span className="font-bold text-blue-600">{totalItems}</span>{" "}
                   results
                 </p>
-
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -1785,7 +1784,6 @@ const SurveyTable: React.FC = () => {
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Previous
                   </button>
-
                   <div className="flex space-x-2">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       let pageNumber: any;
@@ -1797,7 +1795,6 @@ const SurveyTable: React.FC = () => {
                         pageNumber = start + i;
                         if (pageNumber > end) return null;
                       }
-
                       return (
                         <button
                           key={pageNumber}
@@ -1812,7 +1809,6 @@ const SurveyTable: React.FC = () => {
                       );
                     })}
                   </div>
-
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
