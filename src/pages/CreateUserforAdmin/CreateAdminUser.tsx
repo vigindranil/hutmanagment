@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Cookies from "js-cookie";
 import { commonApi } from "../../Service/commonAPI";
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
@@ -378,13 +378,13 @@ const CreateAdminUser = () => {
                       <label>
                         User Type <span className="text-red-600">*</span>
                       </label>
-                      <SelectField label="User Type" name="user_type_id" options={userTypeOptions} required />
+                      <SelectField name="user_type_id" options={userTypeOptions} required />
                     </div>
                     <div className="form-group">
                       <label>
                         District <span className="text-red-600">*</span>
                       </label>
-                      <SelectField label="District" name="district_id" options={districtOptions} required />
+                      <SelectField name="district_id" options={districtOptions} required />
                     </div>
                   </div>
                   {userTypeID == 10 && (
@@ -393,13 +393,13 @@ const CreateAdminUser = () => {
                         <label>
                           Police Station <span className="text-red-600">*</span>
                         </label>
-                        <SelectField label="Police Station" name="ps_id" options={psOptions} required />
+                        <SelectField name="ps_id" options={psOptions} required />
                       </div>
                       <div className="form-group">
                         <label>
                           Haat <span className="text-red-600">*</span>
                         </label>
-                        <SelectField label="Haat" name="haat_id" options={haatOptions} required />
+                        <SelectField name="haat_id" options={haatOptions} required />
                       </div>
                     </div>
                   )}
