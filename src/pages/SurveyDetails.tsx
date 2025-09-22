@@ -336,8 +336,15 @@ const SurveyTable: React.FC = () => {
       certificateContainer.style.top = '-9999px';
       document.body.appendChild(certificateContainer);
 
+      // Ensure licenseType is the correct union type
+      type LicenseType = "Commercial Only" | "Commercial with Residential";
+      const mappedDataWithType = {
+        ...mappedData,
+        licenseType: (mappedData.licenseType === 'Commercial Only' ? 'Commercial Only' : 'Commercial with Residential') as LicenseType
+      };
+
       const root = createRoot(certificateContainer);
-      root.render(<CertificateTemplate data={mappedData} />);
+      root.render(<CertificateTemplate data={mappedDataWithType} />);
 
       // A short delay to ensure the component is fully rendered in the DOM.
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -1890,15 +1897,15 @@ const SurveyTable: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-slate-700">
                           {userType == 1 && haatStatusId == "4"
-                            ? ([1,2,3,4,5].includes(selectedSurvey?.relation_status)
+                            ? (selectedSurvey?.relation_status !== undefined && [1,2,3,4,5].includes(selectedSurvey.relation_status)
                                 ? "The initial amount payable is calculated as 10% of 25% of the land’s valuation."
-                                : selectedSurvey?.relation_status == 6
+                                : selectedSurvey?.relation_status === 6
                                   ? "The initial amount payable is calculated as 20% of 25% of the land’s valuation." 
                                   : "")
                             : userType == 1 && haatStatusId == "7"
-                              ? ([1,2,3,4,5].includes(selectedSurvey?.relation_status)
+                              ? (selectedSurvey?.relation_status !== undefined && [1,2,3,4,5].includes(selectedSurvey.relation_status)
                                   ? "The Final amount payable is calculated as 10% of 75% of the land’s valuation."
-                                  : selectedSurvey?.relation_status == 6
+                                  : selectedSurvey?.relation_status === 6
                                     ? "The Final amount payable is calculated as 0% of 75% of the land’s valuation."
                                     : "")
                               : ""}
@@ -2555,40 +2562,36 @@ const SurveyTable: React.FC = () => {
                                   {item.label}
                                 </td>
                                 <td className="px-4 py-2 border-b text-gray-900">
-                                  {item.isImage && item.value ? (
-                                    // Open image in new tab on click
+                                  {"isImage" in item && item.isImage && item.value ? (
                                     <img
-                                      src={item.value}
+                                      src={item.value as string}
                                       alt={item.label}
                                       className="w-32 h-auto rounded border cursor-pointer"
                                       style={{ cursor: "pointer" }}
                                       onClick={() => {
-                                        // Open image in a new tab
                                         const newTab = window.open();
                                         if (newTab) {
-                                          newTab?.document.write(`
-                                          <!DOCTYPE html>
-                                          <html>
-                                          <head>
-                                              <title>Document Viewer</title>
-                                              <style>
-                                                  body { margin: 0; background: #2e2e2e; display: flex; justify-content: center; align-items: center; height: 100vh; }
-                                                  img { max-width: 100%; max-height: 100%; }
-                                              </style>
-                                          </head>
-                                          <body>
-                                              <img src="${item.value}" alt="Document Preview" />
-                                          </body>
-                                          </html>
-                                        `);
-                                          newTab?.document?.close();
+                                          newTab.document.write(`
+                                            <!DOCTYPE html>
+                                            <html>
+                                            <head>
+                                                <title>Document Viewer</title>
+                                                <style>
+                                                    body { margin: 0; background: #2e2e2e; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                                                    img { max-width: 100%; max-height: 100%; }
+                                                </style>
+                                            </head>
+                                            <body>
+                                                <img src="${item.value}" alt="Document Preview" />
+                                            </body>
+                                            </html>
+                                          `);
+                                          newTab.document.close();
                                         }
                                       }}
                                     />
                                   ) : (
-                                    item?.value || (
-                                      <span className="text-gray-400">-</span>
-                                    )
+                                    item?.value ?? <span className="text-gray-400">-</span>
                                   )}
                                 </td>
                               </tr>

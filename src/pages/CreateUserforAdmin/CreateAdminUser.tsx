@@ -1,5 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { commonApi } from "../../Service/commonAPI";
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
@@ -175,7 +174,7 @@ const CreateAdminUser = () => {
         <input
           type={type}
           name={name}
-          value={form[name]}
+          value={form[name as keyof typeof form]}
           onChange={handleChange}
           required={required}
           className="form-input"
@@ -202,7 +201,7 @@ const CreateAdminUser = () => {
     <FormField label={label} name={name} required={required} icon={Icon}>
       <select
         name={name}
-        value={form[name] as string | number}
+        value={form[name as keyof typeof form] as string | number}
         onChange={handleChange}
         required={required}
         className="form-select"
@@ -379,13 +378,13 @@ const CreateAdminUser = () => {
                       <label>
                         User Type <span className="text-red-600">*</span>
                       </label>
-                      <SelectField name="user_type_id" options={userTypeOptions} required />
+                      <SelectField label="User Type" name="user_type_id" options={userTypeOptions} required />
                     </div>
                     <div className="form-group">
                       <label>
                         District <span className="text-red-600">*</span>
                       </label>
-                      <SelectField name="district_id" options={districtOptions} required />
+                      <SelectField label="District" name="district_id" options={districtOptions} required />
                     </div>
                   </div>
                   {userTypeID == 10 && (
@@ -394,13 +393,13 @@ const CreateAdminUser = () => {
                         <label>
                           Police Station <span className="text-red-600">*</span>
                         </label>
-                        <SelectField name="ps_id" options={psOptions} required />
+                        <SelectField label="Police Station" name="ps_id" options={psOptions} required />
                       </div>
                       <div className="form-group">
                         <label>
                           Haat <span className="text-red-600">*</span>
                         </label>
-                        <SelectField name="haat_id" options={haatOptions} required />
+                        <SelectField label="Haat" name="haat_id" options={haatOptions} required />
                       </div>
                     </div>
                   )}
