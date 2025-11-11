@@ -1056,14 +1056,14 @@ const SurveyTable: React.FC = () => {
                           Hearing Date
                         </div>
                       </th>
-                      <th className="px-6 py-5 text-left">
+                      {/* <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                           <div className="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center">
                             <MessageSquare className="w-4 h-4 text-amber-400" />
                           </div>
                           Hearing Remarks
                         </div>
-                      </th>
+                      </th> */}
                       <th className="px-6 py-5 text-left">
                         <div className="text-sm font-bold uppercase tracking-wider  text-center">
                           Actions
@@ -1089,14 +1089,14 @@ const SurveyTable: React.FC = () => {
                           Hearing Date
                         </div>
                       </th>
-                      <th className="px-6 py-5 text-left">
+                      {/* <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                           <div className="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center">
                             <MessageSquare className="w-4 h-4 text-amber-400" />
                           </div>
                           Hearing Remarks
                         </div>
-                      </th>
+                      </th> */}
                       <th className="px-6 py-5 text-left">
                         <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
                           <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
@@ -1545,13 +1545,13 @@ const SurveyTable: React.FC = () => {
                               </span>
                             </div>
                           </td>
-                          <td className="px-6 py-5">
+                          {/* <td className="px-6 py-5">
                             <div className="max-w-xs truncate">
                               <span className="text-slate-900 font-semibold bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">
                                 {survey?.hearing_remarks}
                               </span>
                             </div>
-                          </td>
+                          </td> */}
                           <td className="px-6 py-5 text-center">
                           <button
                             onClick={() => handleViewClick(survey.survey_id)}
@@ -1582,13 +1582,13 @@ const SurveyTable: React.FC = () => {
                               </span>
                             </div>
                           </td>
-                          <td className="px-6 py-5">
+                          {/* <td className="px-6 py-5">
                             <div className="max-w-xs truncate">
                               <span className="text-slate-900 font-semibold bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">
                                 {survey?.hearing_remarks}
                               </span>
                             </div>
-                          </td>
+                          </td> */}
                           <td className="px-6 py-5">
                             <div className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
                               <IndianRupee className="w-4 h-4 mr-1" />
@@ -1891,21 +1891,23 @@ const SurveyTable: React.FC = () => {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-slate-700">
-                          {userType == 1 && haatStatusId == "4"
-                            ? (selectedSurvey?.relation_status !== undefined && [1,2,3,4,5].includes(selectedSurvey.relation_status)
-                                ? "The initial amount payable is calculated as 10% of 25% of the land’s valuation."
-                                : selectedSurvey?.relation_status === 6
-                                  ? "The initial amount payable is calculated as 20% of 25% of the land’s valuation." 
-                                  : "")
-                            : userType == 1 && haatStatusId == "7"
-                              ? (selectedSurvey?.relation_status !== undefined && [1,2,3,4,5].includes(selectedSurvey.relation_status)
-                                  ? "The Final amount payable is calculated as 10% of 75% of the land’s valuation."
+                        <div className="flex-1 flex items-center">
+                          <span className="text-sm font-medium text-slate-700 w-full text-left">
+                            {userType == 1 && haatStatusId == "4"
+                              ? (selectedSurvey?.relation_status !== undefined && [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
+                                  ? "The initial amount payable is calculated as 10% of 25% of the land’s valuation."
                                   : selectedSurvey?.relation_status === 6
-                                    ? "The Final amount payable is calculated as 0% of 75% of the land’s valuation."
+                                    ? "The initial amount payable is calculated as 20% of 25% of the land’s valuation."
                                     : "")
-                              : ""}
-                        </span>
+                              : userType == 1 && haatStatusId == "7"
+                                ? (selectedSurvey?.relation_status !== undefined && [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
+                                    ? "The Final amount payable is calculated as 10% of 75% of the land’s valuation."
+                                    : selectedSurvey?.relation_status === 6
+                                      ? "The Final amount payable is calculated as 20% of 75% of the land’s valuation."
+                                      : "")
+                                : ""}
+                          </span>
+                        </div>
                         <span className="text-2xl font-bold text-slate-900">
                           ₹
                           {userType == 1 && haatStatusId == "7"
@@ -2677,8 +2679,6 @@ const SurveyTable: React.FC = () => {
             </Dialog.Panel>
           </div>
         </Dialog>
-
-
       </div>
     </div>
   );
