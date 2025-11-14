@@ -1,7 +1,6 @@
 import React from 'react';
 import { DivideIcon as LucideIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-// const app_base_url = import.meta.env.VITE_APP_URL;
 
 interface StatsCardProps {
   title: string;

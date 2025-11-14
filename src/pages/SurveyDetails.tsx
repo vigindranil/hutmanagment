@@ -2335,7 +2335,7 @@ const SurveyTable: React.FC = () => {
                       ],
                     },
                     {
-                      title: "Work Order Details",
+                      title: "Documents Details",
                       icon: "📋",
                       color: "green",
                       data: [

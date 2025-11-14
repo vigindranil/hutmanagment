@@ -21,9 +21,7 @@ interface CertificateData {
         khatianNo: string;
         jlNo: string;
         plotNo: string;
-        boundaries: {
-            direction: string;
-        };
+        boundaries: {direction: string;};
         holdingNo: string;
         area: string;
         inLocation: string;

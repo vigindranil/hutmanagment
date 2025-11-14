@@ -2,16 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
-  // Users,
-  // Calculator,
-  CreditCard,
-  // AlertTriangle,
   FileText,
-  // Settings,
   Menu,
   X,
   Building2,
-  ClipboardList,
   ChevronDown,
   ChevronRight,
   LogOut
