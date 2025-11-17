@@ -182,32 +182,34 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex-1 flex items-center">
-                    <span className="text-sm font-medium text-slate-700 w-full text-left">
-                      {userType == 1 && haatStatusId == "4"
-                        ? selectedSurvey?.relation_status !== undefined &&
-                          [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
-                          ? "The initial amount payable is calculated as 10% of 25% of the land's valuation."
-                          : selectedSurvey?.relation_status === 6
-                          ? "The initial amount payable is calculated as 20% of 25% of the land's valuation."
-                          : ""
-                        : userType == 1 && haatStatusId == "7"
-                        ? selectedSurvey?.relation_status !== undefined &&
-                          [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
-                          ? "The Final amount payable is calculated as 10% of 75% of the land's valuation."
-                          : selectedSurvey?.relation_status === 6
-                          ? "The Final amount payable is calculated as 20% of 75% of the land's valuation."
-                          : ""
+                    <div className="flex flex-col flex-1 items-start text-left">
+                      <span className="text-sm font-medium text-slate-700">
+                        {userType == 1 && haatStatusId == "4"
+                          ? selectedSurvey?.relation_status !== undefined &&
+                            [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
+                            ? "The initial amount payable is calculated as 10% of 25% of the land's valuation."
+                            : selectedSurvey?.relation_status === 6
+                            ? "The initial amount payable is calculated as 20% of 25% of the land's valuation."
+                            : ""
+                          : userType == 1 && haatStatusId == "7"
+                          ? selectedSurvey?.relation_status !== undefined &&
+                            [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
+                            ? "The Final amount payable is calculated as 10% of 75% of the land's valuation."
+                            : selectedSurvey?.relation_status === 6
+                            ? "The Final amount payable is calculated as 20% of 75% of the land's valuation."
+                            : ""
+                          : ""}
+                      </span>
+                    </div>
+                    <span className="ml-8 text-2xl font-bold text-slate-900 text-left">
+                      ₹
+                      {userType == 1 && haatStatusId == "7"
+                        ? selectedSurvey?.final_amount
+                        : userType == 1 && haatStatusId == "4"
+                        ? selectedSurvey?.initial_amount
                         : ""}
                     </span>
                   </div>
-                  <span className="text-2xl font-bold text-slate-900">
-                    ₹
-                    {userType == 1 && haatStatusId == "7"
-                      ? selectedSurvey?.final_amount
-                      : userType == 1 && haatStatusId == "4"
-                      ? selectedSurvey?.initial_amount
-                      : ""}
-                  </span>
                 </div>
               </div>
 
