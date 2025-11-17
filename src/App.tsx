@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -11,7 +11,7 @@ import Defaulters from './pages/Defaulters';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import UserDashboard from './pages/UserDashboard';
-import SurveyTable from './pages/SurveyDetails';
+import SurveyTable from './pages/SurveyTable/SurveyTable';
 import Firstpayment from './pages/ApprovalOfficerReports/Firstpayment';
 import Finalpayment from './pages/ApprovalOfficerReports/Finalpayment';
 import Completedhearing from './pages/ApprovalOfficerReports/Completedhearing';
@@ -32,7 +32,6 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
 
 function App() {
   return (
-    <BrowserRouter basename='/'>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
@@ -142,7 +141,6 @@ function App() {
         </ProtectedRoute>
       } />
       </Routes>
-    </BrowserRouter>
   );
 }
 
