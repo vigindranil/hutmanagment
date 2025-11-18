@@ -54,6 +54,7 @@ import {
 interface SurveyData {
   survey_id: number;
   survey_date: string;
+  hearing_date: string;
   application_number: string;
   haat_id: number;
   haat_name: string;
@@ -146,7 +147,6 @@ const SurveyTable: React.FC = () => {
   const haatStatusId = searchParams?.get("_hti");
   const title = searchParams?.get("title");
   const dashboardType = searchParams?.get("dashboardType");
-  
   const [selectedSurvey, setSelectedSurvey] = useState<SurveyData | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showHearingModal, setShowHearingModal] = useState(false);
@@ -155,7 +155,6 @@ const SurveyTable: React.FC = () => {
   const [showPdfPreviewModal, setShowPdfPreviewModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pdfFilename, setPdfFilename] = useState<string>("");
-
   const [selectedDetails, setSelectedDetails] = useState<FullApplicationDetails | null>(null);
   const [paymentName, setPaymentName] = useState("");
   const [paymentNumber, setPaymentNumber] = useState("");
@@ -164,18 +163,15 @@ const SurveyTable: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState(1);
   const [loads, setLoads] = useState(false);
-
   const [hearingDate, setHearingDate] = useState("");
   const [selectedSurveys, setSelectedSurveys] = useState<number[]>([]);
   const [hearingRemarks, setHearingRemarks] = useState<string>("");
   const [remarksText, setRemarksText] = useState<string>("");
   const [approvalAction, setApprovalAction] = useState<"approve" | "reject">("approve");
   const [selectedSurveyForRemarks, setSelectedSurveyForRemarks] = useState<number | null>(null);
-  
   const [isLoadingDetails, setisLoadingDetails] = useState(false);
   const [data, setData] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const certificateRef = useRef<HTMLDivElement>(null);
 
   // Handle View Click
@@ -203,7 +199,6 @@ const SurveyTable: React.FC = () => {
       });
       return;
     }
-
     Swal.fire({
       title: "Generating Certificate...",
       text: "Please wait while we prepare your document.",
@@ -220,21 +215,18 @@ const SurveyTable: React.FC = () => {
         throw new Error(response?.message || "Failed to fetch certificate details.");
       }
       const apiData = response.data;
-
       const formatDate = (dateString: string | null) => {
         if (!dateString) return "N/A";
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return "N/A";
         return date.toLocaleDateString("en-GB");
       };
-
       const fromDate = new Date(apiData.payment_date);
       const toDate = new Date(
         fromDate.getFullYear() + 10,
         fromDate.getMonth(),
         fromDate.getDate()
       );
-
       const mappedData = {
         licenseNo: apiData.application_number?.toString() || "N/A",
         licenseeName: apiData.shopowner_name || "N/A",
@@ -285,9 +277,7 @@ const SurveyTable: React.FC = () => {
 
       const root = createRoot(certificateContainer);
       root.render(<CertificateTemplate data={mappedDataWithType} />);
-
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
       const pdfOptions = {
         margin: [0, 0, 0, 0],
         filename: `License-${mappedData.licenseNo}.pdf`,
@@ -309,9 +299,7 @@ const SurveyTable: React.FC = () => {
       setPdfUrl(pdfDataUri);
       setPdfFilename(pdfOptions.filename);
       setShowPdfPreviewModal(true);
-
       Swal.close();
-
       root.unmount();
       document.body.removeChild(certificateContainer);
     } catch (error) {
@@ -330,7 +318,6 @@ const SurveyTable: React.FC = () => {
   const loadData = async () => {
     const userDetails = decodeJwtToken();
     if (!haatStatusId) return;
-
     if (dashboardType == "ADMIN" && userDetails?.UserTypeID == 100) {
       const result = await getHaatApplicantionDetailsForAdmin(haatStatusId);
       setData(result);
@@ -415,7 +402,6 @@ const SurveyTable: React.FC = () => {
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIdx = startIdx + ITEMS_PER_PAGE;
   const paginatedData = data?.slice(startIdx, endIdx);
-
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -472,9 +458,7 @@ const SurveyTable: React.FC = () => {
       }) || alert("Remarks must be at least 10 characters long!");
       return;
     }
-
     if (!selectedSurveyForRemarks) return;
-
     setLoading(true);
     try {
       const response = await submitRemarksAction(
@@ -483,7 +467,6 @@ const SurveyTable: React.FC = () => {
         approvalAction,
         userType
       );
-
       if (response?.status == 0) {
         setPaymentSuccess(true);
         Swal?.fire({
@@ -525,40 +508,78 @@ const SurveyTable: React.FC = () => {
     (userType == 50 && haatStatusId == "2") ||
     (userType == 70 && haatStatusId == "2");
 
+  // Animation utility class for table row fade-in and hover scaling
+  const rowAnimationClass =
+    "animate-[fade-in_0.5s_ease-in-out] group hover:scale-[1.0125] hover:shadow-md hover:bg-gradient-to-r hover:from-blue-50/70 hover:to-indigo-50/50 transition-all duration-300";
+  const buttonBaseAnimation =
+    "transition-all duration-200 focus:scale-95 active:scale-95 active:shadow-md";
+  const cardAnimation =
+    "animate-[fade-in_0.9s_ease-in] shadow-2xl hover:shadow-2xl transition-all duration-500";
+  const tableHeaderAnimation =
+    "animate-[slide-down_0.5s_ease]";
+
+  // Keyframes for animation
+  React.useEffect(() => {
+    // Keyframes in a style tag for basic fade and slide
+    if (!document.getElementById("survey-table-animations")) {
+      const style = document.createElement("style");
+      style.id = "survey-table-animations";
+      style.innerHTML = `
+      @keyframes fade-in {
+        0% {opacity:0; transform:translateY(30px);}
+        100% {opacity:1; transform:translateY(0);}
+      }
+      @keyframes slide-down {
+        0% {opacity:0; transform:translateY(-16px);}
+        100% {opacity:1; transform:translateY(0);}
+      }
+      `;
+      document.head.appendChild(style);
+    }
+  }, []);
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative overflow-x-hidden scrollbar-thin scrollbar-thumb-blue-200">
       <div className="min-h-full fixed z-[0] w-full">
         <img
           src={bgimg}
           alt="background image"
-          className="fixed left-0 top-20 w-full h-full object-cover opacity-15 z-0"
+          className="fixed left-0 top-20 w-full h-full object-cover opacity-[0.09] z-0 transition-opacity duration-700 ease-in"
+          style={{willChange: "opacity"}}
         />
       </div>
       <div className="container mx-auto px-6 py-8 relative z-10">
         {/* Header Section */}
-        <div className="mb-8">
+        <div className={`mb-8`}>
           <button
             type="button"
             onClick={() => window?.history?.back()}
-            className="group mb-6 inline-flex items-center px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 rounded-xl shadow-sm hover:shadow-md border border-slate-200 transition-all duration-200 font-medium"
+            className={
+              "group mb-6 inline-flex items-center px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 rounded-xl border border-slate-200 font-medium " +
+              buttonBaseAnimation
+            }
           >
-            <ChevronLeft className="w-5 h-5 mr-2 group-hover:-translate-x-0.5 transition-transform duration-200" />
-            Back
+            <ChevronLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 group-focus:-translate-x-1 transition-transform duration-200" />
+            <span className="tracking-wide">Back</span>
           </button>
 
-          <div className="flex items-center gap-3 mb-2">
+          <div className={`${tableHeaderAnimation} flex items-center gap-3 mb-2`}>
             <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{title}</h1>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight animate-[fade-in_1.1s_ease]">
+              {title}
+            </h1>
           </div>
-          <p className="text-slate-600 ml-7">Manage and track survey records efficiently</p>
+          <p className="text-slate-600 ml-7 tracking-wide animate-[fade-in_1.2s_ease]">
+            Manage and track survey records efficiently
+          </p>
         </div>
 
         {/* Table Card */}
-        <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden backdrop-blur-sm bg-white/95">
+        <div className={`bg-white rounded-3xl ${cardAnimation} border border-slate-200 overflow-hidden backdrop-blur-sm bg-white/95`}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
+                <tr className={`bg-gradient-to-r from-slate-800 to-slate-900 text-white ${tableHeaderAnimation}`}>
                   <th className="px-6 py-5 text-left w-12">
                     <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
                       <div className="w-2 h-2 bg-blue-400 rounded-full"></div>#
@@ -569,7 +590,7 @@ const SurveyTable: React.FC = () => {
                       <div className="flex items-center">
                         <input
                           type="checkbox"
-                          className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                          className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer transition-shadow duration-150"
                           checked={
                             selectedSurveys.length === paginatedData.length &&
                             paginatedData.length > 0
@@ -612,6 +633,16 @@ const SurveyTable: React.FC = () => {
                           <Calendar className="w-4 h-4 text-green-400" />
                         </div>
                         Survey Date
+                      </div>
+                    </th>
+                  )}
+                  {(userType == 60 && haatStatusId == "1") && (
+                    <th className="px-6 py-5 text-left">
+                      <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-wider">
+                        <div className="w-8 h-8 bg-violet-500/20 rounded-lg flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-violet-400" />
+                        </div>
+                        Hearing Date
                       </div>
                     </th>
                   )}
@@ -901,7 +932,8 @@ const SurveyTable: React.FC = () => {
                   paginatedData.map((survey: any, index: number) => (
                     <tr
                       key={survey.survey_id}
-                      className="group hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/30 transition-all duration-300"
+                      className={rowAnimationClass}
+                      style={{animationDelay: `${0.08 * (index % ITEMS_PER_PAGE)}s`}}
                     >
                       <td className="px-6 py-5">
                         <div className="w-8 h-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center text-slate-700 font-semibold text-sm">
@@ -960,6 +992,16 @@ const SurveyTable: React.FC = () => {
                             <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                             <span className="text-slate-900 font-semibold">
                               {survey?.survey_date}
+                            </span>
+                          </div>
+                        </td>
+                      )}
+                      {(userType == 60 && haatStatusId == "1") && (
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-violet-400 rounded-full"></div>
+                            <span className="text-slate-900 font-semibold">
+                              {survey?.hearing_date}
                             </span>
                           </div>
                         </td>
@@ -1319,17 +1361,29 @@ const SurveyTable: React.FC = () => {
                           <div className="flex gap-3">
                             <button
                               onClick={() => handleApprovalAction(survey.survey_id, "approve")}
-                              className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                              className="group inline-flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 p-[6px] w-8 h-8"
+                              style={{
+                                minWidth: "2rem",
+                                minHeight: "2rem",
+                                maxWidth: "2rem",
+                                maxHeight: "2rem",
+                              }}
+                              title="Approve"
                             >
-                              <Check className="w-4 h-4 mr-2" />
-                              Approve
+                              <Check className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleApprovalAction(survey.survey_id, "reject")}
-                              className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                              className="group inline-flex items-center justify-center bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 p-[6px] w-8 h-8"
+                              style={{
+                                minWidth: "2rem",
+                                minHeight: "2rem",
+                                maxWidth: "2rem",
+                                maxHeight: "2rem",
+                              }}
+                              title="Reject"
                             >
-                              <X className="w-4 h-4 mr-2" />
-                              Reject
+                              <X className="w-4 h-4" />
                             </button>
                             {showViewButton && (
                               <button
@@ -1356,7 +1410,7 @@ const SurveyTable: React.FC = () => {
                     </tr>
                   ))
                 ) : (
-                  <tr>
+                  <tr className={rowAnimationClass} style={{animationDelay: "0s"}}>
                     <td
                       colSpan={
                         Number(haatStatusId) === 4
@@ -1369,14 +1423,14 @@ const SurveyTable: React.FC = () => {
                       }
                       className="text-center py-16"
                     >
-                      <div className="flex flex-col items-center justify-center h-full w-full">
+                      <div className="flex flex-col items-center justify-center h-full w-full animate-[fade-in_0.8s_ease]">
                         <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mb-6">
-                          <Building className="w-10 h-10 text-slate-400" />
+                          <Building className="w-10 h-10 text-slate-400 animate-pulse" />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-3">
+                        <h3 className="text-xl font-bold text-slate-900 mb-3 animate-fade-in">
                           No Data Available
                         </h3>
-                        <p className="text-slate-500 text-lg">
+                        <p className="text-slate-500 text-lg animate-fade-in">
                           No survey records found for the selected criteria.
                         </p>
                       </div>
@@ -1386,11 +1440,10 @@ const SurveyTable: React.FC = () => {
               </tbody>
             </table>
           </div>
-
           {/* Submit Button for Selected Items */}
           {showCheckboxes && selectedSurveys.length > 0 && (
-            <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-t border-slate-200">
-              <div className="flex items-center justify-between">
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-t border-slate-200 animate-[slide-down_0.4s_ease]">
+              <div className="flex items-center justify-between animate-[fade-in_0.7s_ease]">
                 <p className="text-sm text-slate-700 font-semibold">
                   <span className="font-bold text-blue-600">
                     {selectedSurveys.length}
@@ -1399,16 +1452,39 @@ const SurveyTable: React.FC = () => {
                 </p>
                 <button
                   onClick={handleSubmitSelected}
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className={`inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${buttonBaseAnimation}`}
                 >
-                  <Send className="w-4 h-4 mr-2" />
+                  <Send className="w-4 h-4 mr-2 animate-fade-in" />
                   Submit Selected ({selectedSurveys.length})
                 </button>
               </div>
             </div>
           )}
+        </div>
 
-          {/* Pagination and other UI elements */}
+        {/* --- Animation for pagination controls below the table --- */}
+        <div className="flex justify-end mt-5 animate-[slide-down_0.5s_ease]">
+          <nav className="inline-flex rounded-lg overflow-hidden shadow border border-slate-200 bg-white">
+            <button
+              className={`${buttonBaseAnimation} px-4 py-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 focus:bg-blue-50 transition group`}
+              disabled={currentPage <= 1}
+              style={{ opacity: currentPage <= 1 ? 0.5 : 1 }}
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            </button>
+            <span className="px-5 py-2 text-blue-700 font-bold text-lg bg-gradient-to-br from-blue-50 to-white animate-[fade-in_0.5s_ease]">
+              Page {currentPage} / {totalPages || 1}
+            </span>
+            <button
+              className={`${buttonBaseAnimation} px-4 py-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 focus:bg-blue-50 transition group`}
+              disabled={currentPage >= totalPages}
+              style={{ opacity: currentPage >= totalPages ? 0.5 : 1 }}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </nav>
         </div>
 
         {/* Modals */}
@@ -1429,7 +1505,6 @@ const SurveyTable: React.FC = () => {
           userType={userType}
           haatStatusId={haatStatusId}
         />
-
         <HearingModal
           show={showHearingModal}
           onClose={closeHearingModal}
@@ -1439,7 +1514,6 @@ const SurveyTable: React.FC = () => {
           loading={loading}
           onSubmit={handleHearingDateSubmit}
         />
-
         <RemarksModal
           show={showRemarksModal}
           onClose={closeRemarksModal}
@@ -1449,14 +1523,12 @@ const SurveyTable: React.FC = () => {
           loading={loading}
           onSubmit={handleRemarksSubmit}
         />
-
         <ViewDetailsModal
           show={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           isLoading={isLoadingDetails}
           selectedDetails={selectedDetails}
         />
-
         <PdfPreviewModal
           show={showPdfPreviewModal}
           onClose={() => {
