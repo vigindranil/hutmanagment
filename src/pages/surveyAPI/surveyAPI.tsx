@@ -201,12 +201,10 @@ export const submitRemarksAction = async (
   payload[userType === 70 ? "remarks" : "remarks"] = remarksText;
   payload[userType === 70 ? "final_approval_status" : "approval_status"] =
     approvalAction === "approve" ? 1 : 2;
-
   const url =
     userType === 70
       ? `user/saveFinalApprovalByApprovalOfficerID`
       : `user/updateApprovedHearingDetailsByHearingUserID`;
-
   const response = await commonApi(url, payload);
   return response;
 };
