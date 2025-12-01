@@ -4,8 +4,6 @@ import { decodeJwtToken } from "../utils/decodeToken";
 
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 
-// region --- Payload Types ---
-
 interface SaveHearingDatePayload {
   lstSurveyId: number[];
   entry_user_id: number;
@@ -33,14 +31,8 @@ export interface SavePaymentDetailsPayload {
   user_id: number | undefined; 
 }
 
-// endregion
-
 // --- API Service Functions ---
 
-/**
- * Fetches the full application details for a given survey ID.
- * Also processes and retrieves full URLs for all associated images.
- */
 export const fetchApplicationDetails = async (surveyId: string) => {
   const token = Cookies.get("token");
   const myHeaders = new Headers();
@@ -66,10 +58,8 @@ export const fetchApplicationDetails = async (surveyId: string) => {
   }
   const result = await response.json();
 
-  // Helper to process image paths cleanly
   const getImage = (path: string | null | undefined) => commonApiImage(path || "");
 
-  // Process all images asynchronously
   const processedData = {
     ...result?.data,
     stall_image1: await getImage(result?.data?.stall_image1),
@@ -88,9 +78,6 @@ export const fetchApplicationDetails = async (surveyId: string) => {
   return processedData;
 };
 
-/**
- * Fetches Haat application details for an Admin user.
- */
 export const getHaatApplicationDetailsForAdminApi = async (haatStatusId: string) => {
   const userDetails = decodeJwtToken();
   const payload = {
@@ -102,9 +89,6 @@ export const getHaatApplicationDetailsForAdminApi = async (haatStatusId: string)
   return commonApi(`user/getHaatApplicantionDetailsForAdmin`, payload);
 };
 
-/**
- * Fetches dashboard details for a Checker user.
- */
 export const getCheckerDashboardDetailsApi = async (haatStatusId: string) => {
   const userDetails = decodeJwtToken();
   return commonApi(
@@ -112,16 +96,10 @@ export const getCheckerDashboardDetailsApi = async (haatStatusId: string) => {
   );
 };
 
-/**
- * Saves payment details for a specific survey.
- */
 export const savePaymentDetailsApi = async (payload: SavePaymentDetailsPayload) => {
   return commonApi(`user/savePaymentDetailsBySurveyID`, payload);
 };
 
-/**
- * Fetches survey details for a Shop Owner.
- */
 export const getSurveyDetailsByShopOwnerApi = async (haatStatusId: string) => {
   const userDetails = decodeJwtToken();
   return commonApi(
@@ -129,9 +107,6 @@ export const getSurveyDetailsByShopOwnerApi = async (haatStatusId: string) => {
   );
 };
 
-/**
- * Fetches hearing details for a Hearing Officer.
- */
 export const getHearingDetailsByHearingUserApi = async (haatStatusId: string) => {
   const userDetails = decodeJwtToken();
   return commonApi(
@@ -139,9 +114,6 @@ export const getHearingDetailsByHearingUserApi = async (haatStatusId: string) =>
   );
 };
 
-/**
- * Fetches survey details for an Approval Officer.
- */
 export const getSurveyDetailsByApprovalOfficerApi = async (haatStatusId: string) => {
   const userDetails = decodeJwtToken();
   return commonApi(
@@ -149,23 +121,14 @@ export const getSurveyDetailsByApprovalOfficerApi = async (haatStatusId: string)
   );
 };
 
-/**
- * Saves the hearing date for a list of selected surveys.
- */
 export const saveHearingDateByCheckerApi = async (payload: SaveHearingDatePayload) => {
   return commonApi("user/saveHearingDateByCheckerID", payload);
 };
 
-/**
- * Updates hearing details (approve/reject) by a Hearing Officer.
- */
 export const updateApprovedHearingDetailsApi = async (payload: UpdateApprovalStatusPayload) => {
   return commonApi(`user/updateApprovedHearingDetailsByHearingUserID`, payload);
 };
 
-/**
- * Saves the final approval (approve/reject) by an Approval Officer.
- */
 export const saveFinalApprovalByApprovalOfficerApi = async (payload: SaveFinalApprovalPayload) => {
   return commonApi(`user/saveFinalApprovalByApprovalOfficerID`, payload);
 };
