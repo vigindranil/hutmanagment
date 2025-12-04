@@ -2,25 +2,20 @@ import React, { useEffect, useState, useCallback } from "react";
 import Cookies from "js-cookie";
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import { decodeJwtToken } from "../../utils/decodeToken";
-
 import {
   Calendar,
   Search,
   FileText,
   Building2,
-  ArrowLeft,
-  Download,
   Filter,
-  AlertCircle,
-  CheckCircle,
   Clock,
   MapPin,
   Phone,
   User,
-  Eye,
   TrendingUp,
   Loader2,
-  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 interface PaymentReport {
@@ -50,6 +45,8 @@ interface ReportsProps {
   onBack?: () => void;
 }
 
+const PAGE_SIZE = 7;
+
 const Reports: React.FC<ReportsProps> = ({ onBack }) => {
   const [reportData, setReportData] = useState<PaymentReport[]>([]);
   const [filteredData, setFilteredData] = useState<PaymentReport[]>([]);
@@ -59,6 +56,17 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
   const [toDate, setToDate] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Calculate pagination
+  const pageCount = Math.ceil(filteredData.length / PAGE_SIZE);
+
+  // If data or search changes, go back to first page
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredData.length, searchTerm, selectedFilter, fromDate, toDate]);
 
   const formatDateForInput = (date: Date): string => {
     return date.toISOString().split("T")[0];
@@ -185,6 +193,45 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
     if (!amount || amount === "-") return "-";
     return `₹${parseFloat(amount).toLocaleString('en-IN')}`;
   };
+
+  // Pagination: slice current page's data
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  // Pagination component
+  const Pagination = () => (
+    <div className="flex justify-center gap-2 mt-4">
+      <button
+        onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
+        disabled={currentPage === 1}
+        className={`px-3 py-1 rounded-lg flex items-center gap-1 ${currentPage === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'}`}
+      >
+        <ChevronLeft className="w-4 h-4" /> Prev
+      </button>
+      {[...Array(pageCount)].map((_, idx) => (
+        <button
+          key={idx}
+          onClick={() => setCurrentPage(idx + 1)}
+          className={`px-3 py-1 rounded-lg font-semibold ${
+            currentPage === idx + 1
+              ? "bg-indigo-600 text-white"
+              : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+          }`}
+        >
+          {idx + 1}
+        </button>
+      ))}
+      <button
+        onClick={() => setCurrentPage((page) => Math.min(page + 1, pageCount))}
+        disabled={currentPage === pageCount || pageCount === 0}
+        className={`px-3 py-1 rounded-lg flex items-center gap-1 ${currentPage === pageCount || pageCount === 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'}`}
+      >
+        Next <ChevronRight className="w-4 h-4" />
+      </button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -326,16 +373,6 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Error Toast */}
-        {/* {error && (
-          <div className="fixed bottom-6 right-6 z-50 bg-red-600 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            <div>
-              <span className="font-semibold">Error:</span> {error}
-            </div>
-          </div>
-        )} */}
-
         {/* Data Table Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="bg-gradient-to-r from-indigo-600 to-blue-600 px-6 py-4">
@@ -344,10 +381,6 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                 <FileText className="w-5 h-5 text-white" />
                 <h2 className="text-lg font-semibold text-white">Payment Records</h2>
               </div>
-              {/* <button className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-200">
-                <Download className="w-4 h-4" />
-                Export
-              </button> */}
             </div>
           </div>
 
@@ -355,6 +388,9 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    S.No.
+                  </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4" />
@@ -400,9 +436,12 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredData.length > 0 ? (
-                  filteredData.map((row, idx) => (
+                {paginatedData.length > 0 ? (
+                  paginatedData.map((row, idx) => (
                     <tr key={idx} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="px-4 py-4 text-sm font-medium text-gray-800">
+                        {(currentPage - 1) * PAGE_SIZE + idx + 1}
+                      </td>
                       <td className="px-6 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
@@ -433,7 +472,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center">
+                    <td colSpan={8} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-4">
                         {loading ? (
                           <>
@@ -458,12 +497,16 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
               </tbody>
             </table>
           </div>
+          {/* Pagination Controls */}
+          {pageCount > 1 && <Pagination />}
         </div>
 
         {/* Footer */}
         {filteredData.length > 0 && (
           <div className="mt-6 text-center text-sm text-gray-500 bg-white rounded-lg p-4 shadow-sm">
-            Showing {filteredData.length} of {reportData.length} records
+            Showing {paginatedData.length === 0 ? 0 : ((currentPage - 1) * PAGE_SIZE + 1)} 
+            {" - "}
+            {(currentPage - 1) * PAGE_SIZE + paginatedData.length} of {filteredData.length} records
           </div>
         )}
       </div>

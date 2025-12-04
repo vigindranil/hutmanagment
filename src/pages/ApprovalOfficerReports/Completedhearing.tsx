@@ -8,19 +8,15 @@ import {
   Search,
   FileText,
   Building2,
-  ArrowLeft,
-  Download,
   Filter,
-  AlertCircle,
-  CheckCircle,
   Clock,
   MapPin,
   Phone,
   User,
-  Eye,
   TrendingUp,
   Loader2,
-  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 interface PaymentReport {
@@ -49,6 +45,8 @@ interface ReportsProps {
   onBack?: () => void;
 }
 
+const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
+
 const Reports: React.FC<ReportsProps> = ({ onBack }) => {
   const [reportData, setReportData] = useState<PaymentReport[]>([]);
   const [filteredData, setFilteredData] = useState<PaymentReport[]>([]);
@@ -58,6 +56,9 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
   const [toDate, setToDate] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(PAGE_SIZE_OPTIONS[0]);
 
   const formatDateForInput = (date: Date): string => {
     return date.toISOString().split("T")[0];
@@ -160,6 +161,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
     }
 
     setFilteredData(filtered);
+    setCurrentPage(1); // reset to first page whenever filters/search update
   }, [reportData, searchTerm, selectedFilter]);
 
   const handleSearch = () => {
@@ -183,6 +185,26 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
   const formatCurrency = (amount: string): string => {
     if (!amount || amount === "-") return "-";
     return `₹${parseFloat(amount).toLocaleString('en-IN')}`;
+  };
+
+  // Pagination logic
+  const totalRows = filteredData.length;
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+  const displayedData = filteredData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  // Quick navigation for pagination
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(Number(e.target.value));
+    setCurrentPage(1); // always go to first page on rows-per-page change
   };
 
   return (
@@ -349,11 +371,15 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
               </button> */}
             </div>
           </div>
-
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      #
+                    </div>
+                  </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4" />
@@ -390,13 +416,15 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                       Hearing Date
                     </div>
                   </th>
-                
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredData.length > 0 ? (
-                  filteredData.map((row, idx) => (
+                {displayedData.length > 0 ? (
+                  displayedData.map((row, idx) => (
                     <tr key={idx} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="px-4 py-4 text-sm font-semibold text-gray-600">
+                        {(currentPage - 1) * rowsPerPage + idx + 1}
+                      </td>
                       <td className="px-6 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
@@ -418,7 +446,6 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700">{row.hearing_date || "-"}</td>
-                     
                     </tr>
                   ))
                 ) : (
@@ -448,12 +475,91 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
               </tbody>
             </table>
           </div>
+          {/* Pagination controls */}
+          {totalRows > 0 && (
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-gray-100 bg-white">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">Rows per page:</span>
+                <select
+                  value={rowsPerPage}
+                  onChange={handleRowsPerPageChange}
+                  className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  {PAGE_SIZE_OPTIONS.map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-1 justify-center text-sm text-gray-600">
+                Showing{" "}
+                <span className="font-semibold mx-1">
+                  {displayedData.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1}
+                </span>
+                {"-"}
+                <span className="font-semibold mx-1">
+                  {(currentPage - 1) * rowsPerPage + displayedData.length}
+                </span>
+                of <span className="font-semibold mx-1">{totalRows}</span> records
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`px-2 py-1 rounded ${currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700'} `}
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                {[...Array(totalPages)].map((_, i) => {
+                  // Show only first, last, current, and one around current; use ... in between for long lists
+                  if (
+                    i === 0 ||
+                    i === totalPages - 1 ||
+                    Math.abs(i + 1 - currentPage) <= 1
+                  ) {
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => handlePageChange(i + 1)}
+                        className={`px-2 py-1 mx-1 rounded font-semibold ${currentPage === i + 1 ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-indigo-100'}`}
+                      >
+                        {i + 1}
+                      </button>
+                    );
+                  } else if (
+                    (i === 1 && currentPage > 3) ||
+                    (i === totalPages - 2 && currentPage < totalPages - 2)
+                  ) {
+                    return (
+                      <span key={i} className="px-1 text-gray-400 select-none">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                })}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className={`px-2 py-1 rounded ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700'} `}
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
         {filteredData.length > 0 && (
           <div className="mt-6 text-center text-sm text-gray-500 bg-white rounded-lg p-4 shadow-sm">
-            Showing {filteredData.length} of {reportData.length} records
+            Showing {(currentPage - 1) * rowsPerPage + 1}
+            {" - "}
+            {(currentPage - 1) * rowsPerPage + displayedData.length}
+            {" "}of {reportData.length} records
           </div>
         )}
       </div>

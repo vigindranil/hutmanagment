@@ -52,6 +52,9 @@ interface ReportsProps {
     onBack?: () => void;
 }
 
+// Pagination constants
+const ROWS_PER_PAGE = 10;
+
 const Reports: React.FC<ReportsProps> = ({ onBack }) => {
     const [reportData, setReportData] = useState<PaymentReport[]>([]);
     const [filteredData, setFilteredData] = useState<PaymentReport[]>([]);
@@ -61,6 +64,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
     const [toDate, setToDate] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [selectedFilter, setSelectedFilter] = useState<string>("all");
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
     const formatDateForInput = (date: Date): string => {
         return date.toISOString().split("T")[0];
@@ -163,7 +167,15 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
         }
 
         setFilteredData(filtered);
+        // Reset to page 1 when data changes
+        setCurrentPage(1);
     }, [reportData, searchTerm, selectedFilter]);
+
+    // Compute paginated data from filteredData
+    const pageCount = Math.ceil(filteredData.length / ROWS_PER_PAGE);
+    const startIdx = (currentPage - 1) * ROWS_PER_PAGE;
+    const endIdx = Math.min(startIdx + ROWS_PER_PAGE, filteredData.length);
+    const paginatedData = filteredData.slice(startIdx, endIdx);
 
     const handleSearch = () => {
         fetchReportData();
@@ -328,16 +340,6 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                     </div>
                 </div>
 
-                {/* Error Toast */}
-                {/* {error && (
-          <div className="fixed bottom-6 right-6 z-50 bg-red-600 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            <div>
-              <span className="font-semibold">Error:</span> {error}
-            </div>
-          </div>
-        )} */}
-
                 {/* Data Table Card */}
                 <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                     <div className="bg-gradient-to-r from-indigo-600 to-blue-600 px-6 py-4">
@@ -346,10 +348,6 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                                 <FileText className="w-5 h-5 text-white" />
                                 <h2 className="text-lg font-semibold text-white">Payment Records</h2>
                             </div>
-                            {/* <button className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-200">
-                <Download className="w-4 h-4" />
-                Export
-              </button> */}
                         </div>
                     </div>
 
@@ -357,6 +355,13 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                         <table className="w-full">
                             <thead>
                                 <tr className="bg-gray-50 border-b border-gray-200">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        <div className="flex items-center gap-2">
+                                            {/* Serial No. Icon */}
+                                            <span>#</span>
+                                            Serial No.
+                                        </div>
+                                    </th>
                                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                         <div className="flex items-center gap-2">
                                             <FileText className="w-4 h-4" />
@@ -408,9 +413,15 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                                {filteredData.length > 0 ? (
-                                    filteredData.map((row, idx) => (
-                                        <tr key={idx} className="hover:bg-gray-50 transition-colors duration-150">
+                                {paginatedData.length > 0 ? (
+                                    paginatedData.map((row, idx) => (
+                                        <tr key={startIdx + idx} className="hover:bg-gray-50 transition-colors duration-150">
+                                            <td className="px-6 py-4 text-sm">
+                                                {/* Serial No: Calculate from currentPage and idx */}
+                                                <span className="font-semibold text-gray-700">
+                                                    {startIdx + idx + 1}
+                                                </span>
+                                            </td>
                                             <td className="px-6 py-4 text-sm">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
@@ -438,7 +449,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={7} className="px-6 py-12 text-center">
+                                        <td colSpan={9} className="px-6 py-12 text-center">
                                             <div className="flex flex-col items-center gap-4">
                                                 {loading ? (
                                                     <>
@@ -463,12 +474,46 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Pagination Controls */}
+                    {pageCount > 1 && (
+                        <div className="flex flex-wrap items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50">
+                            <div className="text-sm text-gray-500">
+                                Showing <span className="font-semibold">{startIdx + 1}</span> to <span className="font-semibold">{endIdx}</span> of <span className="font-semibold">{filteredData.length}</span> entries
+                            </div>
+                            <div className="flex gap-2 items-center mt-2 md:mt-0">
+                                <button
+                                    className="px-3 py-1 rounded disabled:opacity-50 disabled:cursor-not-allowed font-semibold bg-white border border-gray-200 hover:bg-gray-100 transition-all"
+                                    disabled={currentPage === 1}
+                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                >
+                                    Prev
+                                </button>
+                                {[...Array(pageCount)].map((_, i) => (
+                                    <button
+                                        key={i}
+                                        className={`px-3 py-1 rounded font-semibold border ${currentPage === i + 1 ? "bg-indigo-600 text-white border-indigo-600" : "bg-white border-gray-200 hover:bg-gray-100 text-gray-700"}`}
+                                        onClick={() => setCurrentPage(i + 1)}
+                                    >
+                                        {i + 1}
+                                    </button>
+                                ))}
+                                <button
+                                    className="px-3 py-1 rounded disabled:opacity-50 disabled:cursor-not-allowed font-semibold bg-white border border-gray-200 hover:bg-gray-100 transition-all"
+                                    disabled={currentPage === pageCount}
+                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Footer */}
                 {filteredData.length > 0 && (
                     <div className="mt-6 text-center text-sm text-gray-500 bg-white rounded-lg p-4 shadow-sm">
-                        Showing {filteredData.length} of {reportData.length} records
+                        Showing records {startIdx + 1}-{endIdx} of {reportData.length}
                     </div>
                 )}
             </div>
