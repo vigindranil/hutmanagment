@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
+import {
   Building2,
   Mail,
   Lock,
@@ -53,7 +53,7 @@ const Login: React.FC = () => {
         const decoded_data = jwtDecode<any>(result?.data?.access_token || "");
         const user_details = JSON.parse(decoded_data?.userDetails);
 
-        if (loginType === 'admin' && (user_details?.UserTypeID === 100 || user_details?.UserTypeID === 50 || user_details?.UserTypeID === 60 ||  user_details?.UserTypeID === 70 ||  user_details?.UserTypeID === 10) ){ // for admin
+        if (loginType === 'admin' && (user_details?.UserTypeID === 100 || user_details?.UserTypeID === 50 || user_details?.UserTypeID === 60 ||  user_details?.UserTypeID === 70 ||  user_details?.UserTypeID === 10 || user_details?.UserTypeID === 80) ){ // for admin
           navigate('/dashboard');
         } else if(loginType === 'user' && user_details?.UserTypeID === 1) { // for user
           navigate('/user-dashboard');
@@ -65,7 +65,6 @@ const Login: React.FC = () => {
             confirmButtonColor: '#d33'
           });
         }
-
       } else {
         Swal?.fire({
           icon: 'error',
@@ -74,7 +73,6 @@ const Login: React.FC = () => {
           confirmButtonColor: '#d33'
         });
       }
-      
       console.log("Token Response:", result);
       setIsLoading(false);
     }
@@ -99,7 +97,6 @@ const Login: React.FC = () => {
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
               <span>Back to Home</span>
             </Link>
-
             <div className="flex items-center space-x-3 mb-6">
               <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
                 <Building2 className="w-8 h-8 text-white" />
@@ -111,7 +108,6 @@ const Login: React.FC = () => {
                 <p className="text-sm text-gray-500 font-medium">Jalpaiguri</p>
               </div>
             </div>
-
             <div className="space-y-2">
               <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
               <p className="text-gray-600">Sign in to access the Haat Management System</p>

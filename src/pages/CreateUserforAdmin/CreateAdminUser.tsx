@@ -10,6 +10,7 @@ const userTypeOptions = [
   { label: "Hearing Officer", value: 60 },
   { label: "Approval Officer", value: 70 },
   { label: "Haat Manager", value: 10 },
+  { label: "Maker User", value: 80 },
 ];
 
 const initialFormState = {
@@ -377,13 +378,13 @@ const CreateAdminUser = () => {
                       <label>
                         User Type <span className="text-red-600">*</span>
                       </label>
-                      <SelectField name="user_type_id" options={userTypeOptions} required />
+                      <SelectField name="user_type_id" options={userTypeOptions} required label="User Type" />
                     </div>
                     <div className="form-group">
                       <label>
                         District <span className="text-red-600">*</span>
                       </label>
-                      <SelectField name="district_id" options={districtOptions} required />
+                      <SelectField name="district_id" options={districtOptions} required label="District" />
                     </div>
                   </div>
                   {userTypeID == 10 && (
@@ -392,13 +393,13 @@ const CreateAdminUser = () => {
                         <label>
                           Police Station <span className="text-red-600">*</span>
                         </label>
-                        <SelectField name="ps_id" options={psOptions} required />
+                        <SelectField name="ps_id" options={psOptions} required label="Police Station" />
                       </div>
                       <div className="form-group">
                         <label>
                           Haat <span className="text-red-600">*</span>
                         </label>
-                        <SelectField name="haat_id" options={haatOptions} required />
+                        <SelectField name="haat_id" options={haatOptions} required label="Haat" />
                       </div>
                     </div>
                   )}

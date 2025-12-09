@@ -73,8 +73,8 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
   }, [location.pathname]);
 
   function handleLogout() {
-    // TODO: Replace with your logout logic
-    // For example, clear auth tokens, redirect, etc.
+    // Replace with logout logic
+    // clear auth tokens, redirect, etc.
     Cookies.remove('token');
     console.log("Logout button triggered")
     navigate('/login');
@@ -95,6 +95,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
     { name: 'Checker Dashboard', user_type_id: 50, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Hearing Officer Dasboard', user_type_id: 60, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
     { name: 'Approval Officer Dasboard', user_type_id: 70, href: '/dashboard', icon: FileText, color: 'from-purple-500 to-indigo-600' },
+    { name: 'Maker User Dashboard', user_type_id: 80, href: '/dashboard', icon: FileText, color: 'from-purple-500 to-indigo-600' },
     {
       name: 'Survey Reports',
       user_type_id: 70,
