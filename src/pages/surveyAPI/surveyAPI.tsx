@@ -96,7 +96,7 @@ export const getSurveyDetailsByApprovalOfficerID = async (haatStatusId: any) => 
 export const getHaatManagerDashboardDtlsByHaatManagerID = async (
   haatStatusId: any
 ) => {
-  const userDetails = decodeJwtToken();
+  const userDetails = decodeJwtToken(); 
   const response = await commonApi(
     `user/getHaatManagerDashboardDtlsByHaatManagerID?HaatManagerStatus=${haatStatusId}&HaatManagerID=${userDetails?.UserID}`
   );
