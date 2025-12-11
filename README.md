@@ -26,6 +26,9 @@ This document outlines the user roles and their corresponding `UserTypeID`s, alo
 | `finalapprovaluser`   | Final approval admin |
 | `checkingtestuser1`   | Checker test user |
 | `hearingtestuser`     | Hearing officer test user |
+| `haatmanagertestuser`     | Haat Manager Test user |
+| `makertestuser`     | Maker Test User |
+| `stateadmin`     | State Admin |
 
 ## Application Login
 | Username              | Description      |
