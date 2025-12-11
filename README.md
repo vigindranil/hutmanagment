@@ -38,6 +38,7 @@ This document outlines the user roles and their corresponding `UserTypeID`s, alo
 |-------------|---------------------|
 | `7003372763`| Shop/User login     |
 | `8001104376`| Shop/User login     |
+| `8240091609`| Shop/User login     |
 
 ---
 ## Common Password
