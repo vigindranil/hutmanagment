@@ -13,6 +13,7 @@ This document outlines the user roles and their corresponding `UserTypeID`s, alo
 | **Checker**       | 50         |
 | **Hearing Officer** | 60       |
 | **Approval Officer** | 70      |
+| **Maker Officer** | 80      |
 
 ---
 
@@ -25,6 +26,11 @@ This document outlines the user roles and their corresponding `UserTypeID`s, alo
 | `finalapprovaluser`   | Final approval admin |
 | `checkingtestuser1`   | Checker test user |
 | `hearingtestuser`     | Hearing officer test user |
+
+## Application Login
+| Username              | Description      |
+|-----------------------|------------------|
+| `surveytestuser`   | Field Survey Officer |
 
 ### User Logins
 
