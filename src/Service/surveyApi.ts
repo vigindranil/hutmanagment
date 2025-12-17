@@ -100,12 +100,12 @@ export const savePaymentDetailsApi = async (payload: SavePaymentDetailsPayload) 
   return commonApi(`user/savePaymentDetailsBySurveyID`, payload);
 };
 
-export const getSurveyDetailsByShopOwnerApi = async (haatStatusId: string) => {
-  const userDetails = decodeJwtToken();
-  return commonApi(
-    `user/getSurveyDetailsByShopOwnerID?UserDashboardStatus=${haatStatusId}&ShopOwnerID=${userDetails?.UserID}`
-  );
-};
+// export const getSurveyDetailsByShopOwnerApi = async (haatStatusId: string) => {
+//   const userDetails = decodeJwtToken();
+//   return commonApi(
+//     `user/getSurveyDetailsByShopOwnerID?UserDashboardStatus=${haatStatusId}&ShopOwnerID=${userDetails?.UserID}`
+//   );
+// };
 
 export const getHearingDetailsByHearingUserApi = async (haatStatusId: string) => {
   const userDetails = decodeJwtToken();

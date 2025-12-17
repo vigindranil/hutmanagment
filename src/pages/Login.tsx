@@ -12,7 +12,7 @@ const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
-import bgimg from '../../src/assets/haat2.jpg'
+import bgimg from '../../src/assets/ChatGPT Image Dec 17, 2025, 03_47_07 PM.png'
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);

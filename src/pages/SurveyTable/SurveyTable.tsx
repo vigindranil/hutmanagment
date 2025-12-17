@@ -508,8 +508,8 @@ const SurveyTable: React.FC = () => {
     (userType == 70 && haatStatusId == "2");
 
   // Animation utility class for table row fade-in and hover scaling
-  const rowAnimationClass =
-    "animate-[fade-in_0.5s_ease-in-out] group hover:scale-[1.0125] hover:shadow-md hover:bg-gradient-to-r hover:from-blue-50/70 hover:to-indigo-50/50 transition-all duration-300";
+  // const rowAnimationClass =
+  //   "animate-[fade-in_0.5s_ease-in-out] group hover:scale-[1.0125] hover:shadow-md hover:bg-gradient-to-r hover:from-blue-50/70 hover:to-indigo-50/50 transition-all duration-300";
   const buttonBaseAnimation =
     "transition-all duration-200 focus:scale-95 active:scale-95 active:shadow-md";
   const cardAnimation =
@@ -941,7 +941,7 @@ const SurveyTable: React.FC = () => {
                   paginatedData.map((survey: any, index: number) => (
                     <tr
                       key={survey.survey_id}
-                      className={rowAnimationClass}
+                      // className={rowAnimationClass}
                       style={{ animationDelay: `${0.08 * (index % ITEMS_PER_PAGE)}s` }}
                     >
                       <td className="px-3 py-3">
@@ -1417,7 +1417,7 @@ const SurveyTable: React.FC = () => {
                     </tr>
                   ))
                 ) : (
-                  <tr className={rowAnimationClass} style={{ animationDelay: "0s" }}>
+                  <tr style={{ animationDelay: "1s" }}> 
                     <td
                       colSpan={
                         Number(haatStatusId) === 4
