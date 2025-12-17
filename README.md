@@ -13,6 +13,7 @@ This document outlines the user roles and their corresponding `UserTypeID`s, alo
 | **Checker**       | 50         |
 | **Hearing Officer** | 60       |
 | **Approval Officer** | 70      |
+| **Maker Officer** | 80      |
 
 ---
 
@@ -25,6 +26,14 @@ This document outlines the user roles and their corresponding `UserTypeID`s, alo
 | `finalapprovaluser`   | Final approval admin |
 | `checkingtestuser1`   | Checker test user |
 | `hearingtestuser`     | Hearing officer test user |
+| `haatmanagertestuser`     | Haat Manager Test user |
+| `makertestuser`     | Maker Test User |
+| `stateadmin`     | State Admin |
+
+## Application Login
+| Username              | Description      |
+|-----------------------|------------------|
+| `surveytestuser`   | Field Survey Officer |
 
 ### User Logins
 
@@ -32,6 +41,7 @@ This document outlines the user roles and their corresponding `UserTypeID`s, alo
 |-------------|---------------------|
 | `7003372763`| Shop/User login     |
 | `8001104376`| Shop/User login     |
+| `8240091609`| Shop/User login     |
 
 ---
 ## Common Password
