@@ -51,7 +51,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Modified Applications',
-        value: result?.data?.modified_application ? result?.data?.modified_application?.toString() : "0",
+        value: result?.data?.modified_applications ? result?.data?.modified_applications?.toString() : "0",
         changeType: 'positive' as const,
         icon: TrendingUp,
         color: 'purple' as const,

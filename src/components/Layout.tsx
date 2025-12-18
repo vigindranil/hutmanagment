@@ -77,31 +77,6 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
     });
   }, [location.pathname]);
 
-  // Global back-button logout logic
-  useEffect(() => {
-    const handlePopState = () => {
-      // Show confirm dialog for logout
-      const shouldLogout = window.confirm("Do you want to logout?");
-      if (shouldLogout) {
-        // Clear local storage/session and redirect to login
-        localStorage.clear();
-        sessionStorage.clear();
-        Cookies.remove('token');
-        window.location.href = "/login";
-      } else {
-        // Push current state again to prevent navigation
-        window.history.pushState(null, '', window.location.pathname);
-      }
-    };
-
-    window.history.pushState(null, '', window.location.pathname); // Push initial state
-    window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [location.pathname]);
-
   function handleLogout() {
     // Replace with logout logic
     // clear auth tokens, redirect, etc.
