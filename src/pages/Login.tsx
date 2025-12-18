@@ -45,7 +45,7 @@ const Login: React.FC = () => {
     try {
       const response = await fetch(BASE_API_URL + "auth/authentication", requestOptions);
 
-      if (!response.ok) {throw new Error(`HTTP error! Status: ${response?.status}`);}
+      if (!response.ok) { throw new Error(`HTTP error! Status: ${response?.status}`); }
 
       const result = await response.json();
       if (result?.status == 0) {
@@ -53,15 +53,37 @@ const Login: React.FC = () => {
         const decoded_data = jwtDecode<any>(result?.data?.access_token || "");
         const user_details = JSON.parse(decoded_data?.userDetails);
 
-        if (loginType === 'admin' && (user_details?.UserTypeID === 100 || user_details?.UserTypeID === 50 || user_details?.UserTypeID === 60 ||  user_details?.UserTypeID === 70 ||  user_details?.UserTypeID === 10 || user_details?.UserTypeID === 80) ){ // for admin
-          navigate('/dashboard');
-        } else if(loginType === 'user' && user_details?.UserTypeID === 1) { // for user
-          navigate('/user-dashboard');
-        } else {
+        // Dynamic redirect configuration based on UserTypeID
+        const redirectMap: { [key: number]: { route: string; allowedLoginTypes: ('user' | 'admin')[] } } = {
+          1: { route: '/user-dashboard', allowedLoginTypes: ['user'] },      // Shop Owner
+          10: { route: '/dashboard', allowedLoginTypes: ['admin'] },          // Haat Manager
+          50: { route: '/dashboard', allowedLoginTypes: ['admin'] },          // Checker
+          60: { route: '/dashboard', allowedLoginTypes: ['admin'] },          // Hearing Officer
+          70: { route: '/dashboard', allowedLoginTypes: ['admin'] },          // Approval Officer
+          80: { route: '/maker-dashboard', allowedLoginTypes: ['admin'] },    // Maker User
+          100: { route: '/dashboard', allowedLoginTypes: ['admin'] },         // Admin
+        };
+
+        const userTypeID = user_details?.UserTypeID;
+        const redirectConfig = redirectMap[userTypeID];
+
+        if (redirectConfig && redirectConfig.allowedLoginTypes.includes(loginType)) {
+          // Valid user type and login type combination
+          navigate(redirectConfig.route);
+        } else if (!redirectConfig) {
+          // Unknown user type
           Swal?.fire({
             icon: 'error',
             title: 'Login Failed',
-            text: 'Invalid login type or credentials',
+            text: 'Invalid user type',
+            confirmButtonColor: '#d33'
+          });
+        } else {
+          // User type exists but wrong login type selected
+          Swal?.fire({
+            icon: 'error',
+            title: 'Login Failed',
+            text: `Please use ${redirectConfig.allowedLoginTypes.join(' or ')} login for this account`,
             confirmButtonColor: '#d33'
           });
         }
@@ -76,7 +98,7 @@ const Login: React.FC = () => {
       console.log("Token Response:", result);
       setIsLoading(false);
     }
-      catch (error) {
+    catch (error) {
       console.error("Login error:", error);
       setIsLoading(false);
       alert("Login failed. Please check your credentials and try again.");
@@ -119,22 +141,20 @@ const Login: React.FC = () => {
             <button
               type="button"
               onClick={() => setLoginType('user')}
-              className={`px-4 py-2 rounded-l-xl border border-blue-600 font-semibold transition-colors ${
-                loginType === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-blue-600 hover:bg-blue-50'
-              }`}
+              className={`px-4 py-2 rounded-l-xl border border-blue-600 font-semibold transition-colors ${loginType === 'user'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-blue-600 hover:bg-blue-50'
+                }`}
             >
               User Login
             </button>
             <button
               type="button"
               onClick={() => setLoginType('admin')}
-              className={`px-4 py-2 rounded-r-xl border border-blue-600 font-semibold transition-colors ${
-                loginType === 'admin'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-blue-600 hover:bg-blue-50'
-              }`}
+              className={`px-4 py-2 rounded-r-xl border border-blue-600 font-semibold transition-colors ${loginType === 'admin'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-blue-600 hover:bg-blue-50'
+                }`}
             >
               Admin Login
             </button>
@@ -242,7 +262,7 @@ const Login: React.FC = () => {
         {/* Background decorations */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full -translate-y-48 translate-x-48 blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-indigo-400/20 to-pink-400/20 rounded-full translate-y-36 -translate-x-36 blur-3xl"></div>
-        
+
         {/* Image Container */}
         <div className="relative w-full h-full flex items-center justify-center">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10"></div>

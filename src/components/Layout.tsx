@@ -37,6 +37,13 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  // Load user details from JWT token on component mount
+  useEffect(() => {
+    const data = decodeJwtToken();
+    console.log("Decoded User Details from JWT Token:", data);
+    setUserDetails(data);
+  }, []);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -51,8 +58,6 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
     }
-    const data = decodeJwtToken();
-    setUserDetails(data);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -64,7 +69,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
     const currentPath = location.pathname;
     navigation.forEach((item) => {
       if (item.subMenu) {
-        const hasActiveSubmenu = item.subMenu.some(sub => currentPath === sub.href);
+        const hasActiveSubmenu = item.subMenu.some((sub: any) => currentPath === sub.href);
         if (hasActiveSubmenu && !expandedMenus.includes(item.name)) {
           setExpandedMenus(prev => [...prev, item.name]);
         }
@@ -88,49 +93,71 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
     );
   };
 
-  const navigation = [
-    { name: 'Dashboard', user_type_id: 100, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
-    { name: 'Shop Owner Dashboard', user_type_id: 1, href: '/user-dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
-    { name: 'Haat Manager Dashboard', user_type_id: 10, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
-    { name: 'Checker Dashboard', user_type_id: 50, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
-    { name: 'Hearing Officer Dasboard', user_type_id: 60, href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
-    { name: 'Approval Officer Dasboard', user_type_id: 70, href: '/dashboard', icon: FileText, color: 'from-purple-500 to-indigo-600' },
-    { name: 'Maker User Dashboard', user_type_id: 80, href: '/dashboard', icon: FileText, color: 'from-purple-500 to-indigo-600' },
-    {
-      name: 'Survey Reports',
-      user_type_id: 70,
-      icon: FileText,
-      color: 'from-blue-500 to-purple-600 hover:from-green-600 hover:to-indigo-700',
-      subMenu: [
-        { name: 'First Payment Completed', href: '/firstpayment'},
-        { name: 'Final Payment Completed', href: '/finalpayment'},
-        { name: 'Completed Hearing', href: '/completedhearing'},
-        { name: 'License Generated', href: '/licensegenerated'},
+  // Dynamic navigation based on user type from JWT token
+  const getNavigationItems = () => {
+    const userTypeID = userDetails?.UserTypeID;
+
+    if (!userTypeID) return [];
+
+    // Define navigation items for each user type
+    const navigationMap: { [key: number]: any[] } = {
+      // Admin (100)
+      100: [
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+        {
+          name: 'Survey Reports',
+          icon: FileText,
+          color: 'from-blue-500 to-purple-600 hover:from-green-600 hover:to-indigo-700',
+          subMenu: [
+            { name: 'First Payment Completed', href: '/firstpayment' },
+            { name: 'Final Payment Completed', href: '/finalpayment' },
+            { name: 'Completed Hearing', href: '/completedhearing' },
+            { name: 'License Generated', href: '/licensegenerated' },
+          ],
+        },
+        { name: 'Create User', href: '/create-admin-user', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
       ],
-    },
-    {
-      name: 'Survey Reports',
-      user_type_id: 100,
-      icon: FileText,
-      color: 'from-blue-500 to-purple-600 hover:from-green-600 hover:to-indigo-700',
-      subMenu: [
-        { name: 'First Payment Completed', href: '/firstpayment'},
-        { name: 'Final Payment Completed', href: '/finalpayment'},
-        { name: 'Completed Hearing', href: '/completedhearing'},
-        { name: 'License Generated', href: '/licensegenerated'},
+      // Shop Owner (1)
+      1: [
+        { name: 'Shop Owner Dashboard', href: '/user-dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
       ],
-    },
-    { name: 'Create User', user_type_id: 100, href: '/create-admin-user', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+      // Haat Manager (10)
+      10: [
+        { name: 'Haat Manager Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+      ],
+      // Checker (50)
+      50: [
+        { name: 'Checker Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+      ],
+      // Hearing Officer (60)
+      60: [
+        { name: 'Hearing Officer Dashboard', href: '/dashboard', icon: LayoutDashboard, color: 'from-blue-500 to-purple-600' },
+      ],
+      // Approval Officer (70)
+      70: [
+        { name: 'Approval Officer Dashboard', href: '/dashboard', icon: FileText, color: 'from-purple-500 to-indigo-600' },
+        {
+          name: 'Survey Reports',
+          icon: FileText,
+          color: 'from-blue-500 to-purple-600 hover:from-green-600 hover:to-indigo-700',
+          subMenu: [
+            { name: 'First Payment Completed', href: '/firstpayment' },
+            { name: 'Final Payment Completed', href: '/finalpayment' },
+            { name: 'Completed Hearing', href: '/completedhearing' },
+            { name: 'License Generated', href: '/licensegenerated' },
+          ],
+        },
+      ],
+      // Maker User (80)
+      80: [
+        { name: 'Maker User Dashboard', href: '/maker-dashboard', icon: LayoutDashboard, color: 'from-purple-500 to-indigo-600' },
+      ],
+    };
 
+    return navigationMap[userTypeID] || [];
+  };
 
-
-    // { name: 'Survey', user_type_id: 100, href: '/survey', icon: ClipboardList, color: 'from-teal-500 to-cyan-600' },
-    // { name: 'Vendors', href: '/vendors', icon: Users, color: 'from-green-500 to-teal-600' },
-    // { name: 'Tax Management', href: '/tax-management', icon: Calculator, color: 'from-orange-500 to-red-600' },
-    // { name: 'Payments', user_type_id: 100, href: '/payments', icon: CreditCard, color: 'from-emerald-500 to-cyan-600' },
-    // { name: 'Defaulters', href: '/defaulters', icon: AlertTriangle, color: 'from-red-500 to-pink-600' },
-    // { name: 'Settings', href: '/settings', icon: Settings, color: 'from-gray-500 to-slate-600' },
-  ];
+  const navigation = getNavigationItems();
 
   const isActivePath = (path: string) => {
     return location.pathname === path;
@@ -183,84 +210,82 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                 const isExpanded = expandedMenus.includes(item.name);
 
                 return (
-                  item?.user_type_id == userDetails?.UserTypeID && (
-                    <li key={item.name}>
-                      {/* Main menu item */}
-                      {item.subMenu ? (
-                        // Item with submenu
-                        <div>
-                          <button
-                            onClick={() => toggleSubmenu(item.name)}
-                            className={`group w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${hasSubmenuActive
-                              ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
-                              : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
-                              }`}
-                          >
-                            <div className="flex items-center">
-                              <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
-                                }`} />
-                              {item.name}
-                            </div>
-                            {isExpanded ? (
-                              <ChevronDown className={`w-4 h-4 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
-                                }`} />
-                            ) : (
-                              <ChevronRight className={`w-4 h-4 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
-                                }`} />
-                            )}
-                          </button>
-
-                          {/* Enhanced Submenu with Professional Hover Effects */}
-                          {isExpanded && (
-                            <ul className="mt-2 ml-6 space-y-1">
-                              {item.subMenu.map((subItem) => {
-                                const subActive = isActivePath(subItem.href);
-                                return (
-                                  <li key={subItem.name}>
-                                    <Link
-                                      to={subItem.href}
-                                      className={`group block px-4 py-3 text-sm rounded-lg transition-all duration-300 transform hover:translate-x-1 ${subActive
-                                        ? 'bg-gradient-to-r from-teal-500 to-indigo-600 text-white shadow-lg shadow-teal-500/25'
-                                        : 'text-gray-600 hover:bg-gradient-to-r hover:from-teal-50 hover:via-blue-50 hover:to-indigo-50 hover:text-teal-700 hover:shadow-md hover:border-l-4 hover:border-teal-400'
-                                        }`}
-                                      onClick={() => setSidebarOpen(false)}
-                                    >
-                                      <span className="flex items-center">
-                                        <span className={`w-2 h-2 rounded-full mr-3 transition-all duration-200 ${subActive
-                                          ? 'bg-white shadow-sm'
-                                          : 'bg-gray-300 group-hover:bg-teal-400 group-hover:scale-125'
-                                          }`}></span>
-                                        <span className="relative">
-                                          {subItem.name}
-                                          {!subActive && (
-                                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-400 to-indigo-500 transition-all duration-300 group-hover:w-full"></span>
-                                          )}
-                                        </span>
-                                      </span>
-                                    </Link>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          )}
-                        </div>
-                      ) : (
-                        // Regular menu item
-                        <Link
-                          to={item.href}
-                          className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${active
+                  <li key={item.name}>
+                    {/* Main menu item */}
+                    {item.subMenu ? (
+                      // Item with submenu
+                      <div>
+                        <button
+                          onClick={() => toggleSubmenu(item.name)}
+                          className={`group w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${hasSubmenuActive
                             ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
                             : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
                             }`}
-                          onClick={() => setSidebarOpen(false)}
                         >
-                          <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${active ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
-                            }`} />
-                          {item.name}
-                        </Link>
-                      )}
-                    </li>
-                  )
+                          <div className="flex items-center">
+                            <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                              }`} />
+                            {item.name}
+                          </div>
+                          {isExpanded ? (
+                            <ChevronDown className={`w-4 h-4 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                              }`} />
+                          ) : (
+                            <ChevronRight className={`w-4 h-4 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                              }`} />
+                          )}
+                        </button>
+
+                        {/* Enhanced Submenu with Professional Hover Effects */}
+                        {isExpanded && (
+                          <ul className="mt-2 ml-6 space-y-1">
+                            {item.subMenu.map((subItem: any) => {
+                              const subActive = isActivePath(subItem.href);
+                              return (
+                                <li key={subItem.name}>
+                                  <Link
+                                    to={subItem.href}
+                                    className={`group block px-4 py-3 text-sm rounded-lg transition-all duration-300 transform hover:translate-x-1 ${subActive
+                                      ? 'bg-gradient-to-r from-teal-500 to-indigo-600 text-white shadow-lg shadow-teal-500/25'
+                                      : 'text-gray-600 hover:bg-gradient-to-r hover:from-teal-50 hover:via-blue-50 hover:to-indigo-50 hover:text-teal-700 hover:shadow-md hover:border-l-4 hover:border-teal-400'
+                                      }`}
+                                    onClick={() => setSidebarOpen(false)}
+                                  >
+                                    <span className="flex items-center">
+                                      <span className={`w-2 h-2 rounded-full mr-3 transition-all duration-200 ${subActive
+                                        ? 'bg-white shadow-sm'
+                                        : 'bg-gray-300 group-hover:bg-teal-400 group-hover:scale-125'
+                                        }`}></span>
+                                      <span className="relative">
+                                        {subItem.name}
+                                        {!subActive && (
+                                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-400 to-indigo-500 transition-all duration-300 group-hover:w-full"></span>
+                                        )}
+                                      </span>
+                                    </span>
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </div>
+                    ) : (
+                      // Regular menu item
+                      <Link
+                        to={item.href}
+                        className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${active
+                          ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
+                          : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
+                          }`}
+                        onClick={() => setSidebarOpen(false)}
+                      >
+                        <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${active ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                          }`} />
+                        {item.name}
+                      </Link>
+                    )}
+                  </li>
                 );
               })}
             </ul>

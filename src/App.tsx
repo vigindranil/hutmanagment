@@ -11,6 +11,7 @@ import Defaulters from './pages/Defaulters';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import UserDashboard from './pages/UserDashboard';
+import MakerDashboard from './pages/MakerDashboard';
 import SurveyTable from './pages/SurveyTable/SurveyTable';
 import Firstpayment from './pages/ApprovalOfficerReports/Firstpayment';
 import Finalpayment from './pages/ApprovalOfficerReports/Finalpayment';
@@ -32,107 +33,107 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
 
 function App() {
   return (
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/survey" element={
-          <ProtectedRoute>
-            <Layout>
-              <Survey />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <Layout>
-              <Dashboard />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/vendors" element={
-          <ProtectedRoute>
-            <Layout>
-              <Vendors />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/tax-management" element={
-          <ProtectedRoute>
-            <Layout>
-              <TaxManagement />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/payments" element={
-          <ProtectedRoute>  
-            <Layout>
-              <Payments />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/defaulters" element={
-          <ProtectedRoute>
-            <Layout>
-              <Defaulters />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/reports" element={
-          <ProtectedRoute>
-            <Layout>
-              <Reports />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/settings" element={
-          <ProtectedRoute>
-            <Layout>
-              <Settings />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/user-dashboard" element={
-          <ProtectedRoute>
-            <Layout>
-              <UserDashboard />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/survey-details" element={
-          <ProtectedRoute>
-            <Layout>
-              <SurveyTable />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/firstpayment" element={
-          <ProtectedRoute>
-            <Layout>
-              <Firstpayment />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/finalpayment" element={
-          <ProtectedRoute>
-            <Layout>
-              <Finalpayment />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/completedhearing" element={
-          <ProtectedRoute>
-            <Layout>
-              <Completedhearing />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/licensegenerated" element={
-          <ProtectedRoute>
-            <Layout>
-              <Licensegenerated />
-            </Layout>
-          </ProtectedRoute>
-        } />
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/survey" element={
+        <ProtectedRoute>
+          <Layout>
+            <Survey />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <Layout>
+            <Dashboard />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/vendors" element={
+        <ProtectedRoute>
+          <Layout>
+            <Vendors />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/tax-management" element={
+        <ProtectedRoute>
+          <Layout>
+            <TaxManagement />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/payments" element={
+        <ProtectedRoute>
+          <Layout>
+            <Payments />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/defaulters" element={
+        <ProtectedRoute>
+          <Layout>
+            <Defaulters />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/reports" element={
+        <ProtectedRoute>
+          <Layout>
+            <Reports />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/settings" element={
+        <ProtectedRoute>
+          <Layout>
+            <Settings />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/user-dashboard" element={
+        <ProtectedRoute>
+          <Layout>
+            <UserDashboard />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/survey-details" element={
+        <ProtectedRoute>
+          <Layout>
+            <SurveyTable />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/firstpayment" element={
+        <ProtectedRoute>
+          <Layout>
+            <Firstpayment />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/finalpayment" element={
+        <ProtectedRoute>
+          <Layout>
+            <Finalpayment />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/completedhearing" element={
+        <ProtectedRoute>
+          <Layout>
+            <Completedhearing />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/licensegenerated" element={
+        <ProtectedRoute>
+          <Layout>
+            <Licensegenerated />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/create-admin-user" element={
         <ProtectedRoute>
           <Layout>
@@ -140,7 +141,14 @@ function App() {
           </Layout>
         </ProtectedRoute>
       } />
-      </Routes>
+      <Route path="/maker-dashboard" element={
+        <ProtectedRoute>
+          <Layout>
+            <MakerDashboard />
+          </Layout>
+        </ProtectedRoute>
+      } />
+    </Routes>
   );
 }
 
