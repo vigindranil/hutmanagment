@@ -142,30 +142,6 @@ const Dashboard: React.FC = () => {
     UserdashboardApiCall();
   }, [])
 
-  // Handle browser back button (popstate event)
-  useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-      // Show confirm dialog for logout
-      const shouldLogout = window.confirm("Do you want to logout?");
-      if (shouldLogout) {
-        // Clear local storage/session and redirect to login (customize as needed)
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href = "/login";
-      } else {
-        // Push current state again to prevent navigation
-        window.history.pushState(null, '', window.location.pathname);
-      }
-    };
-
-    window.history.pushState(null, '', window.location.pathname); // Push initial state
-    window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
-
   return (
     <div className="space-y-8">
       {/* <div
