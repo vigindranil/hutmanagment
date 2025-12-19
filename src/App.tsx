@@ -13,6 +13,7 @@ import Settings from './pages/Settings';
 import UserDashboard from './pages/UserDashboard';
 import MakerDashboard from './pages/MakerDashboard';
 import SurveyTable from './pages/SurveyTable/SurveyTable';
+import MakerSurveyTable from './pages/SurveyTable/MakerSurveyTable';
 import Firstpayment from './pages/ApprovalOfficerReports/Firstpayment';
 import Finalpayment from './pages/ApprovalOfficerReports/Finalpayment';
 import Completedhearing from './pages/ApprovalOfficerReports/Completedhearing';
@@ -145,6 +146,13 @@ function App() {
         <ProtectedRoute>
           <Layout>
             <MakerDashboard />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/maker-survey-details" element={
+        <ProtectedRoute>
+          <Layout>
+            <MakerSurveyTable />
           </Layout>
         </ProtectedRoute>
       } />

@@ -37,8 +37,8 @@ export const savePaymentDetailsBySurveyID = async (
       selectedSurvey?.survey_status === "1"
         ? 1
         : selectedSurvey?.survey_status === "5"
-        ? 2
-        : undefined,
+          ? 2
+          : undefined,
     survey_id: selectedSurvey?.survey_id,
     amount:
       (selectedSurvey?.survey_status === "1"
@@ -96,7 +96,7 @@ export const getSurveyDetailsByApprovalOfficerID = async (haatStatusId: any) => 
 export const getHaatManagerDashboardDtlsByHaatManagerID = async (
   haatStatusId: any
 ) => {
-  const userDetails = decodeJwtToken(); 
+  const userDetails = decodeJwtToken();
   const response = await commonApi(
     `user/getHaatManagerDashboardDtlsByHaatManagerID?HaatManagerStatus=${haatStatusId}&HaatManagerID=${userDetails?.UserID}`
   );
@@ -214,3 +214,28 @@ export const getCertificateDetails = async (applicationNumber: string) => {
   const response = await commonApi(url, {});
   return response;
 };
+
+export const getSurveyDetailsForMakerByBoundaryID = async (
+  boundaryLevelId: number,
+  boundaryId: number,
+  statusId: number,
+  startDate: string,
+  endDate: string
+) => {
+  const userDetails = decodeJwtToken();
+  const payload = {
+    boundary_level_id: boundaryLevelId,
+    boundary_id: boundaryId,
+    user_id: userDetails?.UserID,
+    status_id: statusId,
+    start_date: startDate,
+    end_date: endDate,
+  };
+
+  const response = await commonApi(
+    `user/getSurveyDetailsForMakerByBoundaryID`,
+    payload
+  );
+  return response?.data || [];
+};
+

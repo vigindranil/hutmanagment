@@ -63,7 +63,10 @@ const StatsCard: React.FC<StatsCardProps> = ({
   }[changeType];
 
   const colorConfig = colorClasses[color];
-  const destinationPath = `/survey-details?_hti=${HaatDashoardStatus}&title=${title}&dashboardType=${dashboardType}`;
+
+  // Use different routes based on dashboard type
+  const basePath = dashboardType === 'USER' ? '/maker-survey-details' : '/survey-details';
+  const destinationPath = `${basePath}?_hti=${HaatDashoardStatus}&title=${title}&dashboardType=${dashboardType}`;
 
   return (
     <Link
