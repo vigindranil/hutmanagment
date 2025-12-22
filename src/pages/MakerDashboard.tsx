@@ -68,7 +68,6 @@ const Dashboard: React.FC = () => {
     <div className="space-y-8">
       {/* <div
   className="w-screen bg-red-200 h-screen bg-cover bg-center"
-  
 ></div> */}
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -104,7 +103,7 @@ const Dashboard: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats?.map((stat: any, index: number) => (
-          <StatsCard dashboardType="USER" key={index} {...stat} />
+          <StatsCard dashboardType="MAKER" key={index} {...stat} />
         ))}
       </div>
     </div>

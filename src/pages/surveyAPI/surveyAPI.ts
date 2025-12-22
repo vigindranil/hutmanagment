@@ -215,6 +215,8 @@ export const getCertificateDetails = async (applicationNumber: string) => {
   return response;
 };
 
+
+
 export const getSurveyDetailsForMakerByBoundaryID = async (
   boundaryLevelId: number,
   boundaryId: number,
@@ -237,5 +239,74 @@ export const getSurveyDetailsForMakerByBoundaryID = async (
     payload
   );
   return response?.data || [];
+};
+
+
+
+
+export type MakerUploadFiles = {
+  documentImage?: File | Blob;
+  panImage?: File | Blob;
+  residentialCertificateAttached?: File | Blob;
+  tradeLicenseAttached?: File | Blob;
+  affidavitAttached?: File | Blob;
+  warisionCertificateAttached?: File | Blob;
+  deathCertificateAttached?: File | Blob;
+  nocLegalHeirsAttached?: File | Blob;
+  landValuationDoc?: File | Blob;
+  sketchMapAttached?: File | Blob;
+  stallImage1?: File | Blob;
+  stallImage2?: File | Blob;
+};
+
+export const updateSurveyDetailsByMaker = async (
+  files: MakerUploadFiles,
+  applicationDetails: Record<string, any>
+) => {
+  const token = Cookies.get("token");
+  const headers = new Headers();
+  headers.append("accept", "*/*");
+  headers.append("Authorization", `Bearer ${token}`);
+
+  const formdata = new FormData();
+  const appendFile = (key: keyof MakerUploadFiles, file?: File | Blob) => {
+    if (!file) return;
+    const fileName = (file as File)?.name || `${String(key)}.jpg`;
+    formdata.append(key, file, fileName);
+  };
+
+  appendFile("documentImage", files.documentImage);
+  appendFile("panImage", files.panImage);
+  appendFile(
+    "residentialCertificateAttached",
+    files.residentialCertificateAttached
+  );
+  appendFile("tradeLicenseAttached", files.tradeLicenseAttached);
+  appendFile("affidavitAttached", files.affidavitAttached);
+  appendFile("warisionCertificateAttached", files.warisionCertificateAttached);
+  appendFile("deathCertificateAttached", files.deathCertificateAttached);
+  appendFile("nocLegalHeirsAttached", files.nocLegalHeirsAttached);
+  appendFile("landValuationDoc", files.landValuationDoc);
+  appendFile("sketchMapAttached", files.sketchMapAttached);
+  appendFile("stallImage1", files.stallImage1);
+  appendFile("stallImage2", files.stallImage2);
+
+  formdata.append("applicationDetials", JSON.stringify(applicationDetails));
+
+  const response = await fetch(
+    BASE_API_URL + "user/updateSurveyDetailsByMaker",
+    {
+      method: "POST",
+      headers,
+      body: formdata,
+      redirect: "follow",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+
+  return response.json();
 };
 

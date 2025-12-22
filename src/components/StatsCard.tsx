@@ -64,8 +64,23 @@ const StatsCard: React.FC<StatsCardProps> = ({
 
   const colorConfig = colorClasses[color];
 
-  // Use different routes based on dashboard type
-  const basePath = dashboardType === 'USER' ? '/maker-survey-details' : '/survey-details';
+  console.log("HaatDashoardStatus", HaatDashoardStatus)
+
+ 
+  // Make the route dynamic based on dashboardType
+  let basePath;
+  if (dashboardType === 'USER') {
+    basePath = '/survey-details';
+  } else if (dashboardType === 'MAKER' && HaatDashoardStatus !== undefined && HaatDashoardStatus !== null) {
+    // Maker treated as ADMIN but different base path
+    basePath = '/maker-survey-details';
+  } else if (dashboardType === 'ADMIN' && HaatDashoardStatus !== undefined && HaatDashoardStatus !== null ) {
+    // Other admin dashboards
+    basePath = '/survey-details';
+  } else {
+    // console.log("here here here")
+    // basePath = '/maker-survey-details';
+  }
   const destinationPath = `${basePath}?_hti=${HaatDashoardStatus}&title=${title}&dashboardType=${dashboardType}`;
 
   return (

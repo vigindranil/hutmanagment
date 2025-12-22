@@ -317,6 +317,8 @@ const SurveyTable: React.FC = () => {
   // Load Data Based on User Type
   const loadData = async () => {
     const userDetails = decodeJwtToken();
+    console.log('hatstatusID', haatStatusId)
+    console.log(dashboardType)
     if (!haatStatusId) return;
     if (dashboardType == "ADMIN" && userDetails?.UserTypeID == 100) {
       const result = await getHaatApplicantionDetailsForAdmin(haatStatusId);
