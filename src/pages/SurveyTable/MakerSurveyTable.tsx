@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getSurveyDetailsForMakerByBoundaryID, updateSurveyDetailsByMaker, MakerUploadFiles } from '../surveyAPI/surveyAPI';
+import {
+    getSurveyDetailsForMakerByBoundaryID,
+    updateSurveyDetailsByMaker,
+    MakerUploadFiles,
+    getRelationshipDetails,
+    getMouzaListByPoliceStationID,
+    getJLNoByPoliceStationID,
+    getADSRNameByPoliceStationID,
+    getHaatListByPoliceStationID,
+    getThanaListByDistrictID,
+} from '../surveyAPI/surveyAPI';
 import { decodeJwtToken } from '../../utils/decodeToken';
 import {
     FileText,
@@ -18,14 +28,14 @@ import {
     Save,
     X,
     Upload,
-    CheckCircle
+    CheckCircle,
+    Eye
 } from 'lucide-react';
+import { ViewDetailsModal } from '../SurveyModals/SurveyModals';
 
-// You can expand this as needed for typing each field deeply
 interface ExtendedSurveyData {
     survey_id?: string;
     application_number: string;
-    // All new fields for data edit modal, type according to the prompt
     license_type: number;
     application_status: number;
     applicant_type: number;
@@ -83,7 +93,6 @@ interface ExtendedSurveyData {
     final_payment_status: number;
     initial_payment_date: string | null;
     final_payment_date: string | null;
-    // Also old fields if needed for table display
     police_station_name?: string;
     police_district_name?: string;
     block_name?: string;
@@ -96,6 +105,36 @@ interface ExtendedSurveyData {
     document_number?: string;
     // add other table fields as needed
 }
+
+// Mouza option for dropdown
+type MouzaOption = {
+    mouza_id: number;
+    mouza_name: string;
+    adsr_name: string;
+    jl_no: string;
+};
+
+// JL No Option
+type JLNoOption = {
+    jl_no: string;
+};
+
+// ADSR name option for dropdown
+type ADSRNameOption = {
+    adsr_name: string;
+};
+
+// Haat option for dropdown
+type HaatOption = {
+    haat_id: number;
+    haat_name: string;
+};
+
+// Police Station option for dropdown
+type ThanaOption = {
+    police_station_id: number;
+    police_station_name: string;
+};
 
 const PAGE_SIZE = 10;
 
@@ -118,31 +157,30 @@ const ALL_EDIT_FIELDS: { key: keyof ExtendedSurveyData, label: string, type: str
     { key: "pan", label: "PAN", type: "text" },
     { key: "previous_license_no", label: "Previous License No", type: "text" },
     { key: "license_expiry_date", label: "License Expiry Date", type: "date" },
-    { key: "property_tax_payment_to_year", label: "Property Tax Payment To Year", type: "number" },
+    { key: "property_tax_payment_to_year", label: "Property Tax Payment To Year", type: "text" },
     { key: "land_transfer_explanation", label: "Land Transfer Explanation", type: "text" },
-    { key: "occupy", label: "Occupy", type: "number" },
-    { key: "occupy_from_year", label: "Occupy From Year", type: "number" },
+    { key: "occupy", label: "Occupy", type: "text" },
+    { key: "occupy_from_year", label: "Occupy From Year", type: "text" },
     { key: "present_occupier_name", label: "Present Occupier Name", type: "text" },
     { key: "occupier_guardian_name", label: "Occupier Guardian Name", type: "text" },
     { key: "adsr_name", label: "ADSR Name", type: "text" },
     { key: "is_same_owner", label: "Is Same Owner", type: "number" },
     { key: "rented_to_whom", label: "Rented To Whom", type: "text" },
     { key: "district_id", label: "District ID", type: "number" },
-    { key: "block_municipality_type", label: "Block/Municipality Type", type: "number" },
-    { key: "block_municipality_id", label: "Block/Municipality ID", type: "number" },
-    { key: "village_ward_id", label: "Village/Ward ID", type: "number" },
-    { key: "police_station_id", label: "Police Station ID", type: "number" },
-    { key: "hat_id", label: "Hat ID", type: "number" },
-    { key: "mouza_id", label: "Mouza ID", type: "number" },
+    { key: "block_municipality_type", label: "Block/Municipality Type", type: "text" },
+    { key: "block_municipality_id", label: "Block/Municipality ID", type: "text" },
+    { key: "village_ward_id", label: "Village/Ward ID", type: "text" },
+    { key: "hat_id", label: "Hat ID", type: "text" },
+    { key: "mouza_id", label: "Mouza ID", type: "text" },
     { key: "stall_no", label: "Stall No", type: "text" },
     { key: "holding_no", label: "Holding No", type: "text" },
     { key: "jl_no", label: "JL No", type: "text" },
     { key: "khatian_no", label: "Khatian No", type: "text" },
     { key: "plot_no", label: "Plot No", type: "text" },
-    { key: "area_com_sqft", label: "Area (Sqft)", type: "number" },
-    { key: "latitude", label: "Latitude", type: "number" },
-    { key: "longitude", label: "Longitude", type: "number" },
-    { key: "land_valuation_amount", label: "Land Valuation Amount", type: "number" },
+    { key: "area_com_sqft", label: "Area (Sqft)", type: "text" },
+    { key: "latitude", label: "Latitude", type: "text" },
+    { key: "longitude", label: "Longitude", type: "text" },
+    { key: "land_valuation_amount", label: "Land Valuation Amount", type: "text" },
     { key: "remarks", label: "Remarks", type: "text" },
     // { key: "hearing_date", label: "Hearing Date", type: "date" },
     // { key: "hearing_approved_date", label: "Hearing Approved Date", type: "date" },
@@ -157,6 +195,25 @@ const ALL_EDIT_FIELDS: { key: keyof ExtendedSurveyData, label: string, type: str
     // { key: "final_payment_status", label: "Final Payment Status", type: "number" },
     // { key: "initial_payment_date", label: "Initial Payment Date", type: "date" },
     // { key: "final_payment_date", label: "Final Payment Date", type: "date" }
+];
+
+// Updated RelationshipOption type for new backend response
+type RelationshipOption = {
+    relationship_id: number;
+    relationship_name: string;
+};
+
+// -- DOCUMENT TYPE DROPDOWN OPTIONS --
+const DOCUMENT_TYPE_OPTIONS = [
+    { value: "1", label: "Aadhar" },
+    { value: "2", label: "Votar" },
+    // Add more options if necessary
+];
+
+// Dropdown options for is_within_family (Yes/No)
+const IS_WITHIN_FAMILY_OPTIONS = [
+    { value: 1, label: "Yes" },
+    { value: 0, label: "No" }
 ];
 
 const MakerSurveyTable: React.FC = () => {
@@ -190,28 +247,262 @@ const MakerSurveyTable: React.FC = () => {
     const [uploadFiles, setUploadFiles] = useState<MakerUploadFiles>({});
     const [isSaving, setIsSaving] = useState(false);
 
+    // Relationship (dropdown) data
+    const [relationshipOptions, setRelationshipOptions] = useState<RelationshipOption[]>([]);
+    const [relationshipLoading, setRelationshipLoading] = useState(false);
+    const [relationshipError, setRelationshipError] = useState<string | null>(null);
+
+    // Mouza (dropdown) data
+    const [mouzaOptions, setMouzaOptions] = useState<MouzaOption[]>([]);
+    const [mouzaLoading, setMouzaLoading] = useState(false);
+    const [mouzaError, setMouzaError] = useState<string | null>(null);
+
+    // JL No (dropdown) data
+    const [jlNoOptions, setJlNoOptions] = useState<JLNoOption[]>([]);
+    const [jlNoLoading, setJlNoLoading] = useState(false);
+    const [jlNoError, setJlNoError] = useState<string | null>(null);
+
+    // ADSR Name (dropdown) data
+    const [adsrNameOptions, setAdsrNameOptions] = useState<ADSRNameOption[]>([]);
+    const [adsrLoading, setAdsrLoading] = useState(false);
+    const [adsrError, setAdsrError] = useState<string | null>(null);
+
+    // Haat (dropdown) data
+    const [haatOptions, setHaatOptions] = useState<HaatOption[]>([]);
+    const [haatLoading, setHaatLoading] = useState(false);
+    const [haatError, setHaatError] = useState<string | null>(null);
+
+    // Police Station (dropdown) data
+    const [thanaOptions, setThanaOptions] = useState<ThanaOption[]>([]);
+    const [thanaLoading, setThanaLoading] = useState(false);
+    const [thanaError, setThanaError] = useState<string | null>(null);
+
+    // View Modal State
+    const [viewModalOpen, setViewModalOpen] = useState(false);
+    const [viewingSurvey, setViewingSurvey] = useState<ExtendedSurveyData | null>(null);
+
+    // Fetch relationship options on mount (for dropdown)
+    useEffect(() => {
+        setRelationshipLoading(true);
+        getRelationshipDetails()
+            .then((resp: any) => {
+                // Handle if API returns { data: [...] }
+                let rel: any[] = [];
+                if (Array.isArray(resp)) {
+                    rel = resp;
+                } else if (resp && Array.isArray(resp.data)) {
+                    rel = resp.data;
+                }
+                // The backend now gives [{relationship_id, relationship_name}]
+                const options: RelationshipOption[] = (rel || []).map((r: any) => ({
+                    relationship_id: r.relationship_id,
+                    relationship_name: r.relationship_name,
+                }));
+                setRelationshipOptions(options);
+            })
+            .catch(() => {
+                setRelationshipError('Could not load transfer relationships');
+            })
+            .finally(() => {
+                setRelationshipLoading(false);
+            });
+    }, []);
+
+    // Fetch Thana (Police Station) options when editingSurvey opens (need editFields.district_id!) 
+    useEffect(() => {
+        // Only fetch if editingSurvey is set and district_id is available
+        if (
+            editingSurvey &&
+            (editFields.district_id !== undefined && editFields.district_id !== null && editFields.district_id !== 0)
+        ) {
+            setThanaLoading(true);
+            setThanaError(null);
+            getThanaListByDistrictID(editFields.district_id)
+                .then((resp: any) => {
+                    let dataArr: any[] = [];
+                    if (Array.isArray(resp)) {
+                        dataArr = resp;
+                    } else if (resp && Array.isArray(resp.data)) {
+                        dataArr = resp.data;
+                    }
+                    setThanaOptions(dataArr.map((t: any) => ({
+                        police_station_id: t.police_station_id,
+                        police_station_name: t.police_station_name
+                    })));
+                })
+                .catch(() => setThanaError("Could not load Police Station list"))
+                .finally(() => setThanaLoading(false));
+        } else {
+            setThanaOptions([]);
+        }
+    }, [editingSurvey, editFields.district_id]);
+
+    // fetch mouza list when editingSurvey changes or when police_station_id changes
+    useEffect(() => {
+        // Only fetch if editingSurvey is set
+        if (
+            editingSurvey &&
+            (editFields.police_station_id !== undefined && editFields.police_station_id !== null)
+        ) {
+            setMouzaLoading(true);
+            setMouzaError(null);
+            getMouzaListByPoliceStationID(editFields.police_station_id)
+                .then((resp: any) => {
+                    let dataArr: any[] = [];
+                    if (Array.isArray(resp)) {
+                        dataArr = resp;
+                    } else if (resp && Array.isArray(resp.data)) {
+                        dataArr = resp.data;
+                    }
+                    setMouzaOptions(dataArr.map((m: any) => ({
+                        mouza_id: m.mouza_id,
+                        mouza_name: m.mouza_name,
+                        adsr_name: m.adsr_name,
+                        jl_no: m.jl_no
+                    })));
+                })
+                .catch(() => setMouzaError("Could not load mouza list"))
+                .finally(() => setMouzaLoading(false));
+        } else {
+            setMouzaOptions([]);
+        }
+    }, [editingSurvey, editFields.police_station_id]);
+
+    // fetch JL No list when editingSurvey changes or when police_station_id changes
+    useEffect(() => {
+        if (
+            editingSurvey &&
+            (editFields.police_station_id !== undefined && editFields.police_station_id !== null)
+        ) {
+            setJlNoLoading(true);
+            setJlNoError(null);
+            getJLNoByPoliceStationID(editFields.police_station_id)
+                .then((resp: any) => {
+                    let dataArr: any[] = [];
+                    if (Array.isArray(resp)) {
+                        dataArr = resp;
+                    } else if (resp && Array.isArray(resp.data)) {
+                        dataArr = resp.data;
+                    }
+                    setJlNoOptions(dataArr.map((j: any) => ({
+                        jl_no: j.jl_no
+                    })));
+                })
+                .catch(() => setJlNoError("Could not load JL No list"))
+                .finally(() => setJlNoLoading(false));
+        } else {
+            setJlNoOptions([]);
+        }
+    }, [editingSurvey, editFields.police_station_id]);
+
+    // fetch ADSR Name list when editingSurvey changes or when police_station_id changes
+    useEffect(() => {
+        if (
+            editingSurvey &&
+            (editFields.police_station_id !== undefined && editFields.police_station_id !== null)
+        ) {
+            setAdsrLoading(true);
+            setAdsrError(null);
+            getADSRNameByPoliceStationID(editFields.police_station_id)
+                .then((resp: any) => {
+                    let dataArr: any[] = [];
+                    if (Array.isArray(resp)) {
+                        dataArr = resp;
+                    } else if (resp && Array.isArray(resp.data)) {
+                        dataArr = resp.data;
+                    }
+                    setAdsrNameOptions(dataArr.map((a: any) => ({
+                        adsr_name: a.adsr_name
+                    })));
+                })
+                .catch(() => setAdsrError("Could not load ADSR Name list"))
+                .finally(() => setAdsrLoading(false));
+        } else {
+            setAdsrNameOptions([]);
+        }
+    }, [editingSurvey, editFields.police_station_id]);
+
+    // fetch Haat list when editingSurvey changes or when police_station_id changes
+    useEffect(() => {
+        if (
+            editingSurvey &&
+            (editFields.police_station_id !== undefined && editFields.police_station_id !== null)
+        ) {
+            setHaatLoading(true);
+            setHaatError(null);
+            getHaatListByPoliceStationID(editFields.police_station_id)
+                .then((resp: any) => {
+                    let dataArr: any[] = [];
+                    if (Array.isArray(resp)) {
+                        dataArr = resp;
+                    } else if (resp && Array.isArray(resp.data)) {
+                        dataArr = resp.data;
+                    }
+                    setHaatOptions(dataArr.map((h: any) => ({
+                        haat_id: h.haat_id,
+                        haat_name: h.haat_name
+                    })));
+                })
+                .catch(() => setHaatError("Could not load Haat list"))
+                .finally(() => setHaatLoading(false));
+        } else {
+            setHaatOptions([]);
+        }
+    }, [editingSurvey, editFields.police_station_id]);
+
+    const handleViewClick = (survey: ExtendedSurveyData) => {
+        setViewingSurvey(survey);
+        setViewModalOpen(true);
+    };
+
     const handleEditClick = (survey: ExtendedSurveyData) => {
         setEditingSurvey(survey);
-        // Set defaults to show in the edit form (fall back to blank/0 as in prompt)
-        setEditFields({
-            ...Object.fromEntries(
-                ALL_EDIT_FIELDS.map(f => [
-                    f.key,
-                    survey[f.key] !== undefined && survey[f.key] !== null
-                        ? survey[f.key]
-                        : (f.type === 'text' ? '' : f.type === 'date' ? null : 0)
-                ])
-            )
+
+        setEditFields(prevEditFields => {
+            const editObj: Partial<ExtendedSurveyData> = {
+                ...Object.fromEntries(
+                    ALL_EDIT_FIELDS.map(f => {
+                        let val = survey[f.key];
+                        if (val === undefined || val === null || val === '') {
+                            if (f.key === 'name' && survey.shop_owner_name) val = survey.shop_owner_name;
+                            else if (f.key === 'mobile' && survey.mobile_number) val = survey.mobile_number;
+                            else if (f.key === 'document_no' && survey.document_number) val = survey.document_number;
+                        }
+                        // Special treatment for document_type: make sure it's "1" or "2" as string when value is number
+                        if (f.key === "document_type" && (val === 1 || val === 2)) val = val.toString();
+                        return [
+                            f.key,
+                            val !== undefined && val !== null
+                                ? val
+                                : (f.type === 'text' ? '' : f.type === 'date' ? null : 0)
+                        ];
+                    })
+                )
+            };
+            // Ensure police_station_id and district_id are set for the dropdowns
+            editObj.police_station_id = survey.police_station_id ?? 0;
+            editObj.district_id = survey.district_id ?? 0;
+            return editObj;
         });
         setUploadFiles({});
     };
 
-    // Field (text/number/date) change
     const handleFieldChange = (key: keyof ExtendedSurveyData, value: any) => {
-        setEditFields(prev => ({
-            ...prev,
-            [key]: value
-        }));
+        setEditFields(prev => {
+            if (key === 'police_station_id' && prev.police_station_id !== value) {
+                // Reset haat_id, mouza_id, jl_no, adsr_name when changing police_station_id
+                return { ...prev, [key]: value, hat_id: undefined, mouza_id: undefined, jl_no: '', adsr_name: '' };
+            }
+            // On district_id change, also reset police_station_id, haat_id, mouza_id, jl_no, adsr_name
+            if (key === 'district_id' && prev.district_id !== value) {
+                return { ...prev, [key]: value, police_station_id: undefined, hat_id: undefined, mouza_id: undefined, jl_no: '', adsr_name: '' };
+            }
+            // Special: on document_type assign as string '1' or '2'
+            if (key === 'document_type') {
+                return { ...prev, [key]: value };
+            }
+            return { ...prev, [key]: value };
+        });
     };
 
     // File change handler for uploads
@@ -227,26 +518,31 @@ const MakerSurveyTable: React.FC = () => {
         }
     };
 
+    // In MakerSurveyTable.tsx
+
     const handleSave = async () => {
         if (!editingSurvey || !editingSurvey.survey_id) return;
 
         try {
             setIsSaving(true);
             const userDetails = decodeJwtToken();
-            // Compose the payload using all edit fields, survey_id and maker_id (plus any additional required)
+
+            // --- FIX STARTS HERE ---
             const payload = {
-                ...editFields,
+                ...editingSurvey, // 1. Include ALL existing data first
+                ...editFields,    // 2. Overwrite with edited data
                 survey_id: editingSurvey.survey_id,
-                maker_id: userDetails?.UserID
+                user_id: userDetails?.UserID
             };
+            // --- FIX ENDS HERE ---
+
             await updateSurveyDetailsByMaker(uploadFiles, payload);
 
-            // Success feedback and close modal
             alert('Survey details updated successfully!');
             setEditingSurvey(null);
             setEditFields({});
             setUploadFiles({});
-            fetchSurveyData(); // Refresh data
+            fetchSurveyData();
         } catch (error) {
             console.error('Error updating survey:', error);
             alert('Failed to update survey details.');
@@ -254,7 +550,6 @@ const MakerSurveyTable: React.FC = () => {
             setIsSaving(false);
         }
     };
-
     useEffect(() => {
         fetchSurveyData();
     }, [statusId, startDate, endDate]);
@@ -275,7 +570,6 @@ const MakerSurveyTable: React.FC = () => {
         }
     }, [searchTerm, surveyData]);
 
-    // When filteredData changes, ensure page isn't out of bounds
     useEffect(() => {
         const maxPage = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
         if (currentPage > maxPage) {
@@ -291,7 +585,6 @@ const MakerSurveyTable: React.FC = () => {
             const boundaryLevelId = userDetails?.BoundaryLevelID || 2;
             const boundaryId = userDetails?.BoundaryID || 9;
 
-            // Convert YYYY-MM-DD to DD-MM-YYYY for API
             const formatDateForApi = (dateStr: string) => {
                 if (!dateStr) return '';
                 const [year, month, day] = dateStr.split('-');
@@ -585,7 +878,7 @@ const MakerSurveyTable: React.FC = () => {
                                                     {row.document_type === '1'
                                                         ? 'Aadhar'
                                                         : row.document_type === '2'
-                                                            ? 'Voter'
+                                                            ? 'Votar'
                                                             : row.document_type || '-'}
                                                 </span>
                                                 <span className="text-gray-600 text-sm font-mono">
@@ -635,7 +928,14 @@ const MakerSurveyTable: React.FC = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex justify-end pt-4 border-t border-sky-100 mt-4">
+                                    <div className="flex justify-end pt-4 border-t border-sky-100 mt-4 gap-3">
+                                        <button
+                                            onClick={() => handleViewClick(row)}
+                                            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-md hover:shadow-emerald-500/30 font-medium"
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                            View Details
+                                        </button>
                                         {statusId === '2' && (
                                             <button
                                                 onClick={() => handleEditClick(row)}
@@ -649,6 +949,17 @@ const MakerSurveyTable: React.FC = () => {
                                 </div>
                             ))}
                             <Pagination />
+                            {viewingSurvey && (
+                                <ViewDetailsModal
+                                    show={viewModalOpen}
+                                    onClose={() => {
+                                        setViewModalOpen(false);
+                                        setViewingSurvey(null);
+                                    }}
+                                    isLoading={false}
+                                    selectedDetails={viewingSurvey as any}
+                                />
+                            )}
                             {editingSurvey && (
                                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
@@ -665,49 +976,324 @@ const MakerSurveyTable: React.FC = () => {
                                             </button>
                                         </div>
                                         <div className="p-8 overflow-y-auto custom-scrollbar">
+                                            {/* --- District ID field (as number input, visible for Police/Thana dropdown dependency) --- */}
                                             <form onSubmit={e => { e.preventDefault(); handleSave(); }}>
                                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                                    {ALL_EDIT_FIELDS.map(field => (
-                                                        <div key={String(field.key)} className="mb-1">
-                                                            <label className="block text-sm font-bold text-gray-600 mb-2">
-                                                                {field.label}
-                                                            </label>
-                                                            {field.type === "date" ? (
-                                                                <input
-                                                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                    type="date"
-                                                                    value={editFields[field.key] ? String(editFields[field.key]).slice(0, 10) : ""}
-                                                                    onChange={e =>
-                                                                        handleFieldChange(
-                                                                            field.key,
-                                                                            e.target.value === "" ? null : e.target.value
-                                                                        )
-                                                                    }
-                                                                />
-                                                            ) : (
-                                                                <input
-                                                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                    type={field.type}
-                                                                    value={
-                                                                        // numbers may be 0 and blanks allowed for text
-                                                                        (editFields[field.key] !== undefined && editFields[field.key] !== null)
-                                                                            ? editFields[field.key]
-                                                                            : (field.type === "number" ? 0 : "")
-                                                                    }
-                                                                    onChange={e =>
-                                                                        handleFieldChange(
-                                                                            field.key,
-                                                                            field.type === "number"
-                                                                                ? (e.target.value === ""
-                                                                                    ? 0
-                                                                                    : Number(e.target.value))
-                                                                                : e.target.value
-                                                                        )
-                                                                    }
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    ))}
+                                                    {/* Police Station Dropdown */}
+                                                    <div className="mb-1">
+                                                        <label className="block text-sm font-bold text-gray-600 mb-2">
+                                                            Police Station
+                                                        </label>
+                                                        {thanaLoading ? (
+                                                            <div className="text-blue-700 text-xs py-2">Loading Police Station list...</div>
+                                                        ) : thanaError ? (
+                                                            <div className="text-red-600 text-xs py-2">{thanaError}</div>
+                                                        ) : (
+                                                            <select
+                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                value={
+                                                                    editFields.police_station_id === undefined || editFields.police_station_id === null || editFields.police_station_id === 0
+                                                                        ? ""
+                                                                        : String(editFields.police_station_id)
+                                                                }
+                                                                onChange={e =>
+                                                                    handleFieldChange(
+                                                                        'police_station_id',
+                                                                        e.target.value === "" ? undefined : Number(e.target.value)
+                                                                    )
+                                                                }
+                                                                disabled={!(editFields.district_id !== undefined && editFields.district_id !== null && editFields.district_id !== 0)}
+                                                            >
+                                                                <option value="">-- Select Police Station --</option>
+                                                                {thanaOptions.map(thana =>
+                                                                    <option key={thana.police_station_id} value={thana.police_station_id}>
+                                                                        {thana.police_station_name}
+                                                                    </option>
+                                                                )}
+                                                            </select>
+                                                        )}
+                                                        {(editFields.district_id === undefined || editFields.district_id === null || editFields.district_id === 0) && (
+                                                            <div className="text-[11px] text-gray-400 mt-1">
+                                                                Please select District ID first (required for Police Station)
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {/* All other editable fields */}
+                                                    {ALL_EDIT_FIELDS
+                                                        .filter(field => field.key !== 'police_station_name') // remove old text field
+                                                        .filter(field => field.key !== 'police_station_id')   // remove direct edit of id
+                                                        .map(field => (
+                                                            <div key={String(field.key)} className="mb-1">
+                                                                <label className="block text-sm font-bold text-gray-600 mb-2">
+                                                                    {field.label}
+                                                                </label>
+                                                                {field.key === 'is_within_family' ? (
+                                                                    // --------- NEW: Yes/No DropDown for is_within_family ----------
+                                                                    <select
+                                                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                        value={
+                                                                            editFields.is_within_family === undefined || editFields.is_within_family === null
+                                                                                ? ""
+                                                                                : String(editFields.is_within_family)
+                                                                        }
+                                                                        onChange={e =>
+                                                                            handleFieldChange(
+                                                                                field.key,
+                                                                                e.target.value === "" ? undefined : Number(e.target.value)
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <option value="">-- Select --</option>
+                                                                        {IS_WITHIN_FAMILY_OPTIONS.map(opt => (
+                                                                            <option key={String(opt.value)} value={opt.value}>
+                                                                                {opt.label}
+                                                                            </option>
+                                                                        ))}
+                                                                    </select>
+                                                                ) : field.key === 'transfer_relationship' ? (
+                                                                    <>
+                                                                        {relationshipLoading ? (
+                                                                            <div className="text-blue-700 text-xs py-2">Loading transfer relationships...</div>
+                                                                        ) : relationshipError ? (
+                                                                            <div className="text-red-600 text-xs py-2">{relationshipError}</div>
+                                                                        ) : (
+                                                                            <select
+                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                                value={
+                                                                                    editFields.transfer_relationship === 0 || editFields.transfer_relationship === undefined || editFields.transfer_relationship === null
+                                                                                        ? ""
+                                                                                        : editFields.transfer_relationship
+                                                                                }
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value === '' ? 0 : Number(e.target.value)
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <option value="">-- Select Relationship --</option>
+                                                                                {relationshipOptions.map(opt => (
+                                                                                    <option key={opt.relationship_id} value={opt.relationship_id}>{opt.relationship_name}</option>
+                                                                                ))}
+                                                                            </select>
+                                                                        )}
+                                                                    </>
+                                                                ) : field.key === 'hat_id' ? (
+                                                                    <>
+                                                                        {haatLoading ? (
+                                                                            <div className="text-blue-700 text-xs py-2">Loading Haat List...</div>
+                                                                        ) : haatError ? (
+                                                                            <div className="text-red-600 text-xs py-2">{haatError}</div>
+                                                                        ) : (
+                                                                            <select
+                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                                value={
+                                                                                    editFields.hat_id === undefined || editFields.hat_id === null || editFields.hat_id === 0
+                                                                                        ? ""
+                                                                                        : String(editFields.hat_id)
+                                                                                }
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value === "" ? undefined : Number(e.target.value)
+                                                                                    )
+                                                                                }
+                                                                                disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
+                                                                            >
+                                                                                <option value="">-- Select Haat --</option>
+                                                                                {haatOptions.map(haat =>
+                                                                                    <option key={haat.haat_id} value={haat.haat_id}>
+                                                                                        {haat.haat_name}
+                                                                                    </option>
+                                                                                )}
+                                                                            </select>
+                                                                        )}
+                                                                        {(editFields.police_station_id === undefined ||
+                                                                            editFields.police_station_id === null) && (
+                                                                                <div className="text-[11px] text-gray-400 mt-1">
+                                                                                    Police Station selection required for dropdown
+                                                                                </div>
+                                                                            )}
+                                                                    </>
+                                                                ) : field.key === 'mouza_id' ? (
+                                                                    <>
+                                                                        {mouzaLoading ? (
+                                                                            <div className="text-blue-700 text-xs py-2">Loading Mouza List...</div>
+                                                                        ) : mouzaError ? (
+                                                                            <div className="text-red-600 text-xs py-2">{mouzaError}</div>
+                                                                        ) : (
+                                                                            <select
+                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                                value={
+                                                                                    editFields.mouza_id === undefined || editFields.mouza_id === null || editFields.mouza_id === 0
+                                                                                        ? ""
+                                                                                        : String(editFields.mouza_id)
+                                                                                }
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value === "" ? undefined : Number(e.target.value)
+                                                                                    )
+                                                                                }
+                                                                                disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
+                                                                            >
+                                                                                <option value="">-- Select Mouza --</option>
+                                                                                {mouzaOptions.map(mouza =>
+                                                                                    <option key={mouza.mouza_id} value={mouza.mouza_id}>
+                                                                                        {mouza.mouza_name} {mouza.jl_no ? `(${mouza.jl_no})` : ""}
+                                                                                    </option>
+                                                                                )}
+                                                                            </select>
+                                                                        )}
+                                                                        {(editFields.police_station_id === undefined ||
+                                                                            editFields.police_station_id === null) && (
+                                                                                <div className="text-[11px] text-gray-400 mt-1">
+                                                                                    Police Station selection required for dropdown
+                                                                                </div>
+                                                                            )}
+                                                                    </>
+                                                                ) : field.key === 'jl_no' ? (
+                                                                    <>
+                                                                        {jlNoLoading ? (
+                                                                            <div className="text-blue-700 text-xs py-2">Loading JL No list...</div>
+                                                                        ) : jlNoError ? (
+                                                                            <div className="text-red-600 text-xs py-2">{jlNoError}</div>
+                                                                        ) : (
+                                                                            <select
+                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                                value={editFields.jl_no || ""}
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value
+                                                                                    )
+                                                                                }
+                                                                                disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
+                                                                            >
+                                                                                <option value="">-- Select JL No --</option>
+                                                                                {jlNoOptions.map((jl, idx) => (
+                                                                                    <option key={jl.jl_no + idx} value={jl.jl_no}>{jl.jl_no}</option>
+                                                                                ))}
+                                                                            </select>
+                                                                        )}
+                                                                        {(editFields.police_station_id === undefined ||
+                                                                            editFields.police_station_id === null) && (
+                                                                                <div className="text-[11px] text-gray-400 mt-1">
+                                                                                    Police Station selection required for dropdown
+                                                                                </div>
+                                                                            )}
+                                                                    </>
+                                                                ) : field.key === 'adsr_name' ? (
+                                                                    <>
+                                                                        {adsrLoading ? (
+                                                                            <div className="text-blue-700 text-xs py-2">Loading ADSR Name list...</div>
+                                                                        ) : adsrError ? (
+                                                                            <div className="text-red-600 text-xs py-2">{adsrError}</div>
+                                                                        ) : (
+                                                                            <select
+                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                                value={editFields.adsr_name || ""}
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value
+                                                                                    )
+                                                                                }
+                                                                                disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
+                                                                            >
+                                                                                <option value="">-- Select ADSR Name --</option>
+                                                                                {adsrNameOptions.map((adsr, idx) => (
+                                                                                    <option key={adsr.adsr_name + idx} value={adsr.adsr_name}>
+                                                                                        {adsr.adsr_name}
+                                                                                    </option>
+                                                                                ))}
+                                                                            </select>
+                                                                        )}
+                                                                        {(editFields.police_station_id === undefined ||
+                                                                            editFields.police_station_id === null) && (
+                                                                                <div className="text-[11px] text-gray-400 mt-1">
+                                                                                    Police Station selection required for dropdown
+                                                                                </div>
+                                                                            )}
+                                                                    </>
+                                                                ) : field.key === "district_id" ? (
+                                                                    // District input as number (required for Police Station)
+                                                                    <input
+                                                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                        type="number"
+                                                                        value={
+                                                                            (editFields.district_id !== undefined && editFields.district_id !== null)
+                                                                                ? editFields.district_id
+                                                                                : ""
+                                                                        }
+                                                                        min="1"
+                                                                        step="1"
+                                                                        onChange={e =>
+                                                                            handleFieldChange(
+                                                                                field.key,
+                                                                                e.target.value === ""
+                                                                                    ? undefined
+                                                                                    : Number(e.target.value)
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                ) : field.key === "document_type" ? (
+                                                                    // ---- Document Type Dropdown ----
+                                                                    <select
+                                                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                        value={
+                                                                            editFields.document_type !== undefined &&
+                                                                                editFields.document_type !== null
+                                                                                ? String(editFields.document_type)
+                                                                                : ""
+                                                                        }
+                                                                        onChange={e =>
+                                                                            handleFieldChange(
+                                                                                field.key,
+                                                                                e.target.value
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <option value="">-- Select Document Type --</option>
+                                                                        {DOCUMENT_TYPE_OPTIONS.map(opt => (
+                                                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                ) : field.type === "date" ? (
+                                                                    <input
+                                                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                        type="date"
+                                                                        value={editFields[field.key] ? String(editFields[field.key]).slice(0, 10) : ""}
+                                                                        onChange={e =>
+                                                                            handleFieldChange(
+                                                                                field.key,
+                                                                                e.target.value === "" ? null : e.target.value
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                ) : (
+                                                                    <input
+                                                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                        type={field.type}
+                                                                        value={
+                                                                            (editFields[field.key] !== undefined && editFields[field.key] !== null)
+                                                                                ? (editFields[field.key] as string | number)
+                                                                                : (field.type === "number" ? 0 : "")
+                                                                        }
+                                                                        onChange={e =>
+                                                                            handleFieldChange(
+                                                                                field.key,
+                                                                                field.type === "number"
+                                                                                    ? (e.target.value === ""
+                                                                                        ? 0
+                                                                                        : Number(e.target.value))
+                                                                                    : e.target.value
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        ))}
                                                 </div>
                                                 {/* File upload fields (from previous code) */}
                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">

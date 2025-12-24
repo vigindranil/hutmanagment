@@ -264,43 +264,177 @@ export const updateSurveyDetailsByMaker = async (
   applicationDetails: Record<string, any>
 ) => {
   const token = Cookies.get("token");
+
   const headers = new Headers();
   headers.append("accept", "*/*");
   headers.append("Authorization", `Bearer ${token}`);
+  // ❌ DO NOT set Content-Type (browser sets boundary)
 
-  const formdata = new FormData();
-  const appendFile = (key: keyof MakerUploadFiles, file?: File | Blob) => {
-    if (!file) return;
-    const fileName = (file as File)?.name || `${String(key)}.jpg`;
-    formdata.append(key, file, fileName);
+  const formData = new FormData();
+
+  /* ================= FILE PARTS ================= */
+  const fileMap: Record<string, File | Blob | undefined> = {
+    document_image: files.documentImage,
+    pan_image: files.panImage,
+    residential_certificate_attached: files.residentialCertificateAttached,
+    trade_license_attached: files.tradeLicenseAttached,
+    affidavit_attached: files.affidavitAttached,
+    warision_certificate_attached: files.warisionCertificateAttached,
+    death_certificate_attached: files.deathCertificateAttached,
+    noc_legal_heirs_attached: files.nocLegalHeirsAttached,
+    sketch_map_attached: files.sketchMapAttached,
+    stall_image1: files.stallImage1,
+    stall_image2: files.stallImage2,
   };
 
-  appendFile("documentImage", files.documentImage);
-  appendFile("panImage", files.panImage);
-  appendFile(
-    "residentialCertificateAttached",
-    files.residentialCertificateAttached
-  );
-  appendFile("tradeLicenseAttached", files.tradeLicenseAttached);
-  appendFile("affidavitAttached", files.affidavitAttached);
-  appendFile("warisionCertificateAttached", files.warisionCertificateAttached);
-  appendFile("deathCertificateAttached", files.deathCertificateAttached);
-  appendFile("nocLegalHeirsAttached", files.nocLegalHeirsAttached);
-  appendFile("landValuationDoc", files.landValuationDoc);
-  appendFile("sketchMapAttached", files.sketchMapAttached);
-  appendFile("stallImage1", files.stallImage1);
-  appendFile("stallImage2", files.stallImage2);
+  Object.entries(fileMap).forEach(([key, file]) => {
+    if (file) formData.append(key, file);
+  });
 
-  formdata.append("applicationDetials", JSON.stringify(applicationDetails));
+  /* ================= JSON PAYLOAD ================= */
+  // Matching Java backend structure: Integer, Long, Double, String types
+  const payload = {
+    // Long
+    survey_id: Number(applicationDetails.survey_id ?? 0),
+    
+    // Integer
+    license_type: Number(applicationDetails.license_type ?? 0),
+    application_status: Number(applicationDetails.application_status ?? 0),
+    applicant_type: Number(applicationDetails.applicant_type ?? 0),
+    usage_type: Number(applicationDetails.usage_type ?? 0),
+    active_status: Number(applicationDetails.active_status ?? 0),
 
+    /* Applicant - String */
+    name: String(applicationDetails.name?.trim() || " "),
+    guardian_name: String(applicationDetails.guardian_name?.trim() || " "),
+    address: String(applicationDetails.address?.trim() || " "),
+    mobile: String(applicationDetails.mobile?.trim() || " "),
+    citizenship: String(applicationDetails.citizenship?.trim() || " "),
+    
+    // Integer
+    pin_code: Number(applicationDetails.pin_code ?? 0),
+    is_within_family: Number(applicationDetails.is_within_family ?? 0),
+    transfer_relationship: Number(applicationDetails.transfer_relationship ?? 0),
+    
+    // String
+    document_type: String(applicationDetails.document_type?.trim() || " "),
+    document_no: String(applicationDetails.document_no?.trim() || " "),
+    pan: String(applicationDetails.pan?.trim() || " "),
+
+    /* Existing - String */
+    previous_license_no: String(applicationDetails.previous_license_no || " "),
+    license_expiry_date: applicationDetails.license_expiry_date || null,
+    // Integer
+    property_tax_payment_to_year: Number(applicationDetails.property_tax_payment_to_year ?? 0),
+
+    /* Transfer - String */
+    land_transfer_explanation: String(applicationDetails.land_transfer_explanation?.trim() || " "),
+    // Integer
+    occupy: Number(applicationDetails.occupy ?? 0),
+    occupy_from_year: Number(applicationDetails.occupy_from_year ?? 0),
+    // String
+    present_occupier_name: String(applicationDetails.present_occupier_name?.trim() || " "),
+    occupier_guardian_name: String(applicationDetails.occupier_guardian_name?.trim() || " "),
+    adsr_name: String(applicationDetails.adsr_name?.trim() || " "),
+    // Integer
+    is_same_owner: Number(applicationDetails.is_same_owner ?? 0),
+    // String
+    rented_to_whom: applicationDetails.rented_to_whom || null,
+
+    /* Plot - Integer */
+    district_id: Number(applicationDetails.district_id ?? 0),
+    block_municipality_type: Number(applicationDetails.block_municipality_type ?? 0),
+    village_ward_id: Number(applicationDetails.village_ward_id ?? 0),
+    police_station_id: Number(applicationDetails.police_station_id ?? 0),
+    hat_id: Number(applicationDetails.hat_id ?? 0),
+    mouza_id: Number(applicationDetails.mouza_id ?? 0),
+    
+    // String
+    stall_no: String(applicationDetails.stall_no?.trim() || " "),
+    holding_no: String(applicationDetails.holding_no?.trim() || " "),
+    jl_no: String(applicationDetails.jl_no?.trim() || " "),
+    khatian_no: String(applicationDetails.khatian_no?.trim() || " "),
+    plot_no: String(applicationDetails.plot_no?.trim() || " "),
+    // Double
+    area_com_sqft: Number(applicationDetails.area_com_sqft ?? 0),
+    latitude: Number(applicationDetails.latitude ?? 0),
+    longitude: Number(applicationDetails.longitude ?? 0),
+    land_valuation_amount: Number(applicationDetails.land_valuation_amount ?? 0),
+
+    // String
+    remarks: String(applicationDetails.remarks?.trim() || " "),
+    // Long
+    user_id: Number(applicationDetails.user_id ?? 0),
+
+    /* Hearing / Approval - String */
+    hearing_date: applicationDetails.hearing_date || null,
+    hearing_approved_date: applicationDetails.hearing_approved_date || null,
+    hearing_remarks: String(applicationDetails.hearing_remarks?.trim() || " "),
+    hearing_approved_by: String(applicationDetails.hearing_approved_by?.trim() || " "),
+    approval_remarks: String(applicationDetails.approval_remarks?.trim() || " "),
+    approval_date: applicationDetails.approval_date || null,
+    survey_approved_by: String(applicationDetails.survey_approved_by?.trim() || " "),
+
+    /* Payment - Double */
+    initial_amount: Number(applicationDetails.initial_amount ?? 0),
+    final_amount: Number(applicationDetails.final_amount ?? 0),
+    // Integer
+    initial_payment_status: Number(applicationDetails.initial_payment_status ?? 0),
+    final_payment_status: Number(applicationDetails.final_payment_status ?? 0),
+    // String
+    initial_payment_date: applicationDetails.initial_payment_date || null,
+    final_payment_date: applicationDetails.final_payment_date || null,
+
+    /* Location breakup - Integer */
+    block_id: Number(applicationDetails.block_id ?? 0),
+    panchayet_id: Number(applicationDetails.panchayet_id ?? 0),
+    municipality_id: Number(applicationDetails.municipality_id ?? 0),
+    ward_id: Number(applicationDetails.ward_id ?? 0),
+  };
+
+  /* 🔑 BACKEND EXPECTS STRINGIFIED JSON */
+  formData.append("applicationDetials", JSON.stringify(payload));
+
+  /* ================= API CALL ================= */
   const response = await fetch(
     BASE_API_URL + "user/updateSurveyDetailsByMaker",
     {
       method: "POST",
       headers,
-      body: formdata,
-      redirect: "follow",
+      body: formData,
     }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok || data.status !== 1) {
+    throw new Error(data.message || "Failed to update survey");
+  }
+
+  return data;
+};
+
+
+
+
+
+export const getRelationshipDetails = async (): Promise<any> => {
+  const token = Cookies.get("token");
+  const headers = new Headers();
+  headers.append("accept", "");
+  headers.append("Authorization", `Bearer ${token}`);
+
+  const requestOptions: RequestInit = {
+    method: "GET",
+    headers,
+    redirect: "follow",
+  };
+
+  const apiUrl = `${BASE_API_URL}user/getRelationshipDetails`;
+
+  const response = await fetch(
+    apiUrl,
+    requestOptions
   );
 
   if (!response.ok) {
@@ -309,4 +443,129 @@ export const updateSurveyDetailsByMaker = async (
 
   return response.json();
 };
+
+
+export const getMouzaListByPoliceStationID = async (policeStationID: number): Promise<any> => {
+  const token = Cookies.get("token");
+  const headers = new Headers();
+  headers.append("accept", "*/*");
+  headers.append("Authorization", `Bearer ${token}`);
+
+  const requestOptions: RequestInit = {
+    method: "POST",
+    headers,
+    redirect: "follow"
+  };
+
+  const apiUrl = `${BASE_API_URL}user/getMouzaListByPoliceStationID?PoliceStationID=${policeStationID}`;
+
+  const response = await fetch(apiUrl, requestOptions);
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+
+  return response.json();
+};
+
+
+
+export const getJLNoByPoliceStationID = async (policeStationID: number): Promise<any> => {
+  const token = Cookies.get("token");
+  const headers = new Headers();
+  headers.append("accept", "*/*");
+  headers.append("Authorization", `Bearer ${token}`);
+
+  const requestOptions: RequestInit = {
+    method: "POST",
+    headers,
+    redirect: "follow"
+  };
+
+  const apiUrl = `${BASE_API_URL}user/getJLNO?PoliceStationID=${policeStationID}`;
+
+  const response = await fetch(apiUrl, requestOptions);
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+
+  return response.json();
+};
+
+
+
+export const getADSRNameByPoliceStationID = async (
+  policeStationID: number
+): Promise<any> => {
+  const token = Cookies.get("token");
+  const headers = new Headers();
+  headers.append("accept", "*/*");
+  headers.append("Authorization", `Bearer ${token}`);
+
+  const requestOptions: RequestInit = {
+    method: "POST",
+    headers,
+    redirect: "follow"
+  };
+
+  const apiUrl = `${BASE_API_URL}user/getADSRName?PoliceStationID=${policeStationID}`;
+
+  const response = await fetch(apiUrl, requestOptions);
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+
+  return response.json();
+};
+
+
+
+export const getHaatListByPoliceStationID = async (
+  policeStationID: number
+): Promise<any> => {
+  const token = Cookies.get("token");
+  const headers = new Headers();
+  headers.append("accept", "*/*");
+  headers.append("Authorization", `Bearer ${token}`);
+
+  const requestOptions: RequestInit = {
+    method: "POST",
+    headers,
+    redirect: "follow"
+  };
+  const apiUrl = `${BASE_API_URL}user/getHaatListByPoliceStationID?PoliceStationID=${policeStationID}`;
+  const response = await fetch(apiUrl, requestOptions);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+  return response.json();
+};
+
+export const getThanaListByDistrictID = async (
+  districtID: number
+): Promise<any> => {
+  const token = Cookies.get("token");
+  const headers = new Headers();
+  headers.append("accept", "*/*");
+  headers.append("Authorization", `Bearer ${token}`);
+
+  const requestOptions: RequestInit = {
+    method: "POST",
+    headers,
+    redirect: "follow"
+  };
+
+  const url = `${BASE_API_URL}user/getThanaListByDistrictID?DistrictID=${districtID}`;
+
+  const response = await fetch(url, requestOptions);
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+
+  return response.json();
+};
+
 
