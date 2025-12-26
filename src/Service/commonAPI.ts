@@ -48,9 +48,7 @@ export const commonApiImage = async (file_url: string) => {
     method: "GET",
     headers: myHeaders,
   };
-
   console.log("file_url", file_url);
-
   const res = await fetch(
     BASE_API_URL + "user/getImgAsBase64ByFileName/" + file_url,
     requestOptions

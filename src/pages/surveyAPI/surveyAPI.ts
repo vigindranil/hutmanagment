@@ -93,6 +93,7 @@ export const getSurveyDetailsByApprovalOfficerID = async (haatStatusId: any) => 
   return response?.data || [];
 };
 
+
 export const getHaatManagerDashboardDtlsByHaatManagerID = async (
   haatStatusId: any
 ) => {
@@ -102,6 +103,7 @@ export const getHaatManagerDashboardDtlsByHaatManagerID = async (
   );
   return response?.data || [];
 };
+
 
 export const fetchFullApplicationDetails = async (surveyId: string) => {
   const token = Cookies.get("token");
@@ -173,6 +175,7 @@ export const fetchFullApplicationDetails = async (surveyId: string) => {
   };
 };
 
+
 export const saveHearingDateByCheckerID = async (
   selectedSurveys: number[],
   hearingDate: string
@@ -209,12 +212,12 @@ export const submitRemarksAction = async (
   return response;
 };
 
+
 export const getCertificateDetails = async (applicationNumber: string) => {
   const url = `user/getShopOwnerCertificateDetails?ApplicationNumber=${applicationNumber}`;
   const response = await commonApi(url, {});
   return response;
 };
-
 
 
 export const getSurveyDetailsForMakerByBoundaryID = async (
@@ -242,8 +245,6 @@ export const getSurveyDetailsForMakerByBoundaryID = async (
 };
 
 
-
-
 export type MakerUploadFiles = {
   documentImage?: File | Blob;
   panImage?: File | Blob;
@@ -258,6 +259,24 @@ export type MakerUploadFiles = {
   stallImage1?: File | Blob;
   stallImage2?: File | Blob;
 };
+
+function formatDateToDDMMYYYY(date: any): string | null {
+  if (!date) return null;
+  let d: Date;
+  if (typeof date === "string") {
+    // Try parse string to Date
+    d = new Date(date);
+    if (Number.isNaN(d.getTime())) return null;
+  } else if (date instanceof Date) {
+    d = date;
+  } else {
+    return null;
+  }
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+}
 
 export const updateSurveyDetailsByMaker = async (
   files: MakerUploadFiles,
@@ -323,7 +342,7 @@ export const updateSurveyDetailsByMaker = async (
 
     /* Existing - String */
     previous_license_no: String(applicationDetails.previous_license_no || " "),
-    license_expiry_date: applicationDetails.license_expiry_date || null,
+    license_expiry_date: formatDateToDDMMYYYY(applicationDetails.license_expiry_date),
     // Integer
     property_tax_payment_to_year: Number(applicationDetails.property_tax_payment_to_year ?? 0),
 
@@ -367,12 +386,12 @@ export const updateSurveyDetailsByMaker = async (
     user_id: Number(applicationDetails.user_id ?? 0),
 
     /* Hearing / Approval - String */
-    hearing_date: applicationDetails.hearing_date || null,
-    hearing_approved_date: applicationDetails.hearing_approved_date || null,
+    hearing_date: formatDateToDDMMYYYY(applicationDetails.hearing_date),
+    hearing_approved_date: formatDateToDDMMYYYY(applicationDetails.hearing_approved_date),
     hearing_remarks: String(applicationDetails.hearing_remarks?.trim() || " "),
     hearing_approved_by: String(applicationDetails.hearing_approved_by?.trim() || " "),
     approval_remarks: String(applicationDetails.approval_remarks?.trim() || " "),
-    approval_date: applicationDetails.approval_date || null,
+    approval_date: formatDateToDDMMYYYY(applicationDetails.approval_date),
     survey_approved_by: String(applicationDetails.survey_approved_by?.trim() || " "),
 
     /* Payment - Double */
@@ -382,8 +401,8 @@ export const updateSurveyDetailsByMaker = async (
     initial_payment_status: Number(applicationDetails.initial_payment_status ?? 0),
     final_payment_status: Number(applicationDetails.final_payment_status ?? 0),
     // String
-    initial_payment_date: applicationDetails.initial_payment_date || null,
-    final_payment_date: applicationDetails.final_payment_date || null,
+    initial_payment_date: formatDateToDDMMYYYY(applicationDetails.initial_payment_date),
+    final_payment_date: formatDateToDDMMYYYY(applicationDetails.final_payment_date),
 
     /* Location breakup - Integer */
     block_id: Number(applicationDetails.block_id ?? 0),
@@ -413,9 +432,6 @@ export const updateSurveyDetailsByMaker = async (
 
   return data;
 };
-
-
-
 
 
 export const getRelationshipDetails = async (): Promise<any> => {
@@ -469,7 +485,6 @@ export const getMouzaListByPoliceStationID = async (policeStationID: number): Pr
 };
 
 
-
 export const getJLNoByPoliceStationID = async (policeStationID: number): Promise<any> => {
   const token = Cookies.get("token");
   const headers = new Headers();
@@ -492,7 +507,6 @@ export const getJLNoByPoliceStationID = async (policeStationID: number): Promise
 
   return response.json();
 };
-
 
 
 export const getADSRNameByPoliceStationID = async (
@@ -521,7 +535,6 @@ export const getADSRNameByPoliceStationID = async (
 };
 
 
-
 export const getHaatListByPoliceStationID = async (
   policeStationID: number
 ): Promise<any> => {
@@ -542,6 +555,7 @@ export const getHaatListByPoliceStationID = async (
   }
   return response.json();
 };
+
 
 export const getThanaListByDistrictID = async (
   districtID: number
@@ -567,5 +581,33 @@ export const getThanaListByDistrictID = async (
 
   return response.json();
 };
+
+
+export const getBoundaryDetailsByBoundaryID = async (
+  boundaryLevelID: number,
+  boundaryID: number,
+  isUrban: number,
+  loginUserID: number
+): Promise<any> => {
+  const token = Cookies.get("token");
+  const headers = new Headers();
+  headers.append("accept", "*/*");
+  headers.append("Authorization", `Bearer ${token}`);
+  const requestOptions: RequestInit = {
+    method: "POST",
+    headers,
+    redirect: "follow"
+  };
+
+  const apiUrl = `${BASE_API_URL}user/getBoundaryDetailsByBoundaryID?BoundaryLevelID=${boundaryLevelID}&BoundaryID=${boundaryID}&IsUrban=${isUrban}&LoginUserID=${loginUserID}`;
+  const response = await fetch(apiUrl, requestOptions);
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+
+  return response.json();
+};
+
 
 
