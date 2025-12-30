@@ -1535,8 +1535,8 @@ const MakerSurveyTable: React.FC = () => {
                                                                 disabled={!(editFields.district_id !== undefined && editFields.district_id !== null && editFields.district_id !== 0)}
                                                             >
                                                                 <option value="">-- Select Police Station --</option>
-                                                                {thanaOptions.map(thana =>
-                                                                    <option key={thana.police_station_id} value={thana.police_station_id}>
+                                                                {thanaOptions.map((thana, index) =>
+                                                                    <option key={`thana-${thana.police_station_id}-${index}`} value={thana.police_station_id}>
                                                                         {thana.police_station_name}
                                                                     </option>
                                                                 )}
@@ -1602,8 +1602,8 @@ const MakerSurveyTable: React.FC = () => {
 
 
                                                                     <option value="">-- Select Block --</option>
-                                                                    {blockOptions.map(block =>
-                                                                        <option key={block.block_id} value={block.block_id}>
+                                                                    {blockOptions.map((block, index) =>
+                                                                        <option key={`${block.block_id}-${index}`} value={block.block_id}>
                                                                             {block.block_name}
                                                                         </option>
                                                                     )}
@@ -1639,8 +1639,8 @@ const MakerSurveyTable: React.FC = () => {
                                                                     }}
                                                                 >
                                                                     <option value="">-- Select Municipality --</option>
-                                                                    {municipalityOptions.map(municipality =>
-                                                                        <option key={municipality.municipality_id} value={municipality.municipality_id}>
+                                                                    {municipalityOptions.map((municipality, index) =>
+                                                                        <option key={`${municipality.municipality_id}-${index}`} value={municipality.municipality_id}>
                                                                             {municipality.municipality_name}
                                                                         </option>
                                                                     )}
@@ -1675,8 +1675,8 @@ const MakerSurveyTable: React.FC = () => {
                                                                     }
                                                                 >
                                                                     <option value="">-- Select Panchayat --</option>
-                                                                    {panchayatOptions.map(panchayat =>
-                                                                        <option key={panchayat.panchayat_id} value={panchayat.panchayat_id}>
+                                                                    {panchayatOptions.map((panchayat, index) =>
+                                                                        <option key={`${panchayat.panchayat_id}-${index}`} value={panchayat.panchayat_id}>
                                                                             {panchayat.panchayat_name}
                                                                         </option>
                                                                     )}
@@ -1711,8 +1711,8 @@ const MakerSurveyTable: React.FC = () => {
                                                                     }
                                                                 >
                                                                     <option value="">-- Select Ward --</option>
-                                                                    {wardOptions.map(ward =>
-                                                                        <option key={ward.ward_id} value={ward.ward_id}>
+                                                                    {wardOptions.map((ward, index) =>
+                                                                        <option key={`${ward.ward_id}-${index}`} value={ward.ward_id}>
                                                                             {ward.ward_name}
                                                                         </option>
                                                                     )}
@@ -1775,8 +1775,8 @@ const MakerSurveyTable: React.FC = () => {
                                                                                 }
                                                                             >
                                                                                 <option value="">-- Select Relationship --</option>
-                                                                                {relationshipOptions.map(opt => (
-                                                                                    <option key={opt.relationship_id} value={opt.relationship_id}>{opt.relationship_name}</option>
+                                                                                {relationshipOptions.map((opt, index) => (
+                                                                                    <option key={`${opt.relationship_id}-${index}`} value={opt.relationship_id}>{opt.relationship_name}</option>
                                                                                 ))}
                                                                             </select>
                                                                         )}
@@ -1841,8 +1841,8 @@ const MakerSurveyTable: React.FC = () => {
                                                                                 disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
                                                                             >
                                                                                 <option value="">-- Select Mouza --</option>
-                                                                                {mouzaOptions.map(mouza =>
-                                                                                    <option key={mouza.mouza_id} value={mouza.mouza_id}>
+                                                                                {mouzaOptions.map((mouza, index) =>
+                                                                                    <option key={`${mouza.mouza_id}-${index}`} value={mouza.mouza_id}>
                                                                                         {mouza.mouza_name} {mouza.jl_no ? `(${mouza.jl_no})` : ""}
                                                                                     </option>
                                                                                 )}
@@ -1875,7 +1875,7 @@ const MakerSurveyTable: React.FC = () => {
                                                                             >
                                                                                 <option value="">-- Select JL No --</option>
                                                                                 {jlNoOptions.map((jl, idx) => (
-                                                                                    <option key={jl.jl_no + idx} value={jl.jl_no}>{jl.jl_no}</option>
+                                                                                    <option key={`${jl.jl_no}-${idx}`} value={jl.jl_no}>{jl.jl_no}</option>
                                                                                 ))}
                                                                             </select>
                                                                         )}
@@ -1906,7 +1906,7 @@ const MakerSurveyTable: React.FC = () => {
                                                                             >
                                                                                 <option value="">-- Select ADSR Name --</option>
                                                                                 {adsrNameOptions.map((adsr, idx) => (
-                                                                                    <option key={adsr.adsr_name + idx} value={adsr.adsr_name}>
+                                                                                    <option key={`${adsr.adsr_name}-${idx}`} value={adsr.adsr_name}>
                                                                                         {adsr.adsr_name}
                                                                                     </option>
                                                                                 ))}
