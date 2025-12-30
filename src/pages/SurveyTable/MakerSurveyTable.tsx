@@ -8,7 +8,7 @@ import {
     getMouzaListByPoliceStationID,
     getJLNoByPoliceStationID,
     getADSRNameByPoliceStationID,
-    getHaatListByPoliceStationID,
+    getAllHaatDetailsByDistrictID,
     getThanaListByDistrictID,
     getBoundaryDetailsByBoundaryID,
 } from '../surveyAPI/surveyAPI';
@@ -321,9 +321,7 @@ interface ExtendedSurveyData {
     is_same_owner: number;
     rented_to_whom: string | null;
     district_id: number;
-    block_municipality_type: number;
     block_municipality_id: number;
-    village_ward_id: number;
     police_station_id: number;
     hat_id: number;
     mouza_id: number;
@@ -360,7 +358,14 @@ interface ExtendedSurveyData {
     shop_owner_name?: string;
     mobile_number?: string;
     document_number?: string;
-    // add other table fields as needed
+    block_panchayet_status?: number;
+    isUrban?: number;
+    ward_id?: number;
+    is_urban?: number;
+    village_ward_id?: number;
+    block_municipality_type?: number;
+    block_id?: number;
+    municipality_id?: number;
 }
 // ... all the option and field type defs ... (unmodified)
 type MouzaOption = {
@@ -377,18 +382,12 @@ type ADSRNameOption = {
     adsr_name: string;
 };
 type HaatOption = {
-    haat_id: number;
+    hat_id: number;
     haat_name: string;
 };
 type ThanaOption = {
     police_station_id: number;
     police_station_name: string;
-};
-
-type BlockMunicipalityOption = {
-    block_municipality_id: number;
-    block_municipality_name: string;
-    block_municipality_type: number;
 };
 
 type BlockOption = {
@@ -437,11 +436,10 @@ const ALL_EDIT_FIELDS: { key: keyof ExtendedSurveyData, label: string, type: str
     { key: "is_same_owner", label: "Is Same Owner", type: "number" },
     { key: "rented_to_whom", label: "Rented To Whom", type: "text" },
     // { key: "district_id", label: "District ID", type: "number" },
-    { key: "block_municipality_type", label: "Block/Municipality Type", type: "text" },
+    { key: "is_urban", label: "Block/Municipality Type", type: "number" },
     // { key: "block_municipality_id", label: "Block/Municipality ID", type: "text" },
-    // { key: "village_ward_id", label: "Village/Ward ID", type: "text" },
-    { key: "hat_id", label: "Hat ID", type: "text" },
-    { key: "mouza_id", label: "Mouza ID", type: "text" },
+    { key: "hat_id", label: "Haat Name", type: "text" },
+    { key: "mouza_id", label: "Mouza Name", type: "text" },
     { key: "stall_no", label: "Stall No", type: "text" },
     { key: "holding_no", label: "Holding No", type: "text" },
     { key: "jl_no", label: "JL No", type: "text" },
@@ -576,10 +574,6 @@ const MakerSurveyTable: React.FC = () => {
     const [thanaLoading, setThanaLoading] = useState(false);
     const [thanaError, setThanaError] = useState<string | null>(null);
 
-    const [blockMunicipalityOptions, setBlockMunicipalityOptions] = useState<BlockMunicipalityOption[]>([]);
-    const [blockMunicipalityLoading, setBlockMunicipalityLoading] = useState(false);
-    const [blockMunicipalityError, setBlockMunicipalityError] = useState<string | null>(null);
-
     const [blockOptions, setBlockOptions] = useState<BlockOption[]>([]);
     const [blockLoading, setBlockLoading] = useState(false);
     const [blockError, setBlockError] = useState<string | null>(null);
@@ -619,15 +613,14 @@ const MakerSurveyTable: React.FC = () => {
 
     // Fetch Block or Municipality options when block_municipality_type changes
     useEffect(() => {
-        if (editingSurvey && editFields.block_municipality_type !== undefined && editFields.block_municipality_type !== null && editFields.block_municipality_type !== 0) {
+        if (editingSurvey && editFields.is_urban !== undefined && editFields.is_urban !== null && editFields.is_urban !== 0) {
             const userDetails = decodeJwtToken();
             const boundaryLevelId = userDetails?.BoundaryLevelID || 2;
             const boundaryId = userDetails?.BoundaryID || 9;
-            const isUrban = editFields.block_municipality_type; // 1 for Block, 2 for Municipality
+            const isUrban = editFields.is_urban; // 1 for Block, 2 for Municipality
             const loginUserID = userDetails?.UserID || 0;
 
-            if (editFields.block_municipality_type === 1) {
-                // Fetch Block options (inner_boundary_level_id: 5)
+            if (editFields.is_urban == 1) {
                 setBlockLoading(true);
                 setBlockError(null);
                 setBlockOptions([]);
@@ -643,7 +636,7 @@ const MakerSurveyTable: React.FC = () => {
                     })
                     .catch(() => setBlockError('Could not load Block list'))
                     .finally(() => setBlockLoading(false));
-            } else if (editFields.block_municipality_type === 2) {
+            } else if (editFields.is_urban === 2) {
                 // Fetch Municipality options (inner_boundary_level_id: 7)
                 setMunicipalityLoading(true);
                 setMunicipalityError(null);
@@ -665,21 +658,21 @@ const MakerSurveyTable: React.FC = () => {
             setBlockOptions([]);
             setMunicipalityOptions([]);
         }
-    }, [editingSurvey, editFields.block_municipality_type]);
+    }, [editingSurvey, editFields.is_urban]);
 
     // Fetch Panchayat options when Block is selected
     useEffect(() => {
-        if (editingSurvey && editFields.block_municipality_type === 1 && editFields.block_municipality_id !== undefined && editFields.block_municipality_id !== null && editFields.block_municipality_id !== 0) {
+        if (editingSurvey && editFields.is_urban === 1) {
             const userDetails = decodeJwtToken();
             const boundaryLevelId = 5; // Block level
-            const boundaryId = editFields.block_municipality_id; // Selected Block ID
+            const boundaryId = editFields.block_id; // Selected Block ID
             const isUrban = 1;
             const loginUserID = userDetails?.UserID || 0;
 
             setPanchayatLoading(true);
             setPanchayatError(null);
             setPanchayatOptions([]);
-            getBoundaryDetailsByBoundaryID(boundaryLevelId, boundaryId, isUrban, loginUserID)
+            getBoundaryDetailsByBoundaryID(boundaryLevelId, boundaryId || 0, isUrban, loginUserID)
                 .then((resp: any) => {
                     let dataArr: any[] = [];
                     if (Array.isArray(resp)) dataArr = resp;
@@ -694,28 +687,28 @@ const MakerSurveyTable: React.FC = () => {
         } else {
             setPanchayatOptions([]);
         }
-    }, [editingSurvey, editFields.block_municipality_type, editFields.block_municipality_id]);
+    }, [editingSurvey, editFields.is_urban, editFields.municipality_id]);
 
     // Fetch Ward options when Municipality is selected
     useEffect(() => {
-        if (editingSurvey && editFields.block_municipality_type === 2 && editFields.block_municipality_id !== undefined && editFields.block_municipality_id !== null && editFields.block_municipality_id !== 0) {
+        if (editingSurvey && editFields.is_urban === 2) {
             const userDetails = decodeJwtToken();
             const boundaryLevelId = 7; // Municipality level
-            const boundaryId = editFields.block_municipality_id; // Selected Municipality ID
+            const boundaryId = editFields.municipality_id; // Selected Municipality ID
             const isUrban = 2;
             const loginUserID = userDetails?.UserID || 0;
 
             setWardLoading(true);
             setWardError(null);
             setWardOptions([]);
-            getBoundaryDetailsByBoundaryID(boundaryLevelId, boundaryId, isUrban, loginUserID)
+            getBoundaryDetailsByBoundaryID(boundaryLevelId, boundaryId || 0, isUrban, loginUserID)
                 .then((resp: any) => {
                     let dataArr: any[] = [];
                     if (Array.isArray(resp)) dataArr = resp;
                     else if (resp && Array.isArray(resp.data)) dataArr = resp.data;
                     setWardOptions(dataArr.map((item: any) => ({
                         ward_id: item.inner_boundary_id,
-                        ward_name: item.inner_boundary_name
+                        ward_name: item.inner_boundary_name,
                     })));
                 })
                 .catch(() => setWardError('Could not load Ward list'))
@@ -723,7 +716,7 @@ const MakerSurveyTable: React.FC = () => {
         } else {
             setWardOptions([]);
         }
-    }, [editingSurvey, editFields.block_municipality_type, editFields.block_municipality_id]);
+    }, [editingSurvey, editFields.is_urban, editFields.municipality_id]);
 
     // dropdowns for edit (unmodified)
     useEffect(() => {
@@ -810,23 +803,23 @@ const MakerSurveyTable: React.FC = () => {
     useEffect(() => {
         if (
             editingSurvey &&
-            (editFields.police_station_id !== undefined && editFields.police_station_id !== null)
+            (editFields.district_id !== undefined && editFields.district_id !== null)
         ) {
             setHaatLoading(true); setHaatError(null);
-            getHaatListByPoliceStationID(editFields.police_station_id)
+            getAllHaatDetailsByDistrictID(editFields.district_id)
                 .then((resp: any) => {
                     let dataArr: any[] = [];
                     if (Array.isArray(resp)) dataArr = resp;
                     else if (resp && Array.isArray(resp.data)) dataArr = resp.data;
                     setHaatOptions(dataArr.map((h: any) => ({
-                        haat_id: h.haat_id,
+                        hat_id: h.hat_id || h.haat_id,
                         haat_name: h.haat_name
                     })));
                 })
                 .catch(() => setHaatError("Could not load Haat list"))
                 .finally(() => setHaatLoading(false));
         } else setHaatOptions([]);
-    }, [editingSurvey, editFields.police_station_id]);
+    }, [editingSurvey, editFields.district_id]);
 
     // ---- REWRITE: handleViewClick to fetch details from API and show in new DesignableModal
     const handleViewClick = async (survey: ExtendedSurveyData) => {
@@ -916,7 +909,10 @@ const MakerSurveyTable: React.FC = () => {
     const handleEditClick = (survey: ExtendedSurveyData) => {
         setEditingSurvey(survey);
 
-        setEditFields(prevEditFields => {
+        setEditFields(() => {
+            const normalizeId = (val: number | undefined | null) =>
+                val !== undefined && val !== null && val !== 0 ? val : undefined;
+
             const editObj: Partial<ExtendedSurveyData> = {
                 ...Object.fromEntries(
                     ALL_EDIT_FIELDS.map(f => {
@@ -925,27 +921,52 @@ const MakerSurveyTable: React.FC = () => {
                             if (f.key === 'name' && survey.shop_owner_name) val = survey.shop_owner_name;
                             else if (f.key === 'mobile' && survey.mobile_number) val = survey.mobile_number;
                             else if (f.key === 'document_no' && survey.document_number) val = survey.document_number;
+                            // Handle backend naming differences so values pre-fill correctly
+                            else if (f.key === 'is_within_family' && (survey as any).is_with_in_family !== undefined && (survey as any).is_with_in_family !== null) {
+                                val = (survey as any).is_with_in_family;
+                            } else if (f.key === 'hat_id' && (survey as any).hat_id !== undefined && (survey as any).hat_id !== null) {
+                                val = (survey as any).hat_id;
+                            }
                         }
                         if (f.key === "document_type" && (val === 1 || val === 2)) val = val.toString();
                         return [
                             f.key,
                             val !== undefined && val !== null
                                 ? val
-                                : (f.type === 'text' ? '' : f.type === 'date' ? null : 0)
+                                : (f.type === 'text' ? '' : f.type === 'date' ? null : undefined)
                         ];
                     })
                 )
             };
             // Pre-fill additional fields that are handled separately
-            editObj.police_station_id = survey.police_station_id ?? 0;
-            editObj.district_id = survey.district_id ?? 0;
-            editObj.block_municipality_type = survey.block_municipality_type ?? 0;
-            editObj.block_municipality_id = survey.block_municipality_id ?? 0;
-            editObj.village_ward_id = survey.village_ward_id ?? 0;
+            editObj.police_station_id = normalizeId(survey.police_station_id);
+            editObj.block_panchayet_status = normalizeId(survey.block_panchayet_status);
+            editObj.district_id = normalizeId(survey.district_id);
+            editObj.is_urban = normalizeId(survey.is_urban);
+            editObj.block_id = normalizeId(survey.block_id);
+            editObj.municipality_id = normalizeId(survey.municipality_id);
+            if (editObj.is_urban === 1) {
+                editObj.block_id = editObj.block_id;
+            } else if (editObj.is_urban === 2) {
+                editObj.municipality_id = editObj.municipality_id;
+            }
+            // Pre-fill village_ward_id for Panchayat dropdown
+            editObj.village_ward_id = normalizeId(survey.block_panchayet_status);
             editObj.mouza_name = survey.mouza_name ?? '';
             editObj.municipality_name = survey.municipality_name ?? '';
             editObj.ward_no = survey.ward_no ?? '';
+            editObj.ward_id = normalizeId(survey.ward_id);
             editObj.block_name = survey.block_name ?? '';
+            editObj.police_station_id = normalizeId(survey.police_station_id);
+            editObj.district_id = normalizeId(survey.district_id);
+            editObj.is_urban = normalizeId(survey.is_urban);
+            editObj.block_municipality_type = normalizeId(survey.block_municipality_type);
+            editObj.hat_id = survey.hat_id;
+            editObj.haat_name = survey.haat_name ?? '';
+            editObj.mouza_id = survey.mouza_id;
+            editObj.mouza_name = survey.mouza_name ?? '';
+            editObj.jl_no = survey.jl_no ?? '';
+            editObj.adsr_name = survey.adsr_name ?? '';
             return editObj;
         });
         setUploadFiles({});
@@ -955,6 +976,42 @@ const MakerSurveyTable: React.FC = () => {
         setEditFields(prev => {
             if (key === 'police_station_id' && prev.police_station_id !== value) {
                 return { ...prev, [key]: value, hat_id: undefined, mouza_id: undefined, jl_no: '', adsr_name: '' };
+            }
+            if (key === 'block_id' && prev.block_id !== value) {
+                return {
+                    ...prev,
+                    block_id: value as number,
+                    village_ward_id: undefined
+                };
+            }
+            if (key === 'municipality_id' && prev.municipality_id !== value) {
+                return {
+                    ...prev,
+                    municipality_id: value as number,
+                    ward_id: undefined
+                };
+            }
+            if (key === 'is_urban' && prev.is_urban !== value) {
+                const newType =
+                    value === "" || value === undefined || value === null
+                        ? undefined
+                        : Number(value);
+                return {
+                    ...prev,
+                    [key]: newType,
+                    block_municipality_type: newType,
+                    block_municipality_id: undefined,
+                    village_ward_id: undefined,
+                    ward_id: undefined
+                };
+            }
+            if (key === 'block_municipality_id' && prev.block_municipality_id !== value) {
+                return {
+                    ...prev,
+                    [key]: value,
+                    village_ward_id: undefined,
+                    ward_id: undefined
+                };
             }
             if (key === 'district_id' && prev.district_id !== value) {
                 return { ...prev, [key]: value, police_station_id: undefined, hat_id: undefined, mouza_id: undefined, jl_no: '', adsr_name: '' };
@@ -992,7 +1049,7 @@ const MakerSurveyTable: React.FC = () => {
             const response = await updateSurveyDetailsByMaker(uploadFiles, payload);
 
             // Check if response indicates success
-            if (response && (response.status === 1 || response.message?.toLowerCase().includes('success'))) {
+            if (response && (response.status === 0 || response.message?.toLowerCase().includes('success'))) {
                 // Show SweetAlert success message
                 await Swal.fire({
                     icon: 'success',
@@ -1082,6 +1139,9 @@ const MakerSurveyTable: React.FC = () => {
             setLoading(false);
         }
     };
+
+    console.log("blockOptions", editFields.block_id);
+    console.log("mouzaOptions", editFields.mouza_id);
 
     const totalItems = filteredData.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
@@ -1497,13 +1557,13 @@ const MakerSurveyTable: React.FC = () => {
                                                         <select
                                                             className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
                                                             value={
-                                                                editFields.block_municipality_type === undefined || editFields.block_municipality_type === null || editFields.block_municipality_type === 0
+                                                                editFields.is_urban === undefined || editFields.is_urban === null || editFields.is_urban === 0
                                                                     ? ""
-                                                                    : String(editFields.block_municipality_type)
+                                                                    : String(editFields.is_urban)
                                                             }
                                                             onChange={e =>
                                                                 handleFieldChange(
-                                                                    'block_municipality_type',
+                                                                    'is_urban',
                                                                     e.target.value === "" ? undefined : Number(e.target.value)
                                                                 )
                                                             }
@@ -1515,7 +1575,7 @@ const MakerSurveyTable: React.FC = () => {
                                                     </div>
 
                                                     {/* Conditional Block Dropdown (shows when Block is selected) */}
-                                                    {editFields.block_municipality_type === 1 && (
+                                                    {editFields.is_urban === 1 && (
                                                         <div className="mb-1">
                                                             <label className="block text-sm font-bold text-gray-600 mb-2">
                                                                 Block
@@ -1528,19 +1588,19 @@ const MakerSurveyTable: React.FC = () => {
                                                                 <select
                                                                     className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
                                                                     value={
-                                                                        editFields.block_municipality_id === undefined || editFields.block_municipality_id === null || editFields.block_municipality_id === 0
+                                                                        editFields.block_id === undefined || editFields.block_id === null || editFields.block_id === 0
                                                                             ? ""
-                                                                            : String(editFields.block_municipality_id)
+                                                                            : String(editFields.block_id)
                                                                     }
                                                                     onChange={e => {
                                                                         handleFieldChange(
-                                                                            'block_municipality_id',
+                                                                            'block_id',
                                                                             e.target.value === "" ? undefined : Number(e.target.value)
                                                                         );
-                                                                        // Reset village_ward_id when block changes
-                                                                        handleFieldChange('village_ward_id', undefined);
                                                                     }}
                                                                 >
+
+
                                                                     <option value="">-- Select Block --</option>
                                                                     {blockOptions.map(block =>
                                                                         <option key={block.block_id} value={block.block_id}>
@@ -1553,7 +1613,7 @@ const MakerSurveyTable: React.FC = () => {
                                                     )}
 
                                                     {/* Conditional Municipality Dropdown (shows when Municipality is selected) */}
-                                                    {editFields.block_municipality_type === 2 && (
+                                                    {editFields.is_urban === 2 && (
                                                         <div className="mb-1">
                                                             <label className="block text-sm font-bold text-gray-600 mb-2">
                                                                 Municipality
@@ -1566,17 +1626,16 @@ const MakerSurveyTable: React.FC = () => {
                                                                 <select
                                                                     className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
                                                                     value={
-                                                                        editFields.block_municipality_id === undefined || editFields.block_municipality_id === null || editFields.block_municipality_id === 0
+                                                                        editFields.municipality_id === undefined || editFields.municipality_id === null || editFields.municipality_id === 0
                                                                             ? ""
-                                                                            : String(editFields.block_municipality_id)
+                                                                            : String(editFields.municipality_id)
                                                                     }
                                                                     onChange={e => {
                                                                         handleFieldChange(
-                                                                            'block_municipality_id',
+                                                                            'municipality_id',
                                                                             e.target.value === "" ? undefined : Number(e.target.value)
                                                                         );
-                                                                        // Reset village_ward_id when municipality changes
-                                                                        handleFieldChange('village_ward_id', undefined);
+
                                                                     }}
                                                                 >
                                                                     <option value="">-- Select Municipality --</option>
@@ -1591,7 +1650,7 @@ const MakerSurveyTable: React.FC = () => {
                                                     )}
 
                                                     {/* Conditional Panchayat Dropdown (shows after Block selection) */}
-                                                    {editFields.block_municipality_type === 1 && editFields.block_municipality_id && (
+                                                    {editFields.is_urban === 1 && (
                                                         <div className="mb-1">
                                                             <label className="block text-sm font-bold text-gray-600 mb-2">
                                                                 Panchayat
@@ -1627,7 +1686,7 @@ const MakerSurveyTable: React.FC = () => {
                                                     )}
 
                                                     {/* Conditional Ward Dropdown (shows after Municipality selection) */}
-                                                    {editFields.block_municipality_type === 2 && editFields.block_municipality_id && (
+                                                    {editFields.is_urban == 2 && (
                                                         <div className="mb-1">
                                                             <label className="block text-sm font-bold text-gray-600 mb-2">
                                                                 Ward
@@ -1640,13 +1699,13 @@ const MakerSurveyTable: React.FC = () => {
                                                                 <select
                                                                     className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
                                                                     value={
-                                                                        editFields.village_ward_id === undefined || editFields.village_ward_id === null || editFields.village_ward_id === 0
+                                                                        editFields.ward_id === undefined || editFields.ward_id === null || editFields.ward_id === 0
                                                                             ? ""
-                                                                            : String(editFields.village_ward_id)
+                                                                            : String(editFields.ward_id)
                                                                     }
                                                                     onChange={e =>
                                                                         handleFieldChange(
-                                                                            'village_ward_id',
+                                                                            'ward_id',
                                                                             e.target.value === "" ? undefined : Number(e.target.value)
                                                                         )
                                                                     }
@@ -1665,7 +1724,7 @@ const MakerSurveyTable: React.FC = () => {
                                                     {ALL_EDIT_FIELDS
                                                         .filter(field => field.key !== 'police_station_name')
                                                         .filter(field => field.key !== 'police_station_id')
-                                                        .filter(field => field.key !== 'block_municipality_type')
+                                                        .filter(field => field.key !== 'is_urban')
                                                         .filter(field => field.key !== 'block_municipality_id')
                                                         .map(field => (
                                                             <div key={String(field.key)} className="mb-1">
@@ -1742,20 +1801,20 @@ const MakerSurveyTable: React.FC = () => {
                                                                                         e.target.value === "" ? undefined : Number(e.target.value)
                                                                                     )
                                                                                 }
-                                                                                disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
+                                                                                disabled={!(editFields.district_id !== undefined && editFields.district_id !== null)}
                                                                             >
                                                                                 <option value="">-- Select Haat --</option>
-                                                                                {haatOptions.map(haat =>
-                                                                                    <option key={haat.haat_id} value={haat.haat_id}>
+                                                                                {haatOptions.map((haat, index) =>
+                                                                                    <option key={`${haat.hat_id}-${index}`} value={haat.hat_id}>
                                                                                         {haat.haat_name}
                                                                                     </option>
                                                                                 )}
                                                                             </select>
                                                                         )}
-                                                                        {(editFields.police_station_id === undefined ||
-                                                                            editFields.police_station_id === null) && (
+                                                                        {(editFields.district_id === undefined ||
+                                                                            editFields.district_id === null) && (
                                                                                 <div className="text-[11px] text-gray-400 mt-1">
-                                                                                    Police Station selection required for dropdown
+                                                                                    District selection required for dropdown
                                                                                 </div>
                                                                             )}
                                                                     </>
@@ -1857,44 +1916,6 @@ const MakerSurveyTable: React.FC = () => {
                                                                             editFields.police_station_id === null) && (
                                                                                 <div className="text-[11px] text-gray-400 mt-1">
                                                                                     Police Station selection required for dropdown
-                                                                                </div>
-                                                                            )}
-                                                                    </>
-                                                                ) : field.key === "block_municipality_id" ? (
-                                                                    <>
-                                                                        {blockMunicipalityLoading ? (
-                                                                            <div className="text-blue-700 text-xs py-2">Loading Block/Municipality ID list...</div>
-                                                                        ) : blockMunicipalityError ? (
-                                                                            <div className="text-red-600 text-xs py-2">{blockMunicipalityError}</div>
-                                                                        ) : (
-                                                                            <select
-                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                                value={
-                                                                                    editFields.block_municipality_id === undefined || editFields.block_municipality_id === null || editFields.block_municipality_id === 0
-                                                                                        ? ""
-                                                                                        : String(editFields.block_municipality_id)
-                                                                                }
-                                                                                onChange={e =>
-                                                                                    handleFieldChange(
-                                                                                        field.key,
-                                                                                        e.target.value === "" ? undefined : Number(e.target.value)
-                                                                                    )
-                                                                                }
-                                                                                disabled={!(editFields.block_municipality_type !== undefined && editFields.block_municipality_type !== null && editFields.block_municipality_type !== 0)}
-                                                                            >
-                                                                                <option value="">-- Select Block/Municipality ID --</option>
-                                                                                {blockMunicipalityOptions.map(item =>
-                                                                                    <option key={item.block_municipality_id} value={item.block_municipality_id}>
-                                                                                        {item.block_municipality_name}
-                                                                                    </option>
-                                                                                )}
-                                                                            </select>
-                                                                        )}
-                                                                        {(editFields.block_municipality_type === undefined ||
-                                                                            editFields.block_municipality_type === null ||
-                                                                            editFields.block_municipality_type === 0) && (
-                                                                                <div className="text-[11px] text-gray-400 mt-1">
-                                                                                    Please select Block/Municipality Type first
                                                                                 </div>
                                                                             )}
                                                                     </>

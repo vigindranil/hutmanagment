@@ -315,7 +315,7 @@ export const updateSurveyDetailsByMaker = async (
   const payload = {
     // Long
     survey_id: Number(applicationDetails.survey_id ?? 0),
-    
+
     // Integer
     license_type: Number(applicationDetails.license_type ?? 0),
     application_status: Number(applicationDetails.application_status ?? 0),
@@ -329,12 +329,12 @@ export const updateSurveyDetailsByMaker = async (
     address: String(applicationDetails.address?.trim() || " "),
     mobile: String(applicationDetails.mobile?.trim() || " "),
     citizenship: String(applicationDetails.citizenship?.trim() || " "),
-    
+
     // Integer
     pin_code: Number(applicationDetails.pin_code ?? 0),
     is_within_family: Number(applicationDetails.is_within_family ?? 0),
     transfer_relationship: Number(applicationDetails.transfer_relationship ?? 0),
-    
+
     // String
     document_type: String(applicationDetails.document_type?.trim() || " "),
     document_no: String(applicationDetails.document_no?.trim() || " "),
@@ -362,12 +362,11 @@ export const updateSurveyDetailsByMaker = async (
 
     /* Plot - Integer */
     district_id: Number(applicationDetails.district_id ?? 0),
-    block_municipality_type: Number(applicationDetails.block_municipality_type ?? 0),
-    village_ward_id: Number(applicationDetails.village_ward_id ?? 0),
+    is_urban: Number(applicationDetails.is_urban ?? 0),
     police_station_id: Number(applicationDetails.police_station_id ?? 0),
     hat_id: Number(applicationDetails.hat_id ?? 0),
     mouza_id: Number(applicationDetails.mouza_id ?? 0),
-    
+
     // String
     stall_no: String(applicationDetails.stall_no?.trim() || " "),
     holding_no: String(applicationDetails.holding_no?.trim() || " "),
@@ -409,6 +408,7 @@ export const updateSurveyDetailsByMaker = async (
     panchayet_id: Number(applicationDetails.panchayet_id ?? 0),
     municipality_id: Number(applicationDetails.municipality_id ?? 0),
     ward_id: Number(applicationDetails.ward_id ?? 0),
+    ward_no: Number(applicationDetails.ward_no ?? 0),
   };
 
   /* 🔑 BACKEND EXPECTS STRINGIFIED JSON */
@@ -423,11 +423,19 @@ export const updateSurveyDetailsByMaker = async (
       body: formData,
     }
   );
-
   const data = await response.json();
+  const isHttpOk = response.ok;
+  const status = typeof data.status === "number" ? data.status : undefined;
+  const message: string = typeof data.message === "string" ? data.message : "";
+  const messageIndicatesSuccess = /success/i.test(message);
 
-  if (!response.ok || data.status !== 1) {
-    throw new Error(data.message || "Failed to update survey");
+  const isBusinessOk =
+    status === 0 ||
+    status === 1 ||
+    messageIndicatesSuccess;
+
+  if (!isHttpOk || !isBusinessOk) {
+    throw new Error(message || "Failed to update survey");
   }
 
   return data;
@@ -535,26 +543,26 @@ export const getADSRNameByPoliceStationID = async (
 };
 
 
-export const getHaatListByPoliceStationID = async (
-  policeStationID: number
-): Promise<any> => {
-  const token = Cookies.get("token");
-  const headers = new Headers();
-  headers.append("accept", "*/*");
-  headers.append("Authorization", `Bearer ${token}`);
+// export const getHaatListByPoliceStationID = async (
+//   policeStationID: number
+// ): Promise<any> => {
+//   const token = Cookies.get("token");
+//   const headers = new Headers();
+//   headers.append("accept", "*/*");
+//   headers.append("Authorization", `Bearer ${token}`);
 
-  const requestOptions: RequestInit = {
-    method: "POST",
-    headers,
-    redirect: "follow"
-  };
-  const apiUrl = `${BASE_API_URL}user/getHaatListByPoliceStationID?PoliceStationID=${policeStationID}`;
-  const response = await fetch(apiUrl, requestOptions);
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
-  }
-  return response.json();
-};
+//   const requestOptions: RequestInit = {
+//     method: "POST",
+//     headers,
+//     redirect: "follow"
+//   };
+//   const apiUrl = `${BASE_API_URL}user/getHaatListByPoliceStationID?PoliceStationID=${policeStationID}`;
+//   const response = await fetch(apiUrl, requestOptions);
+//   if (!response.ok) {
+//     throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+//   }
+//   return response.json();
+// };
 
 
 export const getThanaListByDistrictID = async (
@@ -600,6 +608,31 @@ export const getBoundaryDetailsByBoundaryID = async (
   };
 
   const apiUrl = `${BASE_API_URL}user/getBoundaryDetailsByBoundaryID?BoundaryLevelID=${boundaryLevelID}&BoundaryID=${boundaryID}&IsUrban=${isUrban}&LoginUserID=${loginUserID}`;
+  const response = await fetch(apiUrl, requestOptions);
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+
+  return response.json();
+};
+
+
+export const getAllHaatDetailsByDistrictID = async (
+  districtID: number
+): Promise<any> => {
+  const token = Cookies.get("token");
+  const headers = new Headers();
+  headers.append("accept", "*/*");
+  headers.append("Authorization", `Bearer ${token}`);
+
+  const requestOptions: RequestInit = {
+    method: "POST",
+    headers,
+    redirect: "follow"
+  };
+
+  const apiUrl = `${BASE_API_URL}user/getAllHaatDetailsByDistrictID?DistrictID=${districtID}`;
   const response = await fetch(apiUrl, requestOptions);
 
   if (!response.ok) {

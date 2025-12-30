@@ -1202,13 +1202,14 @@ const SurveyTable: React.FC = () => {
                                   : "bg-green-500"
                                   }`}
                               />
-                              {survey?.application_status == 1 && "Initial Payment Pending"}
+                              {survey?.application_status == 1 && "Survey Generated & Initial Payment Pending"}
                               {survey?.application_status == 2 && "Change Request"}
                               {survey?.application_status == 3 && "Hearing Pending"}
                               {survey?.application_status == 4 && "Hearing Scheduled"}
                               {survey?.application_status == 5 && "Hearing Approved"}
                               {survey?.application_status == 6 && "Final Payment Done"}
                               {survey?.application_status == 7 && "License Issued"}
+                              {survey?.application_status == 8 && "Survey Initated & Initial Payment Pending"}
                             </div>
                           </td>
                           <td className="px-6 py-5 text-center">

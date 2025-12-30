@@ -9,9 +9,30 @@ interface StatsCardProps {
   changeType: 'positive' | 'negative' | 'neutral';
   icon: typeof LucideIcon;
   color: 'blue' | 'green' | 'red' | 'purple' | 'orange';
-  HaatDashoardStatus: number,
-  dashboardType: string
+  HaatDashoardStatus: number;
+  dashboardType: string;
 }
+
+// Define mapping from color prop to light background color
+const colorBgClasses: Record<string, string> = {
+  blue: 'bg-blue-50',
+  green: 'bg-green-50',
+  red: 'bg-red-50',
+  purple: 'bg-purple-50',
+  orange: 'bg-orange-50',
+};
+
+const getChangeStyle = (changeType: string) => {
+  switch (changeType) {
+    case 'positive':
+      return 'bg-green-100 text-green-700 border-green-200';
+    case 'negative':
+      return 'bg-red-100 text-red-700 border-red-200';
+    case 'neutral':
+    default:
+      return 'bg-gray-100 text-gray-500 border-gray-200';
+  }
+};
 
 const StatsCard: React.FC<StatsCardProps> = ({
   title,
@@ -21,90 +42,178 @@ const StatsCard: React.FC<StatsCardProps> = ({
   icon: Icon,
   color,
   HaatDashoardStatus,
-  dashboardType
+  dashboardType,
 }) => {
-  const colorClasses = {
-    blue: {
-      gradient: 'from-blue-500 to-cyan-600',
-      bg: 'from-blue-50 to-cyan-50',
-      shadow: 'shadow-blue-500/20',
-      ring: 'ring-blue-500/10'
-    },
-    green: {
-      gradient: 'from-emerald-500 to-teal-600',
-      bg: 'from-emerald-50 to-teal-50',
-      shadow: 'shadow-emerald-500/20',
-      ring: 'ring-emerald-500/10'
-    },
-    red: {
-      gradient: 'from-red-500 to-pink-600',
-      bg: 'from-red-50 to-pink-50',
-      shadow: 'shadow-red-500/20',
-      ring: 'ring-red-500/10'
-    },
-    purple: {
-      gradient: 'from-purple-500 to-indigo-600',
-      bg: 'from-purple-50 to-indigo-50',
-      shadow: 'shadow-purple-500/20',
-      ring: 'ring-purple-500/10'
-    },
-    orange: {
-      gradient: 'from-orange-500 to-red-600',
-      bg: 'from-orange-50 to-red-50',
-      shadow: 'shadow-orange-500/20',
-      ring: 'ring-orange-500/10'
-    }
-  };
-
-  const changeColorClass = {
-    positive: 'text-emerald-600 bg-emerald-50',
-    negative: 'text-red-600 bg-red-50',
-    neutral: 'text-gray-600 bg-gray-50'
-  }[changeType];
-
-  const colorConfig = colorClasses[color];
-
-  console.log("HaatDashoardStatus", HaatDashoardStatus)
-
- 
-  // Make the route dynamic based on dashboardType
-  let basePath;
+  // Route handling
+  let basePath = '';
   if (dashboardType === 'USER') {
     basePath = '/survey-details';
-  } else if (dashboardType === 'MAKER' && HaatDashoardStatus !== undefined && HaatDashoardStatus !== null) {
-    // Maker treated as ADMIN but different base path
+  } else if (
+    dashboardType === 'MAKER' &&
+    HaatDashoardStatus !== undefined &&
+    HaatDashoardStatus !== null
+  ) {
     basePath = '/maker-survey-details';
-  } else if (dashboardType === 'ADMIN' && HaatDashoardStatus !== undefined && HaatDashoardStatus !== null ) {
-    // Other admin dashboards
+  } else if (
+    dashboardType === 'ADMIN' &&
+    HaatDashoardStatus !== undefined &&
+    HaatDashoardStatus !== null
+  ) {
     basePath = '/survey-details';
-  } else {
-    // console.log("here here here")
-    // basePath = '/maker-survey-details';
   }
   const destinationPath = `${basePath}?_hti=${HaatDashoardStatus}&title=${title}&dashboardType=${dashboardType}`;
+
+  // Choose light card background based on color prop
+  const lightCardBgClass = colorBgClasses[color] || 'bg-blue-50';
 
   return (
     <Link
       to={destinationPath}
-      className={`relative bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl ${colorConfig.shadow} border border-white/20 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 group overflow-hidden`}
+      className={`
+        group
+        relative
+        flex flex-col
+        justify-between
+        md:min-h-[210px] min-h-[180px]
+        w-full
+        rounded-xl
+        shadow-lg
+        p-6 sm:p-7
+        transition transform duration-150
+        hover:scale-[1.035]
+        ${lightCardBgClass}
+        overflow-hidden
+        border border-slate-200
+      `}
+      style={{
+        minWidth: 0,
+        width: '100%',
+        maxWidth: "100%",
+      }}
     >
-      {/* Background gradient overlay */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${colorConfig.bg} opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>
-      <div className="relative z-10 flex items-center justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-gray-600 mb-1">{title}</p>
-          <p className="text-3xl font-bold text-gray-900 mb-3">{value}</p>
-          <div className="flex items-center">
-            <span className={`text-sm font-semibold px-2 py-1 rounded-full ${changeColorClass}`}>
-              {change}
-            </span>
-            {/* <span className="text-sm text-gray-500 ml-2">from last month</span> */}
-          </div>
+      {/* Remove overly white gradient overlay, keep card light color */}
+      <div
+        className="
+          absolute inset-0
+          pointer-events-none
+          z-0
+        "
+      >
+        {/* You may opt to add a subtle light pattern here if desired */}
+        {/* For now, do not overwrite bg color with whiteish gradient */}
+      </div>
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="flex items-center gap-3 mb-2">
+          <span
+            className={`
+              flex items-center justify-center
+              h-12 w-12 min-w-12 min-h-12
+              rounded-xl
+              bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600
+              shadow-md
+            `}
+          >
+            <Icon className="w-6 h-6 text-white" />
+          </span>
+          <span
+            className={`
+              text-lg sm:text-xl
+              font-bold
+              uppercase
+              bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600
+              bg-clip-text text-transparent
+              tracking-wide
+            `}
+          >
+            {title}
+          </span>
         </div>
-        <div className={`p-4 rounded-2xl bg-gradient-to-br ${colorConfig.gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-          <Icon className="w-8 h-8 text-white" />
+        <div className="flex-1 flex items-end mt-2 mb-3">
+          <span
+            className="
+              font-extrabold
+              text-[2.1rem] sm:text-[2.5rem]
+              leading-[1.1]
+              drop-shadow-md
+              bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600
+              bg-clip-text text-transparent
+            "
+            style={{
+              letterSpacing: '-.01em',
+              wordBreak: 'break-word',
+              // Medium card main value style
+            }}
+          >
+            {value}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span
+            className={`
+              inline-flex items-center gap-1 px-3 py-1 rounded-full 
+              border text-sm font-semibold
+              transition
+              ${getChangeStyle(changeType)}
+              shadow
+            `}
+          >
+            {changeType === 'positive' && (
+              <svg
+                width={14}
+                height={14}
+                className="mr-1 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M5 10l5-5 5 5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
+            {changeType === 'negative' && (
+              <svg
+                width={14}
+                height={14}
+                className="mr-1 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M15 10l-5 5-5-5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
+            {changeType === 'neutral' && (
+              <svg
+                width={9}
+                height={9}
+                className="mr-1 text-gray-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <circle cx="10" cy="10" r="5" />
+              </svg>
+            )}
+            <span>{change}</span>
+          </span>
         </div>
       </div>
+      {/* Subtle border */}
+      <div className="
+        pointer-events-none
+        absolute inset-0
+        border border-slate-300/20
+        rounded-xl
+        z-10
+      " />
     </Link>
   );
 };

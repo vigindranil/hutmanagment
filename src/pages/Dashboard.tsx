@@ -20,7 +20,6 @@ import { commonApi } from '../Service/commonAPI';
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
 
-
   const dashboardApiCall = async () => {
     const userDetails = decodeJwtToken();
 
