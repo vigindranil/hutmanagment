@@ -1209,7 +1209,7 @@ const SurveyTable: React.FC = () => {
                               {survey?.application_status == 5 && "Hearing Approved"}
                               {survey?.application_status == 6 && "Final Payment Done"}
                               {survey?.application_status == 7 && "License Issued"}
-                              {survey?.application_status == 8 && "Survey Initated & Initial Payment Pending"}
+                              {survey?.application_status == 8 && "Survey Initated & Maker Updation Pending"}
                             </div>
                           </td>
                           <td className="px-6 py-5 text-center">
