@@ -14,6 +14,11 @@ import {
   Download,
 } from "lucide-react";
 
+// Helper function to open image in new tab
+const openImageInNewTab = (src: string) => {
+  window.open(src, "_blank");
+};
+
 interface FullApplicationDetails {
   survey_id: number;
   name: string;
@@ -120,6 +125,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   userType,
   haatStatusId,
 }) => {
+  const handleNameChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPaymentName(e.target.value), [setPaymentName]);
+  const handleNumberChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPaymentNumber(e.target.value), [setPaymentNumber]);
+  const handleEmailChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPaymentEmail(e.target.value), [setPaymentEmail]);
+
   if (!show) return null;
 
   return (
@@ -189,16 +198,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                             [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
                             ? "The initial amount payable is calculated as 10% of 25% of the land's valuation."
                             : selectedSurvey?.relation_status === 6
-                            ? "The initial amount payable is calculated as 20% of 25% of the land's valuation."
-                            : ""
+                              ? "The initial amount payable is calculated as 20% of 25% of the land's valuation."
+                              : ""
                           : userType == 1 && haatStatusId == "7"
-                          ? selectedSurvey?.relation_status !== undefined &&
-                            [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
-                            ? "The Final amount payable is calculated as 10% of 75% of the land's valuation."
-                            : selectedSurvey?.relation_status === 6
-                            ? "The Final amount payable is calculated as 20% of 75% of the land's valuation."
-                            : ""
-                          : ""}
+                            ? selectedSurvey?.relation_status !== undefined &&
+                              [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
+                              ? "The Final amount payable is calculated as 10% of 75% of the land's valuation."
+                              : selectedSurvey?.relation_status === 6
+                                ? "The Final amount payable is calculated as 20% of 75% of the land's valuation."
+                                : ""
+                            : ""}
                       </span>
                     </div>
                     <span className="ml-8 text-2xl font-bold text-slate-900 text-left">
@@ -206,8 +215,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       {userType == 1 && haatStatusId == "7"
                         ? selectedSurvey?.final_amount
                         : userType == 1 && haatStatusId == "4"
-                        ? selectedSurvey?.initial_amount
-                        : ""}
+                          ? selectedSurvey?.initial_amount
+                          : ""}
                     </span>
                   </div>
                 </div>
@@ -223,7 +232,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
                     placeholder="Enter your full name"
                     value={paymentName}
-                    onChange={(e) => setPaymentName(e.target.value)}
+                    onChange={handleNameChange}
                     required
                   />
                 </div>
@@ -237,7 +246,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
                     placeholder="Enter your mobile number"
                     value={paymentNumber}
-                    onChange={(e) => setPaymentNumber(e.target.value)}
+                    onChange={handleNumberChange}
                     required
                   />
                 </div>
@@ -251,7 +260,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
                     placeholder="Enter your email address"
                     value={paymentEmail}
-                    onChange={(e) => setPaymentEmail(e.target.value)}
+                    onChange={handleEmailChange}
                     required
                   />
                 </div>
@@ -298,6 +307,8 @@ export const HearingModal: React.FC<HearingModalProps> = ({
   loading,
   onSubmit,
 }) => {
+  const handleDateChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setHearingDate(e.target.value), [setHearingDate]);
+
   console.log("render")
   if (!show) return null;
 
@@ -347,7 +358,7 @@ export const HearingModal: React.FC<HearingModalProps> = ({
                 type="date"
                 className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
                 value={hearingDate}
-                onChange={(e) => setHearingDate(e.target.value)}
+                onChange={handleDateChange}
                 required
                 min={new Date().toISOString().split("T")[0]}
               />
@@ -403,6 +414,8 @@ export const RemarksModal: React.FC<RemarksModalProps> = ({
   loading,
   onSubmit,
 }) => {
+  const handleRemarksChange = React.useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => setRemarksText(e.target.value), [setRemarksText]);
+
   if (!show) return null;
 
   return (
@@ -411,11 +424,10 @@ export const RemarksModal: React.FC<RemarksModalProps> = ({
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <div className="flex items-center gap-3">
             <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                approvalAction === "approve"
-                  ? "bg-gradient-to-r from-green-500 to-emerald-600"
-                  : "bg-gradient-to-r from-red-500 to-pink-600"
-              }`}
+              className={`w-10 h-10 rounded-xl flex items-center justify-center ${approvalAction === "approve"
+                ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                : "bg-gradient-to-r from-red-500 to-pink-600"
+                }`}
             >
               <MessageSquare className="w-5 h-5 text-white" />
             </div>
@@ -439,18 +451,16 @@ export const RemarksModal: React.FC<RemarksModalProps> = ({
         <div className="p-6">
           <div className="space-y-6">
             <div
-              className={`rounded-xl p-4 border ${
-                approvalAction === "approve"
-                  ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-100"
-                  : "bg-gradient-to-r from-red-50 to-pink-50 border-red-100"
-              }`}
+              className={`rounded-xl p-4 border ${approvalAction === "approve"
+                ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-100"
+                : "bg-gradient-to-r from-red-50 to-pink-50 border-red-100"
+                }`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-slate-700">Action</span>
                 <span
-                  className={`text-xl font-bold ${
-                    approvalAction === "approve" ? "text-green-700" : "text-red-700"
-                  }`}
+                  className={`text-xl font-bold ${approvalAction === "approve" ? "text-green-700" : "text-red-700"
+                    }`}
                 >
                   {approvalAction === "approve" ? "APPROVE" : "REJECT"}
                 </span>
@@ -465,15 +475,14 @@ export const RemarksModal: React.FC<RemarksModalProps> = ({
                 className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-slate-50 focus:bg-white resize-none"
                 placeholder="Enter your remarks here (minimum 10 characters)..."
                 value={remarksText}
-                onChange={(e) => setRemarksText(e.target.value)}
+                onChange={handleRemarksChange}
                 rows={4}
                 required
               />
               <div className="flex items-center justify-between mt-2">
                 <span
-                  className={`text-xs ${
-                    remarksText.length >= 10 ? "text-green-600" : "text-red-500"
-                  }`}
+                  className={`text-xs ${remarksText.length >= 10 ? "text-green-600" : "text-red-500"
+                    }`}
                 >
                   {remarksText.length >= 10
                     ? "✓ Valid length"
@@ -497,11 +506,10 @@ export const RemarksModal: React.FC<RemarksModalProps> = ({
                 type="button"
                 onClick={onSubmit}
                 disabled={remarksText.length < 10 || loading}
-                className={`flex-1 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl ${
-                  approvalAction === "approve"
-                    ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-slate-400 disabled:to-slate-500"
-                    : "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 disabled:from-slate-400 disabled:to-slate-500"
-                }`}
+                className={`flex-1 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl ${approvalAction === "approve"
+                  ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-slate-400 disabled:to-slate-500"
+                  : "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 disabled:from-slate-400 disabled:to-slate-500"
+                  }`}
               >
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">
@@ -632,16 +640,16 @@ export const ViewDetailsModal: React.FC<ViewDetailsModalProps> = ({
                         selectedDetails?.transfer_relationship == "1"
                           ? "Wife"
                           : selectedDetails?.transfer_relationship == "2"
-                          ? "Daughter"
-                          : selectedDetails?.transfer_relationship == "3"
-                          ? "Son"
-                          : selectedDetails?.transfer_relationship == "4"
-                          ? "Father"
-                          : selectedDetails?.transfer_relationship == "5"
-                          ? "Mother"
-                          : selectedDetails?.transfer_relationship == "6"
-                          ? "Other"
-                          : selectedDetails?.transfer_relationship || "",
+                            ? "Daughter"
+                            : selectedDetails?.transfer_relationship == "3"
+                              ? "Son"
+                              : selectedDetails?.transfer_relationship == "4"
+                                ? "Father"
+                                : selectedDetails?.transfer_relationship == "5"
+                                  ? "Mother"
+                                  : selectedDetails?.transfer_relationship == "6"
+                                    ? "Other"
+                                    : selectedDetails?.transfer_relationship || "",
                     },
                     {
                       label: "Document Type",
@@ -649,8 +657,8 @@ export const ViewDetailsModal: React.FC<ViewDetailsModalProps> = ({
                         selectedDetails?.document_type == "1"
                           ? "Aadhar"
                           : selectedDetails?.document_type == "2"
-                          ? "Voter"
-                          : selectedDetails?.document_type || "",
+                            ? "Voter"
+                            : selectedDetails?.document_type || "",
                     },
                     { label: "Document Image", value: selectedDetails?.document_image, isImage: true },
                     { label: "Previous License No", value: selectedDetails?.previous_license_no },
@@ -743,28 +751,7 @@ export const ViewDetailsModal: React.FC<ViewDetailsModalProps> = ({
                                   src={item.value as string}
                                   alt={item.label}
                                   className="w-32 h-auto rounded border cursor-pointer"
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => {
-                                    const newTab = window.open();
-                                    if (newTab) {
-                                      newTab.document.write(`
-                                        <!DOCTYPE html>
-                                        <html>
-                                        <head>
-                                            <title>Document Viewer</title>
-                                            <style>
-                                                body { margin: 0; background: #2e2e2e; display: flex; justify-content: center; align-items: center; height: 100vh; }
-                                                img { max-width: 100%; max-height: 100%; }
-                                            </style>
-                                        </head>
-                                        <body>
-                                            <img src="${item.value}" alt="Document Preview" />
-                                        </body>
-                                        </html>
-                                      `);
-                                      newTab.document.close();
-                                    }
-                                  }}
+                                  onClick={() => openImageInNewTab(item.value as string)}
                                 />
                               ) : (
                                 item?.value ?? <span className="text-gray-400">-</span>

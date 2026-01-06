@@ -140,7 +140,21 @@ interface FullApplicationDetails {
   hearing_approved_date?: string;
 }
 
+// ... imports ...
+
 const ITEMS_PER_PAGE = 10;
+
+// Animation styles
+const FADE_IN_KEYFRAMES = `
+  @keyframes fade-in {
+    0% {opacity:0; transform:translateY(30px);}
+    100% {opacity:1; transform:translateY(0);}
+  }
+  @keyframes slide-down {
+    0% {opacity:0; transform:translateY(-16px);}
+    100% {opacity:1; transform:translateY(0);}
+  }
+`;
 
 const SurveyTable: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -174,8 +188,14 @@ const SurveyTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const certificateRef = useRef<HTMLDivElement>(null);
 
+
   // Handle View Click
-  const handleViewClick = async (surveyId: string) => {
+  const handleBack = React.useCallback(() => {
+    window?.history?.back();
+  }, []);
+
+  // Handle View Click
+  const handleViewClick = React.useCallback(async (surveyId: string) => {
     try {
       setIsModalOpen(true);
       setisLoadingDetails(true);
@@ -187,10 +207,10 @@ const SurveyTable: React.FC = () => {
     } finally {
       setisLoadingDetails(false);
     }
-  };
+  }, []);
 
   // Handle Download Certificate
-  const handleDownloadClick = async (survey: any) => {
+  const handleDownloadClick = React.useCallback(async (survey: any) => {
     if (!survey || !survey.application_number) {
       Swal.fire({
         icon: "error",
@@ -312,10 +332,10 @@ const SurveyTable: React.FC = () => {
         text: errorMessage,
       });
     }
-  };
+  }, []);
 
   // Load Data Based on User Type
-  const loadData = async () => {
+  const loadData = React.useCallback(async () => {
     const userDetails = decodeJwtToken();
     console.log('hatstatusID', haatStatusId)
     console.log(dashboardType)
@@ -340,39 +360,53 @@ const SurveyTable: React.FC = () => {
       setData(result);
     }
     setCurrentPage(1);
-  };
+  }, [haatStatusId, dashboardType]);
 
   useEffect(() => {
     const userDetails = decodeJwtToken();
     setUserType(userDetails?.UserTypeID);
     loadData();
-  }, [haatStatusId, paymentSuccess]);
+  }, [haatStatusId, paymentSuccess, loadData]);
+
+  // Pagination
+  const totalItems = data?.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIdx = startIdx + ITEMS_PER_PAGE;
+
+  const paginatedData = React.useMemo(() => data?.slice(startIdx, endIdx), [data, startIdx, endIdx]);
+
+  const handlePageChange = React.useCallback((page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  }, [totalPages]);
 
   // Checkbox functionality
-  const handleCheckboxChange = (surveyId: number) => {
+  const handleCheckboxChange = React.useCallback((surveyId: number) => {
     setSelectedSurveys((prev) =>
       prev.includes(surveyId)
         ? prev.filter((id) => id !== surveyId)
         : [...prev, surveyId]
     );
-  };
+  }, []);
 
-  const handleSelectAll = () => {
+  const handleSelectAll = React.useCallback(() => {
     if (selectedSurveys.length === paginatedData.length) {
       setSelectedSurveys([]);
     } else {
       const allIds = paginatedData.map((survey: any) => survey.survey_id);
       setSelectedSurveys(allIds);
     }
-  };
+  }, [selectedSurveys.length, paginatedData]);
 
-  const handleSubmitSelected = () => {
+  const handleSubmitSelected = React.useCallback(() => {
     if (selectedSurveys.length > 0) {
       setShowHearingModal(true);
     }
-  };
+  }, [selectedSurveys.length]);
 
-  const handleHearingDateSubmit = async () => {
+  const handleHearingDateSubmit = React.useCallback(async () => {
     if (!hearingDate) return;
 
     setLoading(true);
@@ -396,21 +430,11 @@ const SurveyTable: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [hearingDate, selectedSurveys]);
 
-  // Pagination
-  const totalItems = data?.length;
-  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIdx = startIdx + ITEMS_PER_PAGE;
-  const paginatedData = data?.slice(startIdx, endIdx);
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
 
-  const handlePaymentSubmit = async (e: React.FormEvent) => {
+
+  const handlePaymentSubmit = React.useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     const userDetails = decodeJwtToken();
@@ -421,37 +445,41 @@ const SurveyTable: React.FC = () => {
     }
     setLoading(false);
     setLoads(true);
-  };
+  }, [selectedSurvey]);
 
-  const closePaymentModal = () => {
+  const closePaymentModal = React.useCallback(() => {
     setShowPaymentModal(false);
     setPaymentSuccess(false);
     setPaymentName("");
     setPaymentNumber("");
     setPaymentEmail("");
     setLoads(false);
-  };
+  }, []);
 
-  const closeHearingModal = () => {
+  const closeHearingModal = React.useCallback(() => {
     setShowHearingModal(false);
     setHearingDate("");
-  };
+  }, []);
 
-  const closeRemarksModal = () => {
+  const closeRemarksModal = React.useCallback(() => {
     setShowRemarksModal(false);
     setRemarksText("");
     setSelectedSurveyForRemarks(null);
-  };
+  }, []);
+
+  const handleCloseDetailsModal = React.useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
   // Handle Approval Actions
-  const handleApprovalAction = (surveyId: number, action: "approve" | "reject") => {
+  const handleApprovalAction = React.useCallback((surveyId: number, action: "approve" | "reject") => {
     setSelectedSurveyForRemarks(surveyId);
     setApprovalAction(action);
     setRemarksText("");
     setShowRemarksModal(true);
-  };
+  }, []);
 
-  const handleRemarksSubmit = async () => {
+  const handleRemarksSubmit = React.useCallback(async () => {
     if (remarksText.length < 10) {
       Swal?.fire({
         icon: "warning",
@@ -498,7 +526,7 @@ const SurveyTable: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [remarksText, selectedSurveyForRemarks, approvalAction, userType, loadData]);
 
   // Visibility flags
   const showCheckboxes = userType == 50 && haatStatusId == "2";
@@ -520,24 +548,29 @@ const SurveyTable: React.FC = () => {
     "animate-[slide-down_0.5s_ease]";
 
   // Keyframes for animation
+  // Keyframes for animation
   React.useEffect(() => {
     // Keyframes in a style tag for basic fade and slide
     if (!document.getElementById("survey-table-animations")) {
       const style = document.createElement("style");
       style.id = "survey-table-animations";
-      style.innerHTML = `
-      @keyframes fade-in {
-        0% {opacity:0; transform:translateY(30px);}
-        100% {opacity:1; transform:translateY(0);}
-      }
-      @keyframes slide-down {
-        0% {opacity:0; transform:translateY(-16px);}
-        100% {opacity:1; transform:translateY(0);}
-      }
-      `;
+      style.innerHTML = FADE_IN_KEYFRAMES;
       document.head.appendChild(style);
     }
   }, []);
+
+  const handleOpenPaymentModal = React.useCallback((survey: SurveyData) => {
+    setShowPaymentModal(true);
+    setSelectedSurvey(survey);
+  }, []);
+
+  const handleOpenPdfPreview = React.useCallback(() => {
+    setShowPdfPreviewModal(false);
+    setPdfUrl(null);
+  }, []);
+
+  const backgroundStyle = React.useMemo(() => ({ willChange: "opacity" }), []);
+
 
   return (
     <div className="min-h-screen relative overflow-x-hidden scrollbar-thin scrollbar-thumb-blue-200">
@@ -546,7 +579,7 @@ const SurveyTable: React.FC = () => {
           src={bgimg}
           alt="background image"
           className="fixed left-0 top-20 w-full h-full object-cover opacity-[0.09] z-0 transition-opacity duration-700 ease-in"
-          style={{ willChange: "opacity" }}
+          style={backgroundStyle}
         />
       </div>
       <div className="container mx-auto px-6 py-8 relative z-10">
@@ -554,7 +587,7 @@ const SurveyTable: React.FC = () => {
         <div className={`mb-8`}>
           <button
             type="button"
-            onClick={() => window?.history?.back()}
+            onClick={handleBack}
             className={
               "group mb-6 inline-flex items-center px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 rounded-xl border border-slate-200 font-medium " +
               buttonBaseAnimation
@@ -1072,10 +1105,7 @@ const SurveyTable: React.FC = () => {
                           </td>
                           <td className="px-3 py-3">
                             <button
-                              onClick={() => {
-                                setShowPaymentModal(true);
-                                setSelectedSurvey(survey);
-                              }}
+                              onClick={() => handleOpenPaymentModal(survey)}
                               className="group inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-semibold text-[10px] shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                             >
                               <CreditCard className="w-3 h-3 mr-1 group-hover:rotate-12 transition-transform duration-200" />
@@ -1243,10 +1273,7 @@ const SurveyTable: React.FC = () => {
                       {haatStatusId == "7" && userType == 1 && (
                         <td className="px-6 py-5">
                           <button
-                            onClick={() => {
-                              setShowPaymentModal(true);
-                              setSelectedSurvey(survey);
-                            }}
+                            onClick={() => handleOpenPaymentModal(survey)}
                             className="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                           >
                             <CreditCard className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200" />
@@ -1371,26 +1398,14 @@ const SurveyTable: React.FC = () => {
                           <div className="flex gap-2">
                             <button
                               onClick={() => handleApprovalAction(survey.survey_id, "approve")}
-                              className="group inline-flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 p-1 w-6 h-6"
-                              style={{
-                                minWidth: "1.5rem",
-                                minHeight: "1.5rem",
-                                maxWidth: "1.5rem",
-                                maxHeight: "1.5rem",
-                              }}
+                              className="group inline-flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 p-1 w-6 h-6 min-w-6 min-h-6 max-w-6 max-h-6"
                               title="Approve"
                             >
                               <Check className="w-3 h-3" />
                             </button>
                             <button
                               onClick={() => handleApprovalAction(survey.survey_id, "reject")}
-                              className="group inline-flex items-center justify-center bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 p-1 w-6 h-6"
-                              style={{
-                                minWidth: "1.5rem",
-                                minHeight: "1.5rem",
-                                maxWidth: "1.5rem",
-                                maxHeight: "1.5rem",
-                              }}
+                              className="group inline-flex items-center justify-center bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 p-1 w-6 h-6 min-w-6 min-h-6 max-w-6 max-h-6"
                               title="Reject"
                             >
                               <X className="w-3 h-3" />
@@ -1420,7 +1435,7 @@ const SurveyTable: React.FC = () => {
                     </tr>
                   ))
                 ) : (
-                  <tr style={{ animationDelay: "1s" }}> 
+                  <tr style={{ animationDelay: "1s" }}>
                     <td
                       colSpan={
                         Number(haatStatusId) === 4
@@ -1476,9 +1491,8 @@ const SurveyTable: React.FC = () => {
         <div className="flex justify-end mt-5 animate-[slide-down_0.5s_ease]">
           <nav className="inline-flex rounded-lg overflow-hidden shadow border border-slate-200 bg-white">
             <button
-              className={`${buttonBaseAnimation} px-4 py-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 focus:bg-blue-50 transition group`}
+              className={`${buttonBaseAnimation} px-4 py-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 focus:bg-blue-50 transition group disabled:opacity-50`}
               disabled={currentPage <= 1}
-              style={{ opacity: currentPage <= 1 ? 0.5 : 1 }}
               onClick={() => handlePageChange(currentPage - 1)}
             >
               <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -1487,9 +1501,8 @@ const SurveyTable: React.FC = () => {
               Page {currentPage} / {totalPages || 1}
             </span>
             <button
-              className={`${buttonBaseAnimation} px-4 py-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 focus:bg-blue-50 transition group`}
+              className={`${buttonBaseAnimation} px-4 py-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 focus:bg-blue-50 transition group disabled:opacity-50`}
               disabled={currentPage >= totalPages}
-              style={{ opacity: currentPage >= totalPages ? 0.5 : 1 }}
               onClick={() => handlePageChange(currentPage + 1)}
             >
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -1535,16 +1548,13 @@ const SurveyTable: React.FC = () => {
         />
         <ViewDetailsModal
           show={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleCloseDetailsModal}
           isLoading={isLoadingDetails}
           selectedDetails={selectedDetails}
         />
         <PdfPreviewModal
           show={showPdfPreviewModal}
-          onClose={() => {
-            setShowPdfPreviewModal(false);
-            setPdfUrl(null);
-          }}
+          onClose={handleOpenPdfPreview}
           pdfUrl={pdfUrl}
           pdfFilename={pdfFilename}
         />

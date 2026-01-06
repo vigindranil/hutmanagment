@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  AlertTriangle, 
-  Search, 
-  Phone, 
-  MapPin, 
+import {
+  AlertTriangle,
+  Search,
+  Phone,
+  MapPin,
   Clock,
   IndianRupee,
   Flag,

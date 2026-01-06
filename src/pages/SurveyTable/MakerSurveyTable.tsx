@@ -35,18 +35,37 @@ import {
     Eye
 } from 'lucide-react';
 
-// ---- Modal (for View Details) ----
-const DesignableModal = ({
-    show,
-    onClose,
-    isLoading,
-    details
-}: {
+// Helper to open blob in new window
+const openBlobInNewWindow = (val: string) => {
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+        newWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Image Viewer</title>
+                <style>
+                    body { margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #000; }
+                    img { max-width: 100%; max-height: 100vh; object-fit: contain; }
+                </style>
+            </head>
+            <body>
+                <img src="${val}" alt="Image" />
+            </body>
+            </html>
+        `);
+        newWindow.document.close();
+    }
+};
+
+interface DesignableModalProps {
     show: boolean;
     onClose: () => void;
     isLoading: boolean;
     details: any;
-}) => {
+}
+
+const DesignableModal = React.memo(({ show, onClose, isLoading, details }: DesignableModalProps) => {
     if (!show) return null;
 
     // Function to render file/image/attachment value
@@ -57,36 +76,14 @@ const DesignableModal = ({
         if (typeof val === 'string' && (val.startsWith('blob:') || val.startsWith('data:image'))) {
             return (
                 <div
-                    onClick={() => {
-                        // Open blob URL in new window/tab
-                        const newWindow = window.open('', '_blank');
-                        if (newWindow) {
-                            newWindow.document.write(`
-                                <!DOCTYPE html>
-                                <html>
-                                <head>
-                                    <title>Image Viewer</title>
-                                    <style>
-                                        body { margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #000; }
-                                        img { max-width: 100%; max-height: 100vh; object-fit: contain; }
-                                    </style>
-                                </head>
-                                <body>
-                                    <img src="${val}" alt="Image" />
-                                </body>
-                                </html>
-                            `);
-                            newWindow.document.close();
-                        }
-                    }}
+                    onClick={() => openBlobInNewWindow(val)}
                     className="inline-block cursor-pointer"
                     title="Click to open in new tab"
                 >
                     <img
                         src={val}
                         alt="Attachment"
-                        className="h-16 max-w-full border rounded shadow hover:opacity-80 transition-opacity"
-                        style={{ background: '#f7fafc', objectFit: 'contain' }}
+                        className="h-16 max-w-full border rounded shadow hover:opacity-80 transition-opacity bg-gray-50 object-contain"
                     />
                 </div>
             );
@@ -106,8 +103,7 @@ const DesignableModal = ({
                         <img
                             src={val}
                             alt="Attachment"
-                            className="h-16 max-w-full border rounded shadow cursor-pointer hover:opacity-80 transition-opacity"
-                            style={{ background: '#f7fafc', objectFit: 'contain' }}
+                            className="h-16 max-w-full border rounded shadow cursor-pointer hover:opacity-80 transition-opacity bg-gray-50 object-contain"
                         />
                     </a>
                 );
@@ -200,7 +196,7 @@ const DesignableModal = ({
     ];
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm flex-col">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-y-auto max-h-[92vh] flex flex-col border border-sky-100">
                 <div className="flex justify-between items-center px-7 py-5 border-b border-sky-100 bg-gradient-to-r from-blue-50 to-sky-50/90">
                     <div>
@@ -287,7 +283,7 @@ const DesignableModal = ({
             </div>
         </div>
     );
-};
+});
 // ---- END DesignableModal ----
 
 interface ExtendedSurveyData {
@@ -822,7 +818,7 @@ const MakerSurveyTable: React.FC = () => {
     }, [editingSurvey, editFields.district_id]);
 
     // ---- REWRITE: handleViewClick to fetch details from API and show in new DesignableModal
-    const handleViewClick = async (survey: ExtendedSurveyData) => {
+    const handleViewClick = React.useCallback(async (survey: ExtendedSurveyData) => {
         if (!survey.survey_id) {
             alert('Survey ID not found');
             return;
@@ -903,10 +899,10 @@ const MakerSurveyTable: React.FC = () => {
         } finally {
             setIsLoadingDetails(false);
         }
-    };
+    }, []);
 
     // --- rest of your code (edits, saving, search, pagination, etc) unmodified ---
-    const handleEditClick = (survey: ExtendedSurveyData) => {
+    const handleEditClick = React.useCallback((survey: ExtendedSurveyData) => {
         setEditingSurvey(survey);
 
         setEditFields(() => {
@@ -970,9 +966,9 @@ const MakerSurveyTable: React.FC = () => {
             return editObj;
         });
         setUploadFiles({});
-    };
+    }, []);
 
-    const handleFieldChange = (key: keyof ExtendedSurveyData, value: any) => {
+    const handleFieldChange = React.useCallback((key: keyof ExtendedSurveyData, value: any) => {
         setEditFields(prev => {
             if (key === 'police_station_id' && prev.police_station_id !== value) {
                 return { ...prev, [key]: value, hat_id: undefined, mouza_id: undefined, jl_no: '', adsr_name: '' };
@@ -1021,9 +1017,9 @@ const MakerSurveyTable: React.FC = () => {
             }
             return { ...prev, [key]: value };
         });
-    };
+    }, []);
 
-    const handleFileChange = (key: keyof MakerUploadFiles, file: File | null) => {
+    const handleFileChange = React.useCallback((key: keyof MakerUploadFiles, file: File | null) => {
         if (file) {
             setUploadFiles(prev => ({ ...prev, [key]: file }));
         } else {
@@ -1033,9 +1029,9 @@ const MakerSurveyTable: React.FC = () => {
                 return newFiles;
             });
         }
-    };
+    }, []);
 
-    const handleSave = async () => {
+    const handleSave = React.useCallback(async () => {
         if (!editingSurvey || !editingSurvey.survey_id) return;
         try {
             setIsSaving(true);
@@ -1062,7 +1058,8 @@ const MakerSurveyTable: React.FC = () => {
                 setEditingSurvey(null);
                 setEditFields({});
                 setUploadFiles({});
-                fetchSurveyData();
+                // Trigger reload
+                setReloadTrigger(prev => prev + 1);
             } else {
                 throw new Error(response?.message || 'Update failed');
             }
@@ -1079,7 +1076,7 @@ const MakerSurveyTable: React.FC = () => {
         } finally {
             setIsSaving(false);
         }
-    };
+    }, [editingSurvey, editFields, uploadFiles]); // Added dependencies
 
     useEffect(() => {
         fetchSurveyData();
@@ -1108,7 +1105,7 @@ const MakerSurveyTable: React.FC = () => {
         }
     }, [filteredData, currentPage]);
 
-    const fetchSurveyData = async () => {
+    const fetchSurveyData = React.useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -1138,20 +1135,50 @@ const MakerSurveyTable: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [startDate, endDate, statusId]);
+
+    // To handle the dependency issue where handleSave calls fetchSurveyData, we can add an effect or a ref.
+    // For now, let's keep it simple. If we need to reload, we can toggle a state.
+    // To properly fix the "use before declaration" issue in the original code (if it was an issue), we should rely on useEffect.
+    const [reloadTrigger, setReloadTrigger] = useState(0);
+    useEffect(() => {
+        if (reloadTrigger > 0) fetchSurveyData();
+    }, [reloadTrigger, fetchSurveyData]);
+
+
+
+
+    // Handlers for inputs and modals
+    const handleSearchChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value), []);
+    const handleStartDateChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value), []);
+    const handleEndDateChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value), []);
+
+    const handleCloseDetailsModal = React.useCallback(() => {
+        setShowDetailsModal(false);
+        setSelectedDetails(null);
+    }, []);
+
+    const handleCloseEditModal = React.useCallback(() => setEditingSurvey(null), []);
+
+    const handleEditSubmit = React.useCallback((e: React.FormEvent) => {
+        e.preventDefault();
+        handleSave();
+    }, [handleSave]);
 
     console.log("blockOptions", editFields.block_id);
     console.log("mouzaOptions", editFields.mouza_id);
 
     const totalItems = filteredData.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-    const paginatedData = filteredData.slice(
+
+    const paginatedData = React.useMemo(() => filteredData.slice(
         (currentPage - 1) * PAGE_SIZE,
         currentPage * PAGE_SIZE
-    );
-    const handlePrevPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
-    const handleNextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-    const handleGotoPage = (n: number) => setCurrentPage(n);
+    ), [filteredData, currentPage]);
+
+    const handlePrevPage = React.useCallback(() => setCurrentPage((p) => Math.max(p - 1, 1)), []);
+    const handleNextPage = React.useCallback(() => setCurrentPage((p) => Math.min(p + 1, totalPages)), [totalPages]);
+    const handleGotoPage = React.useCallback((n: number) => setCurrentPage(n), []);
 
     const Pagination = () => (
         <div className="flex justify-center items-center mt-6 gap-2">
@@ -1257,7 +1284,7 @@ const MakerSurveyTable: React.FC = () => {
                                 type="text"
                                 placeholder="Search applications..."
                                 value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onChange={handleSearchChange}
                                 className="relative w-full pl-12 pr-4 py-4 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-400 focus:border-transparent text-gray-800 placeholder-gray-400 transition-all text-sm"
                             />
                         </div>
@@ -1269,7 +1296,7 @@ const MakerSurveyTable: React.FC = () => {
                                 <input
                                     type="date"
                                     value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
+                                    onChange={handleStartDateChange}
                                     className="px-4 py-3.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-400 focus:border-transparent text-gray-800 transition-all text-sm"
                                 />
                             </div>
@@ -1280,7 +1307,7 @@ const MakerSurveyTable: React.FC = () => {
                                 <input
                                     type="date"
                                     value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
+                                    onChange={handleEndDateChange}
                                     className="px-4 py-3.5 bg-sky-50/50 border border-sky-200 rounded-xl focus:ring-2 focus:ring-sky-400 focus:border-transparent text-gray-800 transition-all text-sm"
                                 />
                             </div>
@@ -1483,10 +1510,7 @@ const MakerSurveyTable: React.FC = () => {
                             {/* REPLACEMENT: New Designable Modal */}
                             <DesignableModal
                                 show={showDetailsModal}
-                                onClose={() => {
-                                    setShowDetailsModal(false);
-                                    setSelectedDetails(null);
-                                }}
+                                onClose={handleCloseDetailsModal}
                                 isLoading={isLoadingDetails}
                                 details={selectedDetails}
                             />
@@ -1500,14 +1524,14 @@ const MakerSurveyTable: React.FC = () => {
                                                 <p className="text-sm text-gray-500 mt-1">Application No: <span className="font-mono font-medium text-gray-700">{editingSurvey.application_number}</span></p>
                                             </div>
                                             <button
-                                                onClick={() => setEditingSurvey(null)}
+                                                onClick={handleCloseEditModal}
                                                 className="p-2 hover:bg-gray-200/50 rounded-full transition-colors"
                                             >
                                                 <X className="w-6 h-6 text-gray-500" />
                                             </button>
                                         </div>
                                         <div className="p-8 overflow-y-auto custom-scrollbar">
-                                            <form onSubmit={e => { e.preventDefault(); handleSave(); }}>
+                                            <form onSubmit={handleEditSubmit}>
                                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                                                     <div className="mb-1">
