@@ -445,7 +445,7 @@ const Reports: React.FC = () => {
                       { label: "Warision Certificate Attached", value: selectedDetails?.warision_certificate_attached, isImage: true },
                       { label: "Death Certificate Attached", value: selectedDetails?.death_certificate_attached, isImage: true },
                       { label: "NOC Legal Heirs Attached", value: selectedDetails?.noc_legal_heirs_attached, isImage: true },
-                      
+
                     ]
                   },
                   {
@@ -455,7 +455,7 @@ const Reports: React.FC = () => {
                     data: [
                       { label: "Hearing Date", value: selectedDetails?.hearing_date, isDate: true },
                       { label: "Hearing Remarks", value: selectedDetails?.hearing_remarks },
-                      { label: "Hearing Approved By", value: selectedDetails?.hearing_approved_by},
+                      { label: "Hearing Approved By", value: selectedDetails?.hearing_approved_by },
                       { label: "Approval Remarks", value: selectedDetails?.approval_remarks },
                       { label: "Approval Date", value: selectedDetails?.approval_date, isDate: true },
                       { label: "Survey Approved By", value: selectedDetails?.survey_approved_by },

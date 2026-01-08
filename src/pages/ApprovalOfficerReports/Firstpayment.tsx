@@ -2,25 +2,22 @@ import React, { useEffect, useState, useCallback } from "react";
 import Cookies from "js-cookie";
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import { decodeJwtToken } from "../../utils/decodeToken";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import {
   Calendar,
   Search,
   FileText,
   Building2,
-  ArrowLeft,
-  Download,
-  Filter,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  MapPin,
-  Phone,
-  User,
-  Eye,
   TrendingUp,
+  Clock,
+  Filter,
   Loader2,
-  RefreshCw,
+  User,
+  Phone,
+  MapPin,
+  Download,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -172,10 +169,62 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
   // Calculate pagination
   const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
 
+  // Pagination: slice current page's data
   const paginatedData = filteredData.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
+
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+
+    // Add title
+    doc.setFontSize(18);
+    doc.text("First Payment Report", 14, 20);
+
+    // Add metadata
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString("en-IN")}`, 14, 28);
+    if (fromDate && toDate) {
+      doc.text(
+        `Period: ${formatDateForAPI(fromDate)} to ${formatDateForAPI(toDate)}`,
+        14,
+        34
+      );
+    }
+
+    const columns = [
+      { header: "#", dataKey: "serial" },
+      { header: "Application No.", dataKey: "application_number" },
+      { header: "Survey Date", dataKey: "survey_date" },
+      { header: "Haat Name", dataKey: "haat_name" },
+      { header: "Shop Owner", dataKey: "shop_owner" },
+      { header: "Mobile", dataKey: "mobile" },
+      { header: "Payment Date", dataKey: "payment_date" },
+      { header: "Amount", dataKey: "amount" },
+    ];
+
+    const tableData = filteredData.map((item, index) => ({
+      serial: index + 1,
+      application_number: item.application_number || "-",
+      survey_date: formatDisplayDate(item.survey_date),
+      haat_name: item.haat_name || "-",
+      shop_owner: item.shopowner_name || "-",
+      mobile: item.mobile_number || "-",
+      payment_date: item.initial_payment_date || "-",
+      amount: item.initial_payment_amount || "-",
+    }));
+
+    autoTable(doc, {
+      startY: 40,
+      columns: columns,
+      body: tableData,
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [79, 70, 229] },
+    });
+
+    doc.save("First_Payment_Report.pdf");
+  };
 
   const handleSearch = () => {
     fetchReportData();
@@ -361,10 +410,13 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                 <FileText className="w-5 h-5 text-white" />
                 <h2 className="text-lg font-semibold text-white">Payment Records</h2>
               </div>
-              {/* <button className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-200">
+              <button
+                onClick={handleExportPDF}
+                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-200"
+              >
                 <Download className="w-4 h-4" />
                 Export
-              </button> */}
+              </button>
             </div>
           </div>
 
@@ -451,7 +503,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                       <td className="px-6 py-4 text-sm text-gray-700">{row.initial_payment_date || "-"}</td>
                       <td className="px-6 py-4 text-sm">
                         <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-700 rounded-full font-semibold">
-                          ₹ {row.initial_payment_amount || "-"}
+                          {formatCurrency(row.initial_payment_amount || "")}
                         </span>
                       </td>
                     </tr>
@@ -494,7 +546,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                   className={`p-2 rounded ${currentPage === 1
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : "bg-white text-gray-700 hover:bg-indigo-100"
-                  }`}
+                    }`}
                   aria-label="Prev"
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -508,7 +560,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                   className={`p-2 rounded ${currentPage === totalPages || totalPages === 0
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : "bg-white text-gray-700 hover:bg-indigo-100"
-                  }`}
+                    }`}
                   aria-label="Next"
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -523,7 +575,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                     className={`px-3 py-1 rounded ${pageNum === currentPage
                       ? "bg-indigo-600 text-white font-bold"
                       : "bg-white text-gray-700 hover:bg-indigo-100"
-                    }`}
+                      }`}
                     disabled={pageNum === currentPage}
                     aria-label={`Go to page ${pageNum}`}
                   >

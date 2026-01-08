@@ -121,11 +121,7 @@ const Dashboard: React.FC = () => {
   }, [])
 
   return (
-    <div className="space-y-8">
-      {/* <div
-  className="w-screen bg-red-200 h-screen bg-cover bg-center"
-  
-></div> */}
+    <div className="min-h-screen w-full bg-grey-800 p-8 space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -140,8 +136,8 @@ const Dashboard: React.FC = () => {
           <p className="text-gray-600 font-medium">Welcome back to Haat Management System</p>
         </div>
         <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-          <div className="flex items-center space-x-2 text-sm text-gray-500 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-white/20">
-            <Calendar className="w-4 h-4 text-blue-500" />
+          <div className="flex items-center space-x-2 text-sm text-gray-100 bg-gray-900/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-gray-700">
+            <Calendar className="w-4 h-4 text-blue-400" />
             <span className="font-medium">
               Last updated: {
                 (() => {

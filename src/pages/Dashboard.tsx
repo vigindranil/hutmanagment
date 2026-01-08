@@ -24,9 +24,9 @@ const Dashboard: React.FC = () => {
     const userDetails = decodeJwtToken();
 
 
-  //Admin Dashboard
-  const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
-  setStats([
+    //Admin Dashboard
+    const result = await commonApi(`user/getAdminDashboardDetails?UserID=${userDetails?.UserID}`);
+    setStats([
       {
         title: 'Total Vendors',
         value: result?.data?.total_survey ? result?.data?.total_survey?.toString() : "0",
@@ -81,7 +81,7 @@ const Dashboard: React.FC = () => {
         color: 'purple' as const,
         HaatDashoardStatus: 6
       }
-  ])
+    ])
   }
 
   //Checker Dashboard
@@ -213,7 +213,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Initial Payment Pending',
-        value: result?.data?.completed_initial_payment? result?.data?.completed_initial_payment?.toString() : "0",
+        value: result?.data?.completed_initial_payment ? result?.data?.completed_initial_payment?.toString() : "0",
         changeType: 'neutral' as const,
         icon: CalendarClock,
         color: 'orange' as const,
@@ -229,7 +229,7 @@ const Dashboard: React.FC = () => {
       },
       {
         title: 'Issued Lisence',
-        value: result?.data?.licensed_survey? result?.data?.licensed_survey?.toString() : "0",
+        value: result?.data?.licensed_survey ? result?.data?.licensed_survey?.toString() : "0",
         changeType: 'neutral' as const,
         icon: FaIdCard,
         color: 'green' as const,
@@ -261,7 +261,7 @@ const Dashboard: React.FC = () => {
       }
     ]);
   };
- 
+
 
   useEffect(() => {
     const user_details = decodeJwtToken();
@@ -277,7 +277,7 @@ const Dashboard: React.FC = () => {
     else if (user_details?.UserTypeID === 70) {
       getApproveOfficerDashboard();
     }
-    else if (user_details?.UserTypeID === 10){
+    else if (user_details?.UserTypeID === 10) {
       getDashboardDtlsCountByHaatManagerID();
     }
   }, []);
@@ -299,8 +299,8 @@ const Dashboard: React.FC = () => {
           <p className="text-gray-600 font-medium">Welcome back to Haat Management System</p>
         </div>
         <div className="mt-4 sm:mt-0 flex items-center space-x-3 transform">
-          <div className="relative flex items-center space-x-2 text-sm text-gray-500 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-white/20">
-            <Calendar className="w-4 h-4 text-blue-500" />
+          <div className="relative flex items-center space-x-2 text-sm text-gray-100 bg-gray-900/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-gray-700">
+            <Calendar className="w-4 h-4 text-blue-400" />
             <span className="font-medium">
               Last updated: {
                 (() => {

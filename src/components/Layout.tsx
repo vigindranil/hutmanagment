@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { decodeJwtToken } from '../utils/decodeToken';
+import TableBackground from '../assets/table background.jpg';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -178,24 +179,24 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white/95 backdrop-blur-xl shadow-2xl border-r border-white/20 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:flex-shrink-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900/95 backdrop-blur-xl shadow-2xl border-r border-slate-800 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:flex-shrink-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between h-16 px-6 border-b border-gradient-to-r from-blue-200 to-purple-200">
+          <div className="flex items-center justify-between h-16 px-6 border-b border-slate-800">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
                 <Building2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                   Zila Parishad
                 </h1>
-                <p className="text-xs text-gray-500 font-medium">Jalpaiguri</p>
+                <p className="text-xs text-slate-400 font-medium">Jalpaiguri</p>
               </div>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200"
+              className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200"
             >
               <X className="w-5 h-5" />
             </button>
@@ -219,19 +220,19 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                           onClick={() => toggleSubmenu(item.name)}
                           className={`group w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${hasSubmenuActive
                             ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
-                            : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
+                            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                             }`}
                         >
                           <div className="flex items-center">
-                            <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                            <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-white-400 group-hover:text-blue-400'
                               }`} />
                             {item.name}
                           </div>
                           {isExpanded ? (
-                            <ChevronDown className={`w-4 h-4 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                            <ChevronDown className={`w-4 h-4 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-white-400 group-hover:text-blue-400'
                               }`} />
                           ) : (
-                            <ChevronRight className={`w-4 h-4 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                            <ChevronRight className={`w-4 h-4 transition-all duration-200 ${hasSubmenuActive ? 'text-white' : 'text-white-400 group-hover:text-blue-400'
                               }`} />
                           )}
                         </button>
@@ -247,14 +248,14 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                                     to={subItem.href}
                                     className={`group block px-4 py-3 text-sm rounded-lg transition-all duration-300 transform hover:translate-x-1 ${subActive
                                       ? 'bg-gradient-to-r from-teal-500 to-indigo-600 text-white shadow-lg shadow-teal-500/25'
-                                      : 'text-gray-600 hover:bg-gradient-to-r hover:from-teal-50 hover:via-blue-50 hover:to-indigo-50 hover:text-teal-700 hover:shadow-md hover:border-l-4 hover:border-teal-400'
+                                      : 'text-white hover:bg-slate-800 hover:text-teal-400 hover:shadow-md hover:border-l-4 hover:border-teal-400'
                                       }`}
                                     onClick={() => setSidebarOpen(false)}
                                   >
                                     <span className="flex items-center">
                                       <span className={`w-2 h-2 rounded-full mr-3 transition-all duration-200 ${subActive
                                         ? 'bg-white shadow-sm'
-                                        : 'bg-gray-300 group-hover:bg-teal-400 group-hover:scale-125'
+                                        : 'bg-white group-hover:bg-teal-400 group-hover:scale-125'
                                         }`}></span>
                                       <span className="relative">
                                         {subItem.name}
@@ -276,11 +277,11 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                         to={item.href}
                         className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 transform hover:scale-105 ${active
                           ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-blue-500/25`
-                          : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
+                          : 'text-white hover:bg-slate-800 hover:text-white'
                           }`}
                         onClick={() => setSidebarOpen(false)}
                       >
-                        <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${active ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'
+                        <Icon className={`w-5 h-5 mr-3 transition-all duration-200 ${active ? 'text-white' : 'text-white-400 group-hover:text-blue-400'
                           }`} />
                         {item.name}
                       </Link>
@@ -334,12 +335,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                 {/* Enhanced Dropdown Menu */}
                 {dropdownOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-64 max-w-xs bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl ring-1 ring-black/5 border border-white/20 z-[101]"
-                    style={{
-                      minWidth: '12rem',
-                      top: '100%',
-                      position: 'absolute', // Ensure it's explicitly positioned
-                    }}
+                    className="absolute right-0 mt-2 w-64 max-w-xs bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl ring-1 ring-black/5 border border-white/20 z-[101] min-w-[12rem] top-full"
                   >
                     <div className="p-2">
                       {/* User Info */}
@@ -350,8 +346,7 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
                       {/* Logout Button */}
                       <button
                         onClick={handleLogout}
-                        className="group w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-600 rounded-lg transition-all duration-200 transform hover:scale-105"
-                        style={{ zIndex: 102 }} // Explicit z-index for the button
+                        className="group w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-600 rounded-lg transition-all duration-200 transform hover:scale-105 z-[102]"
                       >
                         <LogOut className="w-4 h-4 mr-3 transition-all duration-200 text-gray-400 group-hover:text-red-500" />
                         <span className="relative">
@@ -369,8 +364,16 @@ const Layout: React.FC<LayoutProps> = ({ children, UserFullName: propUserFullNam
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 overflow-y-auto">
-          {children}
+        <main className="flex-1 overflow-y-auto relative">
+          <div
+            className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat blur-[30px]"
+            style={{
+              backgroundImage: `url(${TableBackground})`
+            }}
+          />
+          <div className="relative z-10 p-4 sm:p-6">
+            {children}
+          </div>
         </main>
       </div>
     </div>

@@ -1623,8 +1623,6 @@ const MakerSurveyTable: React.FC = () => {
                                                                         );
                                                                     }}
                                                                 >
-
-
                                                                     <option value="">-- Select Block --</option>
                                                                     {blockOptions.map((block, index) =>
                                                                         <option key={`${block.block_id}-${index}`} value={block.block_id}>
@@ -1635,7 +1633,6 @@ const MakerSurveyTable: React.FC = () => {
                                                             )}
                                                         </div>
                                                     )}
-
                                                     {/* Conditional Municipality Dropdown (shows when Municipality is selected) */}
                                                     {editFields.is_urban === 2 && (
                                                         <div className="mb-1">
@@ -1672,7 +1669,6 @@ const MakerSurveyTable: React.FC = () => {
                                                             )}
                                                         </div>
                                                     )}
-
                                                     {/* Conditional Panchayat Dropdown (shows after Block selection) */}
                                                     {editFields.is_urban === 1 && (
                                                         <div className="mb-1">

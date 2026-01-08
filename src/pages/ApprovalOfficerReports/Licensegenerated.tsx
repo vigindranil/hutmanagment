@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import Cookies from "js-cookie";
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import { decodeJwtToken } from "../../utils/decodeToken";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import {
     Calendar,
@@ -177,6 +179,59 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
     const endIdx = Math.min(startIdx + ROWS_PER_PAGE, filteredData.length);
     const paginatedData = filteredData.slice(startIdx, endIdx);
 
+    const handleExportPDF = () => {
+        const doc = new jsPDF();
+
+        // Add title
+        doc.setFontSize(18);
+        doc.text("License Generated Report", 14, 20);
+
+        // Add metadata
+        doc.setFontSize(10);
+        doc.text(`Generated on: ${new Date().toLocaleDateString("en-IN")}`, 14, 28);
+        if (fromDate && toDate) {
+            doc.text(
+                `Period: ${formatDateForAPI(fromDate)} to ${formatDateForAPI(toDate)}`,
+                14,
+                34
+            );
+        }
+
+        const columns = [
+            { header: "#", dataKey: "serial" },
+            { header: "Application No.", dataKey: "application_number" },
+            { header: "Survey Date", dataKey: "survey_date" },
+            { header: "Haat Name", dataKey: "haat_name" },
+            { header: "Shop Owner", dataKey: "shop_owner" },
+            { header: "Mobile", dataKey: "mobile" },
+            { header: "Approved Date", dataKey: "approved_date" },
+            { header: "Approved By", dataKey: "approved_by" },
+            { header: "Approved Remarks", dataKey: "approved_remarks" },
+        ];
+
+        const tableData = filteredData.map((item, index) => ({
+            serial: index + 1,
+            application_number: item.application_number || "-",
+            survey_date: formatDisplayDate(item.survey_date),
+            haat_name: item.haat_name || "-",
+            shop_owner: item.shopowner_name || "-",
+            mobile: item.mobile_number || "-",
+            approved_date: item.approved_date || "-",
+            approved_by: item.approved_by || "-",
+            approved_remarks: item.approved_rermarks || "-",
+        }));
+
+        autoTable(doc, {
+            startY: 40,
+            columns: columns,
+            body: tableData,
+            styles: { fontSize: 9 },
+            headStyles: { fillColor: [79, 70, 229] },
+        });
+
+        doc.save("License_Generated_Report.pdf");
+    };
+
     const handleSearch = () => {
         fetchReportData();
     };
@@ -348,6 +403,13 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                                 <FileText className="w-5 h-5 text-white" />
                                 <h2 className="text-lg font-semibold text-white">Payment Records</h2>
                             </div>
+                            <button
+                                onClick={handleExportPDF}
+                                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-200"
+                            >
+                                <Download className="w-4 h-4" />
+                                Export
+                            </button>
                         </div>
                     </div>
 

@@ -23,7 +23,7 @@ const initialFormState = {
   contact_number: "",
   email_address: "",
   username: "",
-  user_password: "admin@123", // hardcoded
+  user_password: "",
   designation: "",
 };
 
@@ -223,144 +223,7 @@ const CreateAdminUser = () => {
   );
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-0 px-0">
-      <style>{`
-        .landscape-table-container {
-          width: 100%;
-          min-height: 50vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0;
-          margin: 0;
-        }
-        .form-table-card {
-          width: 100%;
-          max-width: 1100px;
-          margin: 4vh auto;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border-radius: 24px;
-          padding: 1px;
-          box-shadow: 0 10px 24px -8px rgba(0,0,0,0.08);
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: stretch;
-          justify-content: center;
-          overflow: hidden;
-        }
-        .form-table-inner {
-          background: white;
-          border-radius: 22px;
-          padding: 1.5rem 1rem;
-          position: relative;
-          flex: 1 1 0;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-        .form-header {
-          text-align: left;
-          margin-bottom: 1.5rem;
-        }
-        .form-title {
-          font-size: 1.7rem;
-          font-weight: 800;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          margin: 0 0 0.5rem 0;
-        }
-        .form-subtitle {
-          color: #64748b;
-          font-size: 1.1rem;
-          margin: 0;
-        }
-        .table-wrapper {
-          width: 100%;
-          overflow-x: auto;
-        }
-        .form-table th, .form-table td {
-          padding: 0.5rem 0.75rem;
-          text-align: left;
-          vertical-align: middle;
-          white-space: nowrap;
-        }
-        .form-table th {
-          background: #f3f4f6;
-          font-weight: 700;
-          border-radius: 6px 6px 0 0;
-        }
-        .form-table td {
-          background: #f9fafb;
-          border-radius: 6px;
-        }
-        .submit-button {
-          width: 100%;
-          padding: 1rem 1.2rem;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          border-radius: 10px;
-          font-weight: 700;
-          font-size: 1.1rem;
-          cursor: pointer;
-          margin-top: 1.5rem;
-        }
-        .submit-button:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-        .form-input, .form-select {
-          padding: 0.75rem 1rem;
-          border: 1.5px solid #cbd5e1;
-          border-radius: 8px;
-          font-size: 1.05rem;
-          background: #f8fafc;
-          margin-top: 0.2rem;
-          margin-bottom: 0.2rem;
-          transition: border 0.2s;
-        }
-        .form-input:focus, .form-select:focus {
-          border-color: #667eea;
-          outline: none;
-          background: #fff;
-        }
-        .form-group {
-          padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-        }
-        .form-group label {
-          font-weight: 600;
-          margin-bottom: 0.3rem;
-          color: #373737;
-          font-size: 1.05rem;
-        }
-        .message {
-          margin-top: 1rem;
-          padding: 0.8rem 1rem;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 1rem;
-        }
-        .success-message {
-          background: #e6fffa;
-          color: #059669;
-        }
-        .error-message {
-          background: #fef2f2;
-          color: #dc2626;
-        }
-        @media (max-width: 700px) {
-          .form-table-card {
-            max-width: 100vw;
-            margin: 0;
-            border-radius: 0;
-          }
-          .form-table-inner {
-            padding: 1rem 0.5rem;
-            border-radius: 0;
-          }
-        }
-      `}
-      </style>
+
       <div className="landscape-table-container">
         <div className="form-table-card">
           <div className="form-table-inner">
@@ -468,47 +331,21 @@ const CreateAdminUser = () => {
                     </div>
                   </div>
                 </div>
-                <style>{`
-                  .responsive-form-table {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1.2rem;
-                  }
-                  .form-row {
-                    display: flex;
-                    gap: 1.2rem;
-                  }
-                  .form-group {
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                  }
-                  .form-group label {
-                    font-weight: 600;
-                    margin-bottom: 0.3rem;
-                  }
-                  @media (max-width: 700px) {
-                    .form-row {
-                      flex-direction: column;
-                      gap: 0.8rem;
-                    }
-                  }
-                `}</style>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="submit-button"
+                >
+                  {loading ? "Creating User..." : "Create User"}
+                </button>
+                {success && <div className="message success-message">{success}</div>}
+                {error && <div className="message error-message">{error}</div>}
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="submit-button"
-              >
-                {loading ? "Creating User..." : "Create User"}
-              </button>
-              {success && <div className="message success-message">{success}</div>}
-              {error && <div className="message error-message">{error}</div>}
             </form>
-          </div>
-        </div>
-      </div>
-    </div>
+          </div >
+        </div >
+      </div >
+    </div >
   );
 };
 

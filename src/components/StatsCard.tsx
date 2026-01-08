@@ -43,12 +43,12 @@ const colorConfig: Record<string, { icon: string; text: string; iconBg: string; 
 const getChangeStyle = (changeType: string) => {
   switch (changeType) {
     case 'positive':
-      return 'text-emerald-600';
+      return 'text-emerald-400';
     case 'negative':
-      return 'text-red-600';
+      return 'text-red-400';
     case 'neutral':
     default:
-      return 'text-slate-500';
+      return 'text-slate-400';
   }
 };
 
@@ -117,39 +117,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
         </div>
 
         <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-100">
-          {changeType === 'positive' && (
-            <svg
-              className="w-4 h-4 text-emerald-600"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M7 17l5-5 5 5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          )}
-          {changeType === 'negative' && (
-            <svg
-              className="w-4 h-4 text-red-600"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M17 7l-5 5-5-5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          )}
-          {changeType === 'neutral' && (
-            <div className="w-2 h-2 rounded-full bg-slate-400" />
-          )}
+
           <span className={`text-sm font-semibold ${getChangeStyle(changeType)}`}>
             {change}
           </span>
@@ -161,10 +129,6 @@ const StatsCard: React.FC<StatsCardProps> = ({
 
 export default StatsCard;
 
-
-
-
-// import React from 'react';
 // import { DivideIcon as LucideIcon } from 'lucide-react';
 // import { Link } from 'react-router-dom';
 

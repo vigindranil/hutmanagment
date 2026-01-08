@@ -16,7 +16,10 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
+  Download,
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface PaymentReport {
   survey_id: string;
@@ -200,6 +203,57 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
     currentPage * PAGE_SIZE
   );
 
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+
+    // Add title
+    doc.setFontSize(18);
+    doc.text("Final Payment Report", 14, 20);
+
+    // Add metadata
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString("en-IN")}`, 14, 28);
+    if (fromDate && toDate) {
+      doc.text(
+        `Period: ${formatDateForAPI(fromDate)} to ${formatDateForAPI(toDate)}`,
+        14,
+        34
+      );
+    }
+
+    const columns = [
+      { header: "#", dataKey: "serial" },
+      { header: "Application No.", dataKey: "application_number" },
+      { header: "Survey Date", dataKey: "survey_date" },
+      { header: "Haat Name", dataKey: "haat_name" },
+      { header: "Shop Owner", dataKey: "shop_owner" },
+      { header: "Mobile", dataKey: "mobile" },
+      { header: "Payment Date", dataKey: "payment_date" },
+      { header: "Amount", dataKey: "amount" },
+    ];
+
+    const tableData = filteredData.map((item, index) => ({
+      serial: index + 1,
+      application_number: item.application_number || "-",
+      survey_date: formatDisplayDate(item.survey_date),
+      haat_name: item.haat_name || "-",
+      shop_owner: item.shopowner_name || "-",
+      mobile: item.mobile_number || "-",
+      payment_date: item.final_payment_date || "-",
+      amount: item.final_payment_amount || "-",
+    }));
+
+    autoTable(doc, {
+      startY: 40,
+      columns: columns,
+      body: tableData,
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [79, 70, 229] },
+    });
+
+    doc.save("Final_Payment_Report.pdf");
+  };
+
   // Pagination component
   const Pagination = () => (
     <div className="flex justify-center gap-2 mt-4">
@@ -214,11 +268,10 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
         <button
           key={idx}
           onClick={() => setCurrentPage(idx + 1)}
-          className={`px-3 py-1 rounded-lg font-semibold ${
-            currentPage === idx + 1
-              ? "bg-indigo-600 text-white"
-              : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
-          }`}
+          className={`px-3 py-1 rounded-lg font-semibold ${currentPage === idx + 1
+            ? "bg-indigo-600 text-white"
+            : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+            }`}
         >
           {idx + 1}
         </button>
@@ -381,6 +434,13 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                 <FileText className="w-5 h-5 text-white" />
                 <h2 className="text-lg font-semibold text-white">Payment Records</h2>
               </div>
+              <button
+                onClick={handleExportPDF}
+                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-all duration-200"
+              >
+                <Download className="w-4 h-4" />
+                Export
+              </button>
             </div>
           </div>
 
@@ -465,7 +525,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
                       <td className="px-6 py-4 text-sm text-gray-700">{row.final_payment_date || "-"}</td>
                       <td className="px-6 py-4 text-sm">
                         <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-700 rounded-full font-semibold">
-                          ₹ {row.final_payment_amount || "-"}
+                          {formatCurrency(row.final_payment_amount || "")}
                         </span>
                       </td>
                     </tr>
@@ -504,7 +564,7 @@ const Reports: React.FC<ReportsProps> = ({ onBack }) => {
         {/* Footer */}
         {filteredData.length > 0 && (
           <div className="mt-6 text-center text-sm text-gray-500 bg-white rounded-lg p-4 shadow-sm">
-            Showing {paginatedData.length === 0 ? 0 : ((currentPage - 1) * PAGE_SIZE + 1)} 
+            Showing {paginatedData.length === 0 ? 0 : ((currentPage - 1) * PAGE_SIZE + 1)}
             {" - "}
             {(currentPage - 1) * PAGE_SIZE + paginatedData.length} of {filteredData.length} records
           </div>
