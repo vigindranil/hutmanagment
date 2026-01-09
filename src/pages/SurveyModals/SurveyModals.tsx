@@ -833,12 +833,7 @@ export const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
               <iframe
                 src={pdfUrl}
                 title="Certificate Preview"
-                className="w-full h-[calc(100vh-56px)] sm:h-full border-0 sm:border-2 border-gray-300 rounded-none sm:rounded-lg"
-                style={{
-                  minHeight: "60vh",
-                  height: "calc(100vh - 56px)",
-                  maxHeight: "100vh",
-                }}
+                className="w-full h-[calc(100vh-56px)] min-h-[60vh] max-h-screen sm:h-full border-0 sm:border-2 border-gray-300 rounded-none sm:rounded-lg"
               />
             ) : (
               <div className="flex items-center justify-center h-full">
