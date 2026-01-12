@@ -515,6 +515,54 @@ const DETAILS_FIELDS_TO_SHOW = [
     "stall_image2"
 ];
 
+//Edited modal image view
+const AsyncImagePreview = React.memo(({ path }: { path: string | null | undefined }) => {
+    const [imgSrc, setImgSrc] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        if (!path) {
+            setImgSrc(null);
+            setLoading(false);
+            return;
+        }
+        // If it's already a blob or data URL, use it directly
+        if (path.startsWith('blob:') || path.startsWith('data:')) {
+            setImgSrc(path);
+            setLoading(false);
+            return;
+        }
+        // Otherwise fetch
+        setLoading(true);
+        let active = true;
+        commonApiImage(path)
+            .then((url: any) => {
+                if (active) {
+                    setImgSrc(url);
+                }
+            })
+            .catch((err: any) => {
+                console.error("AsyncImagePreview error", err);
+            })
+            .finally(() => {
+                if (active) setLoading(false);
+            });
+        return () => { active = false; };
+    }, [path]);
+    if (loading) {
+        return <RefreshCw className="w-6 h-6 animate-spin text-blue-400" />;
+    }
+    if (imgSrc) {
+        return (
+            <img
+                src={imgSrc}
+                alt="Preview"
+                className="h-16 w-auto object-contain rounded shadow-sm bg-white"
+            />
+        );
+    }
+    return <FileText className="w-8 h-8 text-gray-400" />;
+});
+
 const MakerSurveyTable: React.FC = () => {
     const [searchParams] = useSearchParams();
     const [surveyData, setSurveyData] = useState<ExtendedSurveyData[]>([]);
@@ -2080,15 +2128,7 @@ const MakerSurveyTable: React.FC = () => {
                                                                         ) : existingFile ? (
                                                                             <div className="flex flex-col items-center text-blue-600">
                                                                                 <div className="relative mb-2 group-preview">
-                                                                                    {typeof existingFile === 'string' && (existingFile.match(/\.(jpg|jpeg|png|gif|webp)$/i) || existingFile.startsWith('data:image')) ? (
-                                                                                        <img
-                                                                                            src={existingFile}
-                                                                                            alt="Preview"
-                                                                                            className="h-16 w-auto object-contain rounded shadow-sm bg-white"
-                                                                                        />
-                                                                                    ) : (
-                                                                                        <FileText className="w-8 h-8" />
-                                                                                    )}
+                                                                                    <AsyncImagePreview path={existingFile as string} />
                                                                                 </div>
                                                                                 <span className="text-xs font-semibold text-center px-2 truncate w-full max-w-[180px]">
                                                                                     {typeof existingFile === 'string' ? existingFile.split('/').pop() : "File Exists"}

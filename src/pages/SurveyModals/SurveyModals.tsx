@@ -15,8 +15,21 @@ import {
 } from "lucide-react";
 
 // Helper function to open image in new tab
-const openImageInNewTab = (src: string) => {
-  window.open(src, "_blank");
+const openImageInNewTab = (val: string) => {
+  const newWindow = window.open('', '_blank');
+  if (newWindow) {
+    newWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Image Viewer</title>
+            <body style="margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #0e0e0e;">
+                <img src="${val}" alt="Image Preview" style="max-width: 100%; max-height: 100vh; object-fit: contain; box-shadow: 0 0 20px rgba(0,0,0,0.5);" />
+            </body>
+            </html>
+        `);
+    newWindow.document.close();
+  }
 };
 
 interface FullApplicationDetails {

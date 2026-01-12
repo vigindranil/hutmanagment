@@ -9,5 +9,8 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter basename='/haatmanagement'>
       <App />
     </BrowserRouter>
+    {/* <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <App />
+    </BrowserRouter> */}
   </StrictMode>
 );
