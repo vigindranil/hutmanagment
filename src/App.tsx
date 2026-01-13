@@ -20,6 +20,7 @@ import Completedhearing from './pages/ApprovalOfficerReports/Completedhearing';
 import Licensegenerated from './pages/ApprovalOfficerReports/Licensegenerated';
 import CreateAdminUser from './pages/CreateUserforAdmin/CreateAdminUser';
 import { Navigate, useLocation } from 'react-router-dom';
+import PaymentStatus from './pages/Payment-Status';
 
 
 function isAuthenticated() {
@@ -154,6 +155,13 @@ function App() {
           <Layout>
             <MakerSurveyTable />
           </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/payment-status" element={
+        <ProtectedRoute>
+          <Layout>
+            <PaymentStatus />
+          </Layout> 
         </ProtectedRoute>
       } />
     </Routes>
