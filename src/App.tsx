@@ -21,6 +21,7 @@ import Licensegenerated from './pages/ApprovalOfficerReports/Licensegenerated';
 import CreateAdminUser from './pages/CreateUserforAdmin/CreateAdminUser';
 import { Navigate, useLocation } from 'react-router-dom';
 import PaymentStatus from './pages/Payment-Status';
+import SbiPayment from './pages/SbiPayment';
 
 
 function isAuthenticated() {
@@ -161,7 +162,14 @@ function App() {
         <ProtectedRoute>
           <Layout>
             <PaymentStatus />
-          </Layout> 
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/sbi-payment" element={
+        <ProtectedRoute>
+          <Layout>
+            <SbiPayment />
+          </Layout>
         </ProtectedRoute>
       } />
     </Routes>

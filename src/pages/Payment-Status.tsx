@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 const PaymentStatus = () => {
     const [searchParams] = useSearchParams();
     const amount = searchParams.get('amount') || '8,000.02';
-    const txnId = searchParams.get('txnId') || '167357835';
+    const txnId = searchParams.get('txnId') || '167357835'; // Keep this fallback for success screen if needed, though pending screen doesn't show it in the image
+    const status = searchParams.get('status');
     const [dateTime, setDateTime] = useState('');
 
     useEffect(() => {
@@ -19,13 +20,130 @@ const PaymentStatus = () => {
         }));
     }, []);
 
+    // PENDING STATUS UI
+    if (status === 'PENDING' || status === 'Pending') {
+        return (
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
+                <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden relative">
+
+                    {/* Top Section - Dark Yellow/Gold for Pending */}
+                    <div className="bg-[#A16207] p-8 pb-12 text-center relative overflow-hidden">
+                        {/* Background Decorations */}
+                        <div className="absolute top-10 left-10 w-3 h-3 bg-yellow-300 rotate-45 opacity-50"></div>
+                        <div className="absolute bottom-10 right-10 w-2 h-2 bg-yellow-200 rounded-full opacity-50"></div>
+
+                        {/* Icon Container */}
+                        <div className="relative flex items-center justify-center mb-4 z-10">
+                            {/* Outer lighter yellow circle */}
+                            <div className="w-24 h-24 bg-[#CA8A04] rounded-full flex items-center justify-center bg-opacity-80">
+                                {/* Inner yellow circle */}
+                                <div className="w-16 h-16 bg-[#EAB308] rounded-full flex items-center justify-center shadow-lg">
+                                    {/* Simple Clock Icon */}
+                                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 className="text-2xl font-bold text-white mb-2">Payment Pending</h2>
+                        <p className="text-yellow-100 text-sm max-w-xs mx-auto leading-relaxed">
+                            This payment is currently pending. Please try again later.
+                        </p>
+                    </div>
+
+                    {/* Bottom Card Section */}
+                    <div className="bg-white px-6 py-6 -mt-6 rounded-t-3xl relative z-10">
+                        <h3 className="text-lg font-bold text-gray-900 mb-6">Payment Details</h3>
+
+                        <div className="space-y-4 text-sm">
+                            <div className="flex justify-between items-start">
+                                <span className="text-gray-500">Transaction ID</span>
+                                <span className="font-semibold text-gray-800">{txnId}</span>
+                            </div>
+
+                            <div className="flex justify-between items-start">
+                                <span className="text-gray-500">Amount</span>
+                                <span className="font-semibold text-gray-800">₹ {amount}</span>
+                            </div>
+
+                            <div className="flex justify-between items-start">
+                                <span className="text-gray-500">Transaction Status</span>
+                                <span className="font-bold text-[#CA8A04]">Pending</span>
+                            </div>
+
+                            <div className="flex justify-between items-start">
+                                <span className="text-gray-500">Transaction Date/Time</span>
+                                <span className="font-semibold text-gray-800">{dateTime}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // FAILED STATUS UI
+    if (status === 'FAILED' || status === 'Failed') {
+        return (
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
+                <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden relative">
+
+                    {/* Top Section - Dark Red/Pinkish for Failure */}
+                    <div className="bg-[#4a101d] p-8 pb-12 text-center relative overflow-hidden">
+                        {/* Icon Container with concentric circles */}
+                        <div className="relative flex items-center justify-center mb-4 z-10">
+                            {/* Outer lighter red circle */}
+                            <div className="w-24 h-24 bg-[#b71c1c] rounded-full flex items-center justify-center bg-opacity-80">
+                                {/* Inner red circle */}
+                                <div className="w-16 h-16 bg-[#D32F2F] rounded-full flex items-center justify-center shadow-lg">
+                                    {/* Exclamation Icon */}
+                                    <span className="text-white text-5xl font-bold font-serif">!</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h2 className="text-2xl font-bold text-white mb-2">Payment Failed</h2>
+                        <p className="text-red-100 text-sm max-w-xs mx-auto leading-relaxed">
+                            An unexpected error occurred while processing your request.
+                        </p>
+                    </div>
+
+                    {/* Bottom Card Section */}
+                    <div className="bg-white px-6 py-6 -mt-6 rounded-t-3xl relative z-10">
+                        <h3 className="text-lg font-bold text-gray-900 mb-6">Payment Details</h3>
+                        <div className="space-y-4 text-sm">
+                            <div className="flex justify-between items-start">
+                                <span className="text-gray-500">Transaction ID</span>
+                                <span className="font-semibold text-gray-800">{txnId}</span>
+                            </div>
+
+                            <div className="flex justify-between items-start">
+                                <span className="text-gray-500">Amount</span>
+                                <span className="font-semibold text-gray-800">₹ {amount}</span>
+                            </div>
+
+                            <div className="flex justify-between items-start">
+                                <span className="text-gray-500">Transaction Status</span>
+                                <span className="font-bold text-[#D32F2F]">Failed</span>
+                            </div>
+
+                            <div className="flex justify-between items-start">
+                                <span className="text-gray-500">Transaction Date/Time</span>
+                                <span className="font-semibold text-gray-800">{dateTime}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden relative">
 
                 {/* Top Section - Dark Blue */}
                 <div className="bg-[#003B6D] p-8 pb-12 text-center relative overflow-hidden">
-
                     {/* Confetti / Decorations */}
                     {/* Using simple absolute divs for confetti shapes */}
                     <div className="absolute top-10 left-10 w-3 h-3 bg-yellow-400 rotate-45 transform"></div>
@@ -72,24 +190,6 @@ const PaymentStatus = () => {
                             <span className="font-semibold text-[#003B6D]">{dateTime}</span>
                         </div>
                     </div>
-
-                    {/* <div className="mt-6 pt-4 border-t border-gray-100">
-                        <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-50 rounded-md text-blue-500">
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                </div>
-                                <span className="text-gray-600 font-medium">Payment Receipt</span>
-                            </div>
-                            <button className="text-[#d76b38]">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div> */}
                 </div>
             </div>
         </div>
@@ -97,3 +197,5 @@ const PaymentStatus = () => {
 };
 
 export default PaymentStatus;
+
+
