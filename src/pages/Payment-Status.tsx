@@ -7,7 +7,6 @@ const PaymentStatus = () => {
     const txnId = searchParams.get('txnId') || '167357835'; // Keep this fallback for success screen if needed, though pending screen doesn't show it in the image
     const status = searchParams.get('status');
     const [dateTime, setDateTime] = useState('');
-
     useEffect(() => {
         const now = new Date();
         setDateTime(now.toLocaleString('en-IN', {
@@ -19,7 +18,6 @@ const PaymentStatus = () => {
             hour12: true
         }));
     }, []);
-
     // PENDING STATUS UI
     if (status === 'PENDING' || status === 'Pending') {
         return (
@@ -45,33 +43,27 @@ const PaymentStatus = () => {
                                 </div>
                             </div>
                         </div>
-
                         <h2 className="text-2xl font-bold text-white mb-2">Payment Pending</h2>
                         <p className="text-yellow-100 text-sm max-w-xs mx-auto leading-relaxed">
                             This payment is currently pending. Please try again later.
                         </p>
                     </div>
-
                     {/* Bottom Card Section */}
                     <div className="bg-white px-6 py-6 -mt-6 rounded-t-3xl relative z-10">
                         <h3 className="text-lg font-bold text-gray-900 mb-6">Payment Details</h3>
-
                         <div className="space-y-4 text-sm">
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Transaction ID</span>
                                 <span className="font-semibold text-gray-800">{txnId}</span>
                             </div>
-
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Amount</span>
                                 <span className="font-semibold text-gray-800">₹ {amount}</span>
                             </div>
-
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Transaction Status</span>
                                 <span className="font-bold text-[#CA8A04]">Pending</span>
                             </div>
-
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Transaction Date/Time</span>
                                 <span className="font-semibold text-gray-800">{dateTime}</span>
@@ -82,13 +74,11 @@ const PaymentStatus = () => {
             </div>
         );
     }
-
     // FAILED STATUS UI
     if (status === 'FAILED' || status === 'Failed') {
         return (
             <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
                 <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden relative">
-
                     {/* Top Section - Dark Red/Pinkish for Failure */}
                     <div className="bg-[#4a101d] p-8 pb-12 text-center relative overflow-hidden">
                         {/* Icon Container with concentric circles */}
@@ -107,7 +97,6 @@ const PaymentStatus = () => {
                             An unexpected error occurred while processing your request.
                         </p>
                     </div>
-
                     {/* Bottom Card Section */}
                     <div className="bg-white px-6 py-6 -mt-6 rounded-t-3xl relative z-10">
                         <h3 className="text-lg font-bold text-gray-900 mb-6">Payment Details</h3>
@@ -116,17 +105,14 @@ const PaymentStatus = () => {
                                 <span className="text-gray-500">Transaction ID</span>
                                 <span className="font-semibold text-gray-800">{txnId}</span>
                             </div>
-
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Amount</span>
                                 <span className="font-semibold text-gray-800">₹ {amount}</span>
                             </div>
-
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Transaction Status</span>
                                 <span className="font-bold text-[#D32F2F]">Failed</span>
                             </div>
-
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Transaction Date/Time</span>
                                 <span className="font-semibold text-gray-800">{dateTime}</span>
@@ -137,11 +123,9 @@ const PaymentStatus = () => {
             </div>
         );
     }
-
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden relative">
-
                 {/* Top Section - Dark Blue */}
                 <div className="bg-[#003B6D] p-8 pb-12 text-center relative overflow-hidden">
                     {/* Confetti / Decorations */}
@@ -154,37 +138,30 @@ const PaymentStatus = () => {
                     <div className="absolute bottom-20 right-12 w-3 h-3 bg-teal-400 rounded-full"></div>
                     <div className="absolute top-24 right-1/4 w-3 h-3 bg-yellow-500 rotate-12" style={{ clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }}></div>
                     <div className="absolute bottom-12 left-12 w-2 h-5 bg-pink-400 rotate-45 rounded-sm"></div>
-
                     {/* Success Icon */}
                     <div className="relative z-10 mx-auto w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg mb-4">
                         <svg className="w-12 h-12 text-[#00C853]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-
                     <h2 className="text-2xl font-bold text-white mb-2">Payment successful</h2>
                 </div>
-
                 {/* Bottom Card Section - Overlapping or just below */}
                 <div className="bg-white px-6 py-6 -mt-4 rounded-t-3xl relative z-10">
                     <h3 className="text-lg font-bold text-gray-900 mb-6">Payment Details</h3>
-
                     <div className="space-y-4 text-sm">
                         <div className="flex justify-between items-start">
                             <span className="text-gray-500">Transaction ID</span>
                             <span className="font-semibold text-[#003B6D]">{txnId}</span>
                         </div>
-
                         <div className="flex justify-between items-start">
                             <span className="text-gray-500">Amount Paid</span>
                             <span className="font-semibold text-[#003B6D]">₹ {amount}</span>
                         </div>
-
                         <div className="flex justify-between items-start">
                             <span className="text-gray-500">Transaction Status</span>
                             <span className="font-bold text-[#003B6D]">Success</span>
                         </div>
-
                         <div className="flex justify-between items-start">
                             <span className="text-gray-500">Transaction Date/Time</span>
                             <span className="font-semibold text-[#003B6D]">{dateTime}</span>
