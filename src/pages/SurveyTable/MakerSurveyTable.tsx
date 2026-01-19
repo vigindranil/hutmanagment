@@ -1069,6 +1069,16 @@ const MakerSurveyTable: React.FC = () => {
 
     const handleFileChange = React.useCallback((key: keyof MakerUploadFiles, file: File | null) => {
         if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'File too large',
+                    text: 'Image size should be less than 2MB',
+                    confirmButtonColor: '#f59e0b',
+                });
+                // Reset the input value if possible, but here we just don't set it in state
+                return;
+            }
             setUploadFiles(prev => ({ ...prev, [key]: file }));
         } else {
             setUploadFiles(prev => {
@@ -2097,9 +2107,14 @@ const MakerSurveyTable: React.FC = () => {
 
                                                         return (
                                                             <div key={field.key} className="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-blue-300 transition-colors group">
-                                                                <label className="block text-sm font-semibold text-gray-700 mb-3 group-hover:text-blue-600 transition-colors">
-                                                                    {field.label}
-                                                                </label>
+                                                                <div className="flex justify-between items-center mb-3">
+                                                                    <label className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
+                                                                        {field.label}
+                                                                    </label>
+                                                                    <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                                                                        Max 2MB
+                                                                    </span>
+                                                                </div>
                                                                 <div className="relative">
                                                                     <input
                                                                         type="file"

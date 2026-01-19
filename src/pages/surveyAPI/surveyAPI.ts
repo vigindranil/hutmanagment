@@ -20,6 +20,7 @@ export const getHaatApplicantionDetailsForAdmin = async (haatStatusId: any) => {
   return response?.data || [];
 };
 
+
 export const getCheckerDashboardDetails = async (haatStatusId: any) => {
   const userDetails = decodeJwtToken();
   const response = await commonApi(
@@ -27,6 +28,7 @@ export const getCheckerDashboardDetails = async (haatStatusId: any) => {
   );
   return response?.data || [];
 };
+
 
 export const savePaymentDetailsBySurveyID = async (
   selectedSurvey: any,
@@ -51,6 +53,7 @@ export const savePaymentDetailsBySurveyID = async (
   return response;
 };
 
+
 export const getSurveyDetailsByShopOwnerID = async (haatStatusId: any) => {
   const userDetails = decodeJwtToken();
   const response = await commonApi(
@@ -58,6 +61,7 @@ export const getSurveyDetailsByShopOwnerID = async (haatStatusId: any) => {
   );
   return response?.data || [];
 };
+
 
 export const saveFinalApprovalByApprovalOfficerID = async (
   selectedSurvey: any,
@@ -77,6 +81,7 @@ export const saveFinalApprovalByApprovalOfficerID = async (
   return response?.data || [];
 };
 
+
 export const getHearingDetailsByHearingUserID = async (haatStatusId: any) => {
   const userDetails = decodeJwtToken();
   const response = await commonApi(
@@ -84,6 +89,7 @@ export const getHearingDetailsByHearingUserID = async (haatStatusId: any) => {
   );
   return response?.data || [];
 };
+
 
 export const getSurveyDetailsByApprovalOfficerID = async (haatStatusId: any) => {
   const userDetails = decodeJwtToken();
@@ -189,6 +195,7 @@ export const saveHearingDateByCheckerID = async (
   return response;
 };
 
+
 export const submitRemarksAction = async (
   selectedSurveyForRemarks: number,
   remarksText: string,
@@ -260,6 +267,7 @@ export type MakerUploadFiles = {
   stallImage2?: File | Blob;
 };
 
+
 function formatDateToDDMMYYYY(date: any): string | null {
   if (!date) return null;
   let d: Date;
@@ -277,6 +285,7 @@ function formatDateToDDMMYYYY(date: any): string | null {
   const year = d.getFullYear();
   return `${day}-${month}-${year}`;
 }
+
 
 export const updateSurveyDetailsByMaker = async (
   files: MakerUploadFiles,
