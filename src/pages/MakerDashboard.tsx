@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import StatsCard from '../components/StatsCard';
 import { decodeJwtToken } from '../utils/decodeToken';
-import { commonApi } from '../Service/commonAPI';
+import { commonApi } from '../Service/surveyAPI';
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);

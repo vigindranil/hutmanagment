@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Cookies from "js-cookie";
-import { commonApi } from "../../Service/commonAPI";
+import { commonApi } from "../../Service/surveyAPI";
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 
 const userTypeOptions = [

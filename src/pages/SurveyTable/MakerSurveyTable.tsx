@@ -11,8 +11,8 @@ import {
     getAllHaatDetailsByDistrictID,
     getThanaListByDistrictID,
     getBoundaryDetailsByBoundaryID,
-} from '../surveyAPI/surveyAPI';
-import { commonApiImage } from '../../Service/commonAPI';
+} from '../../Service/surveyAPI';
+import { commonApiImage } from '../../Service/surveyAPI';
 import { decodeJwtToken } from '../../utils/decodeToken';
 import Swal from 'sweetalert2';
 import {

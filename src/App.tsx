@@ -22,6 +22,7 @@ import CreateAdminUser from './pages/CreateUserforAdmin/CreateAdminUser';
 import { Navigate, useLocation } from 'react-router-dom';
 import PaymentStatus from './pages/Payment-Status';
 import SbiPayment from './pages/SbiPayment';
+import HaatPaymentPortal from './pages/HaatPaymentPortal';
 
 
 function isAuthenticated() {
@@ -169,6 +170,13 @@ function App() {
         <ProtectedRoute>
           <Layout>
             <SbiPayment />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/haat-payment-portal" element={
+        <ProtectedRoute>
+          <Layout>
+            <HaatPaymentPortal />
           </Layout>
         </ProtectedRoute>
       } />

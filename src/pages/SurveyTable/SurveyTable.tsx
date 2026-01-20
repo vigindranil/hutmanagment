@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { decodeJwtToken } from "../../utils/decodeToken";
 import { createRoot } from "react-dom/client";
 import {
@@ -40,11 +40,11 @@ import {
   saveHearingDateByCheckerID,
   submitRemarksAction,
   getCertificateDetails,
-} from "../surveyAPI/surveyAPI";
+} from "../../Service/surveyAPI";
 
 // Import Modal Components
 import {
-  PaymentModal,
+  // PaymentModal,
   HearingModal,
   RemarksModal,
   ViewDetailsModal,
@@ -559,10 +559,26 @@ const SurveyTable: React.FC = () => {
     }
   }, []);
 
+  const navigate = useNavigate();
+
   const handleOpenPaymentModal = React.useCallback((survey: SurveyData) => {
-    setShowPaymentModal(true);
-    setSelectedSurvey(survey);
-  }, []);
+    // Determine payment type based on haatStatusId
+    const paymentType = haatStatusId === "4" ? "initial" : haatStatusId === "7" ? "final" : "initial";
+
+    // Determine amount based on payment type
+    const amount = paymentType === "initial" ? survey.initial_amount : survey.final_amount;
+
+    // Build query parameters
+    const params = new URLSearchParams({
+      surveyId: survey.survey_id.toString(),
+      amount: amount?.toString() || "0",
+      type: paymentType,
+      landValuation: survey.land_valuation?.toString() || "0",
+    });
+
+    // Navigate to payment portal
+    navigate(`/haat-payment-portal?${params.toString()}`);
+  }, [navigate, haatStatusId]);
 
   const handleOpenPdfPreview = React.useCallback(() => {
     setShowPdfPreviewModal(false);
@@ -1511,7 +1527,7 @@ const SurveyTable: React.FC = () => {
         </div>
 
         {/* Modals */}
-        <PaymentModal
+        {/* <PaymentModal
           show={showPaymentModal}
           onClose={closePaymentModal}
           selectedSurvey={selectedSurvey}
@@ -1527,7 +1543,7 @@ const SurveyTable: React.FC = () => {
           onSubmit={handlePaymentSubmit}
           userType={userType}
           haatStatusId={haatStatusId}
-        />
+        /> */}
         <HearingModal
           show={showHearingModal}
           onClose={closeHearingModal}

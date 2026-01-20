@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { decodeJwtToken } from "../utils/decodeToken";
-import { commonApi, commonApiImage } from "../Service/commonAPI";
+import { commonApi, commonApiImage } from "../Service/surveyAPI";
 import moment from "moment";
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
 import Cookies from "js-cookie";

@@ -121,185 +121,185 @@ interface PaymentModalProps {
   haatStatusId: string | null;
 }
 
-export const PaymentModal: React.FC<PaymentModalProps> = ({
-  show,
-  onClose,
-  selectedSurvey,
-  paymentName,
-  setPaymentName,
-  paymentNumber,
-  setPaymentNumber,
-  paymentEmail,
-  setPaymentEmail,
-  loading,
-  loads,
-  paymentSuccess,
-  onSubmit,
-  userType,
-  haatStatusId,
-}) => {
-  const handleNameChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPaymentName(e.target.value), [setPaymentName]);
-  const handleNumberChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPaymentNumber(e.target.value), [setPaymentNumber]);
-  const handleEmailChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPaymentEmail(e.target.value), [setPaymentEmail]);
+// export const PaymentModal: React.FC<PaymentModalProps> = ({
+//   show,
+//   onClose,
+//   selectedSurvey,
+//   paymentName,
+//   setPaymentName,
+//   paymentNumber,
+//   setPaymentNumber,
+//   paymentEmail,
+//   setPaymentEmail,
+//   loading,
+//   loads,
+//   paymentSuccess,
+//   onSubmit,
+//   userType,
+//   haatStatusId,
+// }) => {
+//   const handleNameChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPaymentName(e.target.value), [setPaymentName]);
+//   const handleNumberChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPaymentNumber(e.target.value), [setPaymentNumber]);
+//   const handleEmailChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPaymentEmail(e.target.value), [setPaymentEmail]);
 
-  if (!show) return null;
+//   if (!show) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform animate-in slide-in-from-bottom-4 duration-300">
-        <div className="flex items-center justify-between p-6 border-b border-slate-200">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-              <CreditCard className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-900">Payment Details</h2>
-            </div>
-          </div>
-          <button
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors duration-200"
-            onClick={onClose}
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+//   return (
+//     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+//       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform animate-in slide-in-from-bottom-4 duration-300">
+//         <div className="flex items-center justify-between p-6 border-b border-slate-200">
+//           <div className="flex items-center gap-3">
+//             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+//               <CreditCard className="w-5 h-5 text-white" />
+//             </div>
+//             <div>
+//               <h2 className="text-xl font-bold text-slate-900">Payment Details</h2>
+//             </div>
+//           </div>
+//           <button
+//             className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors duration-200"
+//             onClick={onClose}
+//           >
+//             <X className="w-5 h-5" />
+//           </button>
+//         </div>
 
-        <div className="p-6">
-          {loads && typeof paymentSuccess === "boolean" ? (
-            paymentSuccess === true ? (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                  Payment Successful!
-                </h3>
-                <p className="text-slate-600">
-                  Your payment has been processed successfully.
-                </p>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <X className="w-8 h-8 text-red-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                  Payment Failed!
-                </h3>
-                <p className="text-slate-600">
-                  Your payment could not be processed. Please try again.
-                </p>
-              </div>
-            )
-          ) : (
-            <form onSubmit={onSubmit} className="space-y-6">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-700">
-                    Your Land Valuation is
-                  </span>
-                  <span className="text-2xl font-bold text-slate-900">
-                    ₹{selectedSurvey?.land_valuation ?? "0"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 flex items-center">
-                    <div className="flex flex-col flex-1 items-start text-left">
-                      <span className="text-sm font-medium text-slate-700">
-                        {userType == 1 && haatStatusId == "4"
-                          ? selectedSurvey?.relation_status !== undefined &&
-                            [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
-                            ? "The initial amount payable is calculated as 10% of 25% of the land's valuation."
-                            : selectedSurvey?.relation_status === 6
-                              ? "The initial amount payable is calculated as 20% of 25% of the land's valuation."
-                              : ""
-                          : userType == 1 && haatStatusId == "7"
-                            ? selectedSurvey?.relation_status !== undefined &&
-                              [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
-                              ? "The Final amount payable is calculated as 10% of 75% of the land's valuation."
-                              : selectedSurvey?.relation_status === 6
-                                ? "The Final amount payable is calculated as 20% of 75% of the land's valuation."
-                                : ""
-                            : ""}
-                      </span>
-                    </div>
-                    <span className="ml-8 text-2xl font-bold text-slate-900 text-left">
-                      ₹
-                      {userType == 1 && haatStatusId == "7"
-                        ? selectedSurvey?.final_amount
-                        : userType == 1 && haatStatusId == "4"
-                          ? selectedSurvey?.initial_amount
-                          : ""}
-                    </span>
-                  </div>
-                </div>
-              </div>
+//         <div className="p-6">
+//           {loads && typeof paymentSuccess === "boolean" ? (
+//             paymentSuccess === true ? (
+//               <div className="text-center py-8">
+//                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+//                   <CheckCircle className="w-8 h-8 text-green-600" />
+//                 </div>
+//                 <h3 className="text-lg font-semibold text-slate-900 mb-2">
+//                   Payment Successful!
+//                 </h3>
+//                 <p className="text-slate-600">
+//                   Your payment has been processed successfully.
+//                 </p>
+//               </div>
+//             ) : (
+//               <div className="text-center py-8">
+//                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+//                   <X className="w-8 h-8 text-red-600" />
+//                 </div>
+//                 <h3 className="text-lg font-semibold text-slate-900 mb-2">
+//                   Payment Failed!
+//                 </h3>
+//                 <p className="text-slate-600">
+//                   Your payment could not be processed. Please try again.
+//                 </p>
+//               </div>
+//             )
+//           ) : (
+//             <form onSubmit={onSubmit} className="space-y-6">
+//               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 space-y-3">
+//                 <div className="flex items-center justify-between">
+//                   <span className="text-sm font-medium text-slate-700">
+//                     Your Land Valuation is
+//                   </span>
+//                   <span className="text-2xl font-bold text-slate-900">
+//                     ₹{selectedSurvey?.land_valuation ?? "0"}
+//                   </span>
+//                 </div>
+//                 <div className="flex items-center justify-between">
+//                   <div className="flex-1 flex items-center">
+//                     <div className="flex flex-col flex-1 items-start text-left">
+//                       <span className="text-sm font-medium text-slate-700">
+//                         {userType == 1 && haatStatusId == "4"
+//                           ? selectedSurvey?.relation_status !== undefined &&
+//                             [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
+//                             ? "The initial amount payable is calculated as 10% of 25% of the land's valuation."
+//                             : selectedSurvey?.relation_status === 6
+//                               ? "The initial amount payable is calculated as 20% of 25% of the land's valuation."
+//                               : ""
+//                           : userType == 1 && haatStatusId == "7"
+//                             ? selectedSurvey?.relation_status !== undefined &&
+//                               [1, 2, 3, 4, 5].includes(selectedSurvey.relation_status)
+//                               ? "The Final amount payable is calculated as 10% of 75% of the land's valuation."
+//                               : selectedSurvey?.relation_status === 6
+//                                 ? "The Final amount payable is calculated as 20% of 75% of the land's valuation."
+//                                 : ""
+//                             : ""}
+//                       </span>
+//                     </div>
+//                     <span className="ml-8 text-2xl font-bold text-slate-900 text-left">
+//                       ₹
+//                       {userType == 1 && haatStatusId == "7"
+//                         ? selectedSurvey?.final_amount
+//                         : userType == 1 && haatStatusId == "4"
+//                           ? selectedSurvey?.initial_amount
+//                           : ""}
+//                     </span>
+//                   </div>
+//                 </div>
+//               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
-                    placeholder="Enter your full name"
-                    value={paymentName}
-                    onChange={handleNameChange}
-                    required
-                  />
-                </div>
+//               <div className="space-y-4">
+//                 <div>
+//                   <label className="block text-sm font-semibold text-slate-700 mb-2">
+//                     Full Name
+//                   </label>
+//                   <input
+//                     type="text"
+//                     className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
+//                     placeholder="Enter your full name"
+//                     value={paymentName}
+//                     onChange={handleNameChange}
+//                     required
+//                   />
+//                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Mobile Number
-                  </label>
-                  <input
-                    type="tel"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
-                    placeholder="Enter your mobile number"
-                    value={paymentNumber}
-                    onChange={handleNumberChange}
-                    required
-                  />
-                </div>
+//                 <div>
+//                   <label className="block text-sm font-semibold text-slate-700 mb-2">
+//                     Mobile Number
+//                   </label>
+//                   <input
+//                     type="tel"
+//                     className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
+//                     placeholder="Enter your mobile number"
+//                     value={paymentNumber}
+//                     onChange={handleNumberChange}
+//                     required
+//                   />
+//                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
-                    placeholder="Enter your email address"
-                    value={paymentEmail}
-                    onChange={handleEmailChange}
-                    required
-                  />
-                </div>
-              </div>
+//                 <div>
+//                   <label className="block text-sm font-semibold text-slate-700 mb-2">
+//                     Email Address
+//                   </label>
+//                   <input
+//                     type="email"
+//                     className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-slate-50 focus:bg-white"
+//                     placeholder="Enter your email address"
+//                     value={paymentEmail}
+//                     onChange={handleEmailChange}
+//                     required
+//                   />
+//                 </div>
+//               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-              >
-                {loading ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Processing...
-                  </div>
-                ) : (
-                  "Complete Payment"
-                )}
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+//               <button
+//                 type="submit"
+//                 disabled={loading}
+//                 className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+//               >
+//                 {loading ? (
+//                   <div className="flex items-center justify-center gap-2">
+//                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+//                     Processing...
+//                   </div>
+//                 ) : (
+//                   "Complete Payment"
+//                 )}
+//               </button>
+//             </form>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 
 interface HearingModalProps {
   show: boolean;
