@@ -888,6 +888,9 @@ export const saveFinalApprovalByApprovalOfficerApi = async (
 
 //----------Payment API-------------------
 
+export const savePaymentInfo = async (payload: SavePaymentInfoPayload) => {
+  return await commonApi("user/savePaymentInfo", payload);
+};
 export interface SavePaymentInfoPayload {
   initial_or_final_payment_status: number;
   survey_id: number;
@@ -899,9 +902,6 @@ export interface SavePaymentInfoPayload {
   entry_user_id: number;
 }
 
-export const savePaymentInfo = async (payload: SavePaymentInfoPayload) => {
-  return await commonApi("user/savePaymentInfo", payload);
-};
 
 export const getPaymentDetailsByTxnRefID = async (txnRefID: number | string) => {
   return await commonApi(

@@ -3,9 +3,17 @@ import { useSearchParams } from 'react-router-dom';
 
 const PaymentStatus = () => {
     const [searchParams] = useSearchParams();
-    const amount = searchParams.get('amount') || '8,000.02';
-    const txnId = searchParams.get('txnId') || '167357835'; // Keep this fallback for success screen if needed, though pending screen doesn't show it in the image
+    const amount = searchParams.get('amount');
+    const transno = searchParams.get('transno');
     const status = searchParams.get('status');
+
+    useEffect(() => {
+        const params: Record<string, string> = {};
+        searchParams.forEach((value, key) => {
+            params[key] = value;
+        });
+        console.log('Payment Status Params:', params);
+    }, [searchParams]);
     const [dateTime, setDateTime] = useState('');
     useEffect(() => {
         const now = new Date();
@@ -54,7 +62,7 @@ const PaymentStatus = () => {
                         <div className="space-y-4 text-sm">
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Transaction ID</span>
-                                <span className="font-semibold text-gray-800">{txnId}</span>
+                                <span className="font-semibold text-gray-800">{transno}</span>
                             </div>
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Amount</span>
@@ -75,7 +83,7 @@ const PaymentStatus = () => {
         );
     }
     // FAILED STATUS UI
-    if (status === 'FAILED' || status === 'Failed') {
+    if (status === 'FAIL' || status === 'Fail') {
         return (
             <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
                 <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden relative">
@@ -103,7 +111,7 @@ const PaymentStatus = () => {
                         <div className="space-y-4 text-sm">
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Transaction ID</span>
-                                <span className="font-semibold text-gray-800">{txnId}</span>
+                                <span className="font-semibold text-gray-800">{transno}</span>
                             </div>
                             <div className="flex justify-between items-start">
                                 <span className="text-gray-500">Amount</span>
@@ -152,7 +160,7 @@ const PaymentStatus = () => {
                     <div className="space-y-4 text-sm">
                         <div className="flex justify-between items-start">
                             <span className="text-gray-500">Transaction ID</span>
-                            <span className="font-semibold text-[#003B6D]">{txnId}</span>
+                            <span className="font-semibold text-[#003B6D]">{transno}</span>
                         </div>
                         <div className="flex justify-between items-start">
                             <span className="text-gray-500">Amount Paid</span>
