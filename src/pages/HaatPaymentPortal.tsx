@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { User, Phone, Mail, MapPin, IndianRupee, AlertCircle, Loader2, ChevronLeft, AlertTriangle, Shield } from 'lucide-react';
 import { savePaymentInfo, SavePaymentInfoPayload, getPaymentDetailsByTxnRefID } from '../Service/surveyAPI';
 import { decodeJwtToken } from '../utils/decodeToken';
@@ -7,13 +7,14 @@ import biswaBanglaLogo from '../assets/biswaBangla.png';
 
 const HaatPaymentPortal: React.FC = () => {
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+    const location = useLocation();
 
-    // Get parameters from URL
-    const surveyId = searchParams.get('surveyId');
-    const amount = parseFloat(searchParams.get('amount') || '0');
-    const paymentType = searchParams.get('type'); // 'initial' or 'final'
-    const landValuation = searchParams.get('landValuation');
+    // Get parameters from state for a clean URL
+    const state = location.state || {};
+    const surveyId = state.surveyId;
+    const amount = parseFloat(state.amount || '0');
+    const paymentType = state.type; // 'initial' or 'final'
+    const landValuation = state.landValuation;
 
     // Form state
     const [formData, setFormData] = useState({
@@ -392,7 +393,13 @@ const HaatPaymentPortal: React.FC = () => {
                                             onClick={() => {
                                                 const statusId = paymentType === 'initial' ? '4' : '7';
                                                 const title = paymentType === 'initial' ? 'Initial Payment Pending' : 'Final Payment Pending';
-                                                navigate(`/survey-details?_hti=${statusId}&title=${encodeURIComponent(title)}&dashboardType=USER`);
+                                                navigate('/survey-details', {
+                                                    state: {
+                                                        _hti: statusId,
+                                                        title: title,
+                                                        dashboardType: 'USER'
+                                                    }
+                                                });
                                             }}
                                             className="flex-1 bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded text-sm transition-all shadow-sm hover:shadow border border-slate-300 flex items-center justify-center gap-1"
                                         >

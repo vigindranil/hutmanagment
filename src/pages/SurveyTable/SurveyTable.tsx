@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { decodeJwtToken } from "../../utils/decodeToken";
 import { createRoot } from "react-dom/client";
 import {
@@ -157,10 +157,11 @@ const FADE_IN_KEYFRAMES = `
 `;
 
 const SurveyTable: React.FC = () => {
-  const [searchParams] = useSearchParams();
-  const haatStatusId = searchParams?.get("_hti");
-  const title = searchParams?.get("title");
-  const dashboardType = searchParams?.get("dashboardType");
+  const location = useLocation();
+  const state = location.state || {};
+  const haatStatusId = state._hti;
+  const title = state.title;
+  const dashboardType = state.dashboardType;
   const [selectedSurvey, setSelectedSurvey] = useState<SurveyData | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showHearingModal, setShowHearingModal] = useState(false);
@@ -568,16 +569,15 @@ const SurveyTable: React.FC = () => {
     // Determine amount based on payment type
     const amount = paymentType === "initial" ? survey.initial_amount : survey.final_amount;
 
-    // Build query parameters
-    const params = new URLSearchParams({
-      surveyId: survey.survey_id.toString(),
-      amount: amount?.toString() || "0",
-      type: paymentType,
-      landValuation: survey.land_valuation?.toString() || "0",
+    // Navigate to payment portal with clean URL
+    navigate('/haat-payment-portal', {
+      state: {
+        surveyId: survey.survey_id.toString(),
+        amount: amount?.toString() || "0",
+        type: paymentType,
+        landValuation: survey.land_valuation?.toString() || "0"
+      }
     });
-
-    // Navigate to payment portal
-    navigate(`/haat-payment-portal?${params.toString()}`);
   }, [navigate, haatStatusId]);
 
   const handleOpenPdfPreview = React.useCallback(() => {

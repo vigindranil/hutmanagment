@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import {
     getSurveyDetailsForMakerByBoundaryID,
     updateSurveyDetailsByMaker,
@@ -564,7 +564,11 @@ const AsyncImagePreview = React.memo(({ path }: { path: string | null | undefine
 });
 
 const MakerSurveyTable: React.FC = () => {
-    const [searchParams] = useSearchParams();
+    const location = useLocation();
+    const state = location.state || {};
+    const statusId = state._hti || '1';
+    const title = state.title || 'Survey Details';
+
     const [surveyData, setSurveyData] = useState<ExtendedSurveyData[]>([]);
     const [filteredData, setFilteredData] = useState<ExtendedSurveyData[]>([]);
     const [loading, setLoading] = useState(true);
@@ -584,12 +588,8 @@ const MakerSurveyTable: React.FC = () => {
     const [endDate, setEndDate] = useState(() => {
         return new Date().toISOString().split('T')[0];
     });
-
-    const statusId = searchParams.get('_hti') || '1';
-    const title = searchParams.get('title') || 'Survey Details';
-
-    const [editingSurvey, setEditingSurvey] = useState<ExtendedSurveyData | null>(null);
     const [editFields, setEditFields] = useState<Partial<ExtendedSurveyData>>({});
+    const [editingSurvey, setEditingSurvey] = useState<ExtendedSurveyData | null>(null);
     const [uploadFiles, setUploadFiles] = useState<MakerUploadFiles>({});
     const [isSaving, setIsSaving] = useState(false);
 

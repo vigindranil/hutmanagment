@@ -1,7 +1,6 @@
-import React, { useState, useMemo, useEffect } from "react";
-import Cookies from "js-cookie";
+import React, { useState, useEffect } from "react";
 import { commonApi } from "../../Service/surveyAPI";
-const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
+
 
 const userTypeOptions = [
   { label: "Admin", value: 100 },
@@ -45,7 +44,6 @@ const CreateAdminUser = () => {
     setSuccess("");
     setError("");
     try {
-      const token = Cookies.get("token");
       // Prepare payload: ensure correct types for IDs
       const payload = {
         ...form,
@@ -63,9 +61,9 @@ const CreateAdminUser = () => {
       } else {
         setError(data?.message);
       }
-    } catch (err: any) {
+      } catch (err: any) {
       setError("Failed to create user.");
-    } finally {
+      } finally {
       setLoading(false);
     }
   };

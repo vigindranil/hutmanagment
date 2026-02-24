@@ -78,13 +78,18 @@ const StatsCard: React.FC<StatsCardProps> = ({
   ) {
     basePath = '/survey-details';
   }
-  const destinationPath = `${basePath}?_hti=${HaatDashoardStatus}&title=${title}&dashboardType=${dashboardType}`;
+  const destinationState = {
+    _hti: HaatDashoardStatus?.toString(),
+    title,
+    dashboardType
+  };
 
   const colors = colorConfig[color] || colorConfig.blue;
 
   return (
     <Link
-      to={destinationPath}
+      to={basePath}
+      state={destinationState}
       className={`
         group
         relative
