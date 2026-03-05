@@ -65,101 +65,54 @@ interface DesignableModalProps {
     details: any;
 }
 
+// ---- Redesigned View Survey Modal ----
 const DesignableModal = React.memo(({ show, onClose, isLoading, details }: DesignableModalProps) => {
+    const [activeTab, setActiveTab] = useState(0);
+    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (show) {
+            setActiveTab(0);
+            setLightboxSrc(null);
+        }
+    }, [show]);
+
     if (!show) return null;
 
-    // Function to render file/image/attachment value
-    const renderAttachment = (val: any) => {
-        if (!val) return <span className="text-gray-400">No file</span>;
-
-        // Check if it's a blob URL (from commonApiImage) or base64 data URL
-        if (typeof val === 'string' && (val.startsWith('blob:') || val.startsWith('data:image'))) {
-            return (
-                <div
-                    onClick={() => openBlobInNewWindow(val)}
-                    className="inline-block cursor-pointer"
-                    title="Click to open in new tab"
-                >
-                    <img
-                        src={val}
-                        alt="Attachment"
-                        className="h-16 max-w-full border rounded shadow hover:opacity-80 transition-opacity bg-gray-50 object-contain"
-                    />
-                </div>
-            );
-        }
-
-        // Check if it's a file path that needs to be converted
-        if (typeof val === 'string' && (val.endsWith('.jpg') || val.endsWith('.jpeg') || val.endsWith('.png') || val.endsWith('.pdf'))) {
-            // For images, show as clickable image
-            if (val.endsWith('.jpg') || val.endsWith('.jpeg') || val.endsWith('.png')) {
-                return (
-                    <a
-                        href={val}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Click to open in new tab"
-                    >
-                        <img
-                            src={val}
-                            alt="Attachment"
-                            className="h-16 max-w-full border rounded shadow cursor-pointer hover:opacity-80 transition-opacity bg-gray-50 object-contain"
-                        />
-                    </a>
-                );
-            }
-            // For PDFs or other files, show as link
-            return (
-                <a
-                    className="text-blue-600 underline text-sm"
-                    href={val}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    {val}
-                </a>
-            );
-        }
-        return <span className="text-gray-500 text-sm">{val}</span>;
-    };
-
-    // Only show the fields as per required keys in DETAILS_FIELDS_TO_SHOW:
-    const fieldOrder = [
-        "survey_date", "application_number", "police_district_name", "police_station_name", "block_name", "mouza_name", "municipality_name", "ward_no",
-        "haat_name", "name", "address", "mobile", "document_number", "land_valuation_amount", "guardian_name", "citizenship", "pin_code",
-        "land_transfer_explanation", "previous_license_no", "license_expiry_date", "property_tax_payment_to_year", "occupy", "occupy_from_year",
-        "present_occupier_name", "occupier_guardian_name", "document_image", "pan", "pan_image", "residential_certificate_attached", "trade_license_attached",
-        "affidavit_attached", "adsr_name", "warision_certificate_attached", "death_certificate_attached", "noc_legal_heirs_attached", "is_with_in_family",
-        "transfer_relationship", "is_same_owner", "rented_to_whom", "stall_no", "holding_no", "jl_no", "khatian_no", "plot_no", "area_dom_sqft", "area_com_sqft", "direction",
-        "latitude", "longitude", "sketch_map_attached", "stall_image1", "stall_image2"
+    const tabs = [
+        { label: 'Overview', icon: '📋' },
+        { label: 'Personal', icon: '👤' },
+        { label: 'Location', icon: '📍' },
+        { label: 'Property', icon: '🏠' },
+        { label: 'Documents', icon: '📎' },
     ];
 
     const prettyLabels: Record<string, string> = {
         survey_date: "Survey Date",
         application_number: "Application Number",
-        police_district_name: "Police District Name",
-        police_station_name: "Police Station Name",
-        block_name: "Block Name",
-        mouza_name: "Mouza Name",
-        municipality_name: "Municipality Name",
+        police_district_name: "Police District",
+        police_station_name: "Police Station",
+        block_name: "Block",
+        mouza_name: "Mouza",
+        municipality_name: "Municipality",
         ward_no: "Ward No",
         haat_name: "Haat Name",
-        name: "Name",
+        name: "Owner Name",
         address: "Address",
         mobile: "Mobile",
         document_number: "Document Number",
-        land_valuation_amount: "Land Valuation Amount",
+        land_valuation_amount: "Land Valuation",
         guardian_name: "Guardian Name",
         citizenship: "Citizenship",
         pin_code: "Pin Code",
-        land_transfer_explanation: "Land Transfer Explanation",
+        land_transfer_explanation: "Transfer Explanation",
         previous_license_no: "Previous License No",
         license_expiry_date: "License Expiry Date",
-        property_tax_payment_to_year: "Property Tax Payment To Year",
-        occupy: "Occupy",
-        occupy_from_year: "Occupy From Year",
-        present_occupier_name: "Present Occupier Name",
-        occupier_guardian_name: "Occupier Guardian Name",
+        property_tax_payment_to_year: "Tax Payment Year",
+        occupy: "Is Occupied",
+        occupy_from_year: "Occupied From Year",
+        present_occupier_name: "Present Occupier",
+        occupier_guardian_name: "Occupier Guardian",
         document_image: "Document Image",
         pan: "PAN",
         pan_image: "PAN Image",
@@ -170,118 +123,379 @@ const DesignableModal = React.memo(({ show, onClose, isLoading, details }: Desig
         warision_certificate_attached: "Warision Certificate",
         death_certificate_attached: "Death Certificate",
         noc_legal_heirs_attached: "NOC Legal Heirs",
-        is_with_in_family: "Is Within Family",
+        is_with_in_family: "Within Family Transfer",
         transfer_relationship: "Transfer Relationship",
         is_same_owner: "Is Same Owner",
-        rented_to_whom: "Rented To Whom",
+        rented_to_whom: "Rented To",
         stall_no: "Stall No",
         holding_no: "Holding No",
         jl_no: "JL No",
         khatian_no: "Khatian No",
         plot_no: "Plot No",
-        area_dom_sqft: "Area DOM Sqft",
-        area_com_sqft: "Area Commercial Sqft",
+        area_dom_sqft: "Domestic Area (Sqft)",
+        area_com_sqft: "Commercial Area (Sqft)",
         direction: "Direction",
         latitude: "Latitude",
         longitude: "Longitude",
         sketch_map_attached: "Sketch Map",
         stall_image1: "Stall Image 1",
-        stall_image2: "Stall Image 2"
+        stall_image2: "Stall Image 2",
     };
 
-    // Organize grouped/priority fields for good UI; others in grid
-    const primaryFields = [
-        "application_number", "name", "guardian_name", "land_valuation_amount", "pan", "mobile",
-        "police_district_name", "police_station_name", "block_name", "mouza_name", "municipality_name", "ward_no", "haat_name"
-    ];
+    const isAttachment = (f: string) =>
+        f.endsWith("attached") || f.endsWith("image") ||
+        ["sketch_map_attached", "stall_image1", "stall_image2"].includes(f);
+
+    const renderAttachment = (val: any, label: string) => {
+        if (!val) return (
+            <div className="flex flex-col items-center justify-center h-28 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 text-gray-400 gap-2">
+                <span className="text-2xl">📄</span>
+                <span className="text-xs font-medium">No file attached</span>
+            </div>
+        );
+        const isImage = typeof val === 'string' && (
+            val.startsWith('blob:') || val.startsWith('data:image') ||
+            val.endsWith('.jpg') || val.endsWith('.jpeg') || val.endsWith('.png')
+        );
+        if (isImage) {
+            return (
+                <div
+                    onClick={() => setLightboxSrc(val)}
+                    className="relative cursor-pointer group overflow-hidden rounded-xl border border-blue-100 bg-blue-50 h-28 flex items-center justify-center shadow-sm hover:shadow-md transition-all"
+                    title="Click to enlarge"
+                >
+                    <img src={val} alt={label} className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-blue-900/0 group-hover:bg-blue-900/20 transition-all flex items-center justify-center">
+                        <span className="opacity-0 group-hover:opacity-100 text-white text-xs bg-blue-600/80 px-2 py-1 rounded-full backdrop-blur-sm transition-all">🔍 Enlarge</span>
+                    </div>
+                </div>
+            );
+        }
+        return (
+            <a href={val} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-3 rounded-xl border border-indigo-100 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors text-sm font-medium">
+                <span>📄</span> <span className="truncate">{typeof val === 'string' ? val.split('/').pop() : 'View File'}</span>
+            </a>
+        );
+    };
+
+    const getVal = (key: string) => {
+        if (!details) return null;
+        let v = details[key];
+        if (key === 'occupy' || key === 'is_same_owner' || key === 'is_with_in_family') {
+            if (v === 1 || v === '1') return 'Yes';
+            if (v === 0 || v === '0') return 'No';
+        }
+        if (key === 'land_valuation_amount') return `₹ ${Number(v || 0).toLocaleString('en-IN')}`;
+        if ((key === 'license_expiry_date' || key === 'survey_date') && typeof v === 'string') return v.slice(0, 10);
+        return v;
+    };
+
+    const InfoRow = ({ label, value, accent }: { label: string; value: any; accent?: boolean }) => (
+        <div className={`flex flex-col gap-0.5 p-3 rounded-xl ${accent ? 'bg-blue-50 border border-blue-100' : 'bg-gray-50 border border-gray-100'}`}>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{label}</span>
+            <span className={`text-sm font-semibold ${accent ? 'text-blue-700' : 'text-gray-800'} break-words`}>
+                {value !== null && value !== undefined && value !== '' ? value : <span className="text-gray-300 font-normal">—</span>}
+            </span>
+        </div>
+    );
+
+    const SectionHeading = ({ children }: { children: React.ReactNode }) => (
+        <div className="flex items-center gap-2 mb-3 mt-1">
+            <div className="h-4 w-1 rounded-full bg-gradient-to-b from-blue-500 to-indigo-500"></div>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">{children}</h3>
+        </div>
+    );
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm flex-col">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-y-auto max-h-[92vh] flex flex-col border border-sky-100">
-                <div className="flex justify-between items-center px-7 py-5 border-b border-sky-100 bg-gradient-to-r from-blue-50 to-sky-50/90">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <FileText className="text-blue-700 w-6 h-6" />
-                            <h2 className="text-2xl font-bold tracking-tight text-gray-700">
-                                Survey Details
-                            </h2>
+        <>
+            {lightboxSrc && (
+                <div
+                    className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+                    onClick={() => setLightboxSrc(null)}
+                >
+                    <button
+                        onClick={() => setLightboxSrc(null)}
+                        className="absolute top-5 right-6 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors z-10"
+                        aria-label="Close lightbox"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                    <img
+                        src={lightboxSrc}
+                        alt="Document Preview"
+                        className="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl shadow-2xl"
+                        onClick={e => e.stopPropagation()}
+                    />
+                </div>
+            )}
+
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                <div
+                    className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl flex flex-col border border-gray-100 overflow-hidden"
+                    style={{ maxHeight: '92vh' }}
+                >
+                    <div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 px-8 pt-8 pb-6 flex-shrink-0">
+                        <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-indigo-900/20 blur-xl pointer-events-none" />
+
+                        <div className="relative flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-white/15 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg">
+                                    <FileText className="w-7 h-7 text-white" />
+                                </div>
+                                <div>
+                                    <p className="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1">Survey Application</p>
+                                    <h2 className="text-2xl font-extrabold text-white tracking-tight leading-tight">
+                                        {details?.name || 'Survey Details'}
+                                    </h2>
+                                    {details?.application_number && (
+                                        <span className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 bg-white/20 border border-white/30 rounded-full text-white text-xs font-mono font-bold backdrop-blur-sm">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
+                                            {details.application_number}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                            <button
+                                onClick={onClose}
+                                className="p-2 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white transition-all"
+                                aria-label="Close"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
                         </div>
-                        {details?.application_number && (
-                            <div className="font-mono text-xs text-gray-500">
-                                Application No: <span className="font-bold text-blue-700">{details.application_number}</span>
+
+                        {details && !isLoading && (
+                            <div className="relative mt-5 flex flex-wrap gap-3">
+                                {[
+                                    { label: 'Haat', value: details.haat_name },
+                                    { label: 'District', value: details.police_district_name },
+                                    { label: 'Survey Date', value: details.survey_date ? String(details.survey_date).slice(0, 10) : null },
+                                    { label: 'Valuation', value: details.land_valuation_amount ? `₹ ${Number(details.land_valuation_amount).toLocaleString('en-IN')}` : null },
+                                ].map(s => s.value ? (
+                                    <div key={s.label} className="flex items-center gap-1.5 px-3 py-1.5 bg-white/15 rounded-xl border border-white/20 backdrop-blur-sm">
+                                        <span className="text-blue-200 text-[10px] font-bold uppercase">{s.label}:</span>
+                                        <span className="text-white text-xs font-semibold">{s.value}</span>
+                                    </div>
+                                ) : null)}
                             </div>
                         )}
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="rounded-full hover:bg-gray-200 transition-colors p-2 duration-100"
-                        aria-label="Close"
-                    >
-                        <X className="text-gray-600 w-6 h-6" />
-                    </button>
-                </div>
-                <div className="px-8 py-6 flex-1 overflow-y-auto">
-                    {isLoading ? (
-                        <div className="flex items-center justify-center w-full py-24">
-                            <RefreshCw className="w-7 h-7 animate-spin text-blue-400 mr-3" />
-                            <span className="text-blue-700 font-semibold text-lg">Loading details...</span>
-                        </div>
-                    ) : details ? (
-                        <>
-                            {/* Show primary info as highlight block */}
-                            <div className="mb-6 bg-sky-50 border border-sky-100 rounded-xl px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8">
-                                {primaryFields.map(f => {
-                                    if (!(f in details)) return null;
-                                    let val = details[f];
-                                    if (f === "land_valuation_amount")
-                                        val = Number(val || 0).toLocaleString();
-                                    return (
-                                        <div key={f}>
-                                            <div className="text-xs text-gray-500 font-bold uppercase">{prettyLabels[f] || f}</div>
-                                            <div className="font-semibold text-gray-800">
-                                                {val ? val : <span className="text-gray-400">-</span>}
+
+                    <div className="flex items-center gap-1 px-6 pt-4 pb-0 border-b border-gray-100 bg-white overflow-x-auto flex-shrink-0 shadow-sm">
+                        {tabs.map((tab, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setActiveTab(i)}
+                                className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-t-xl border-b-2 transition-all whitespace-nowrap ${activeTab === i
+                                    ? 'border-blue-600 text-blue-700 bg-blue-50/60'
+                                    : 'border-transparent text-gray-400 hover:text-gray-700 hover:bg-gray-50'
+                                    }`}
+                            >
+                                <span>{tab.icon}</span>
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto bg-gray-50/50">
+                        {isLoading ? (
+                            <div className="flex flex-col items-center justify-center py-28 gap-4">
+                                <div className="relative w-14 h-14">
+                                    <div className="absolute inset-0 rounded-full border-4 border-blue-100"></div>
+                                    <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 border-r-indigo-500 animate-spin"></div>
+                                </div>
+                                <span className="text-gray-500 font-semibold">Loading survey details...</span>
+                            </div>
+                        ) : !details ? (
+                            <div className="flex items-center justify-center py-24">
+                                <span className="text-gray-400 text-lg">No data found.</span>
+                            </div>
+                        ) : (
+                            <div className="p-6 space-y-4">
+                                {activeTab === 0 && (
+                                    <div className="space-y-5">
+                                        <SectionHeading>Application Summary</SectionHeading>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            <InfoRow label="Application No" value={getVal('application_number')} accent />
+                                            <InfoRow label="Survey Date" value={getVal('survey_date')} />
+                                            <InfoRow label="Owner Name" value={getVal('name')} />
+                                            <InfoRow label="Guardian Name" value={getVal('guardian_name')} />
+                                            <InfoRow label="Mobile" value={getVal('mobile')} />
+                                            <InfoRow label="PAN" value={getVal('pan')} />
+                                        </div>
+                                        <SectionHeading>Valuation</SectionHeading>
+                                        <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+                                            <div className="p-3 bg-blue-600 rounded-xl shadow-md shadow-blue-300">
+                                                <IndianRupee className="w-6 h-6 text-white" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Land Valuation Amount</p>
+                                                <p className="text-3xl font-black text-blue-700 tracking-tight">
+                                                    {details.land_valuation_amount
+                                                        ? `₹ ${Number(details.land_valuation_amount).toLocaleString('en-IN')}`
+                                                        : <span className="text-gray-300">—</span>}
+                                                </p>
                                             </div>
                                         </div>
-                                    );
-                                })}
-                            </div>
-                            {/* Show the rest as data grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3">
-                                {fieldOrder
-                                    .filter(f => !primaryFields.includes(f)) // avoid duplicate
-                                    .map(f => {
-                                        if (!(f in details)) return null;
-                                        let val = details[f];
-                                        if (f.endsWith("attached") || f.endsWith("image") || ["sketch_map_attached", "stall_image1", "stall_image2"].includes(f)) {
-                                            return (
-                                                <div key={f} className="mb-2">
-                                                    <div className="text-xs text-gray-500 font-bold">{prettyLabels[f] || f}</div>
-                                                    <div>{renderAttachment(val)}</div>
+                                        <SectionHeading>Occupancy</SectionHeading>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <InfoRow label="Is Occupied" value={getVal('occupy')} />
+                                            {(details.occupy === 1 || details.occupy === '1') && <>
+                                                <InfoRow label="Occupied From Year" value={getVal('occupy_from_year')} />
+                                                <InfoRow label="Present Occupier" value={getVal('present_occupier_name')} />
+                                                <InfoRow label="Occupier Guardian" value={getVal('occupier_guardian_name')} />
+                                            </>}
+                                            <InfoRow label="Is Same Owner" value={getVal('is_same_owner')} />
+                                            {(details.is_same_owner === 0 || details.is_same_owner === '0') &&
+                                                <InfoRow label="Rented To" value={getVal('rented_to_whom')} />}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeTab === 1 && (
+                                    <div className="space-y-5">
+                                        <SectionHeading>Personal Information</SectionHeading>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <InfoRow label="Owner Name" value={getVal('name')} accent />
+                                            <InfoRow label="Guardian Name" value={getVal('guardian_name')} />
+                                            <InfoRow label="Mobile" value={getVal('mobile')} />
+                                            <InfoRow label="Citizenship" value={getVal('citizenship')} />
+                                            <InfoRow label="Address" value={getVal('address')} />
+                                            <InfoRow label="Pin Code" value={getVal('pin_code')} />
+                                            <InfoRow label="PAN" value={getVal('pan')} />
+                                            <InfoRow label="Document Number" value={getVal('document_number')} />
+                                        </div>
+                                        <SectionHeading>Transfer Info</SectionHeading>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <InfoRow label="Within Family" value={getVal('is_with_in_family')} />
+                                            <InfoRow label="Transfer Relationship" value={getVal('transfer_relationship')} />
+                                            <InfoRow label="Previous License No" value={getVal('previous_license_no')} />
+                                            <InfoRow label="License Expiry" value={getVal('license_expiry_date')} />
+                                            <InfoRow label="Land Transfer Explanation" value={getVal('land_transfer_explanation')} />
+                                            <InfoRow label="Property Tax Year" value={getVal('property_tax_payment_to_year')} />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeTab === 2 && (
+                                    <div className="space-y-5">
+                                        <SectionHeading>Administrative Location</SectionHeading>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            <InfoRow label="Police District" value={getVal('police_district_name')} accent />
+                                            <InfoRow label="Police Station" value={getVal('police_station_name')} />
+                                            <InfoRow label="Block Name" value={getVal('block_name')} />
+                                            <InfoRow label="Mouza Name" value={getVal('mouza_name')} />
+                                            <InfoRow label="Municipality" value={getVal('municipality_name')} />
+                                            <InfoRow label="Ward No" value={getVal('ward_no')} />
+                                            <InfoRow label="Haat Name" value={getVal('haat_name')} />
+                                            <InfoRow label="ADSR Name" value={getVal('adsr_name')} />
+                                        </div>
+                                        <SectionHeading>GPS & Survey</SectionHeading>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <InfoRow label="Latitude" value={getVal('latitude')} />
+                                            <InfoRow label="Longitude" value={getVal('longitude')} />
+                                            <InfoRow label="Direction" value={getVal('direction')} />
+                                        </div>
+                                        {details.latitude && details.longitude && (
+                                            <a
+                                                href={`https://www.google.com/maps?q=${details.latitude},${details.longitude}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-semibold hover:bg-emerald-100 transition-colors w-fit"
+                                            >
+                                                <MapPin className="w-4 h-4" />
+                                                View on Google Maps
+                                            </a>
+                                        )}
+                                    </div>
+                                )}
+
+                                {activeTab === 3 && (
+                                    <div className="space-y-5">
+                                        <SectionHeading>Stall & Property Details</SectionHeading>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            <InfoRow label="Stall No" value={getVal('stall_no')} accent />
+                                            <InfoRow label="Holding No" value={getVal('holding_no')} />
+                                            <InfoRow label="JL No" value={getVal('jl_no')} />
+                                            <InfoRow label="Khatian No" value={getVal('khatian_no')} />
+                                            <InfoRow label="Plot No" value={getVal('plot_no')} />
+                                            <InfoRow label="Domestic Area (Sqft)" value={getVal('area_dom_sqft')} />
+                                            <InfoRow label="Commercial Area (Sqft)" value={getVal('area_com_sqft')} />
+                                        </div>
+                                        <SectionHeading>Stall Images</SectionHeading>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {['stall_image1', 'stall_image2'].map(f => (
+                                                <div key={f}>
+                                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{prettyLabels[f]}</p>
+                                                    {renderAttachment(details[f], prettyLabels[f])}
                                                 </div>
-                                            );
-                                        }
-                                        if (f === "license_expiry_date" || f === "survey_date") {
-                                            val = val && typeof val === 'string' ? val.slice(0, 10) : val;
-                                        }
-                                        return (
-                                            <div key={f} className="mb-2">
-                                                <div className="text-xs text-gray-500 font-bold">{prettyLabels[f] || f}</div>
-                                                <div className="text-gray-700 font-medium">
-                                                    {val && val !== "" && val !== null ? val : <span className="text-gray-400">-</span>}
+                                            ))}
+                                        </div>
+                                        <SectionHeading>Sketch Map</SectionHeading>
+                                        <div className="max-w-xs">
+                                            {renderAttachment(details['sketch_map_attached'], 'Sketch Map')}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeTab === 4 && (
+                                    <div className="space-y-5">
+                                        <SectionHeading>Uploaded Documents & Certificates</SectionHeading>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                            {[
+                                                { key: 'document_image', label: 'Document Image' },
+                                                { key: 'pan_image', label: 'PAN Image' },
+                                                { key: 'residential_certificate_attached', label: 'Residential Certificate' },
+                                                { key: 'trade_license_attached', label: 'Trade License' },
+                                                { key: 'affidavit_attached', label: 'Affidavit' },
+                                                { key: 'warision_certificate_attached', label: 'Warision Certificate' },
+                                                { key: 'death_certificate_attached', label: 'Death Certificate' },
+                                                { key: 'noc_legal_heirs_attached', label: 'NOC Legal Heirs' },
+                                            ].map(({ key, label }) => (
+                                                <div key={key} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow">
+                                                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{label}</p>
+                                                    {renderAttachment(details[key], label)}
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                        </>
-                    ) : (
-                        <div className="flex items-center justify-center py-16">
-                            <span className="text-gray-400 text-lg">No data found.</span>
+                        )}
+                    </div>
+
+                    <div className="px-6 py-4 border-t border-gray-100 bg-white flex items-center justify-between">
+                        <div className="text-xs text-gray-400">
+                            Showing tab <span className="font-bold text-gray-600">{activeTab + 1}</span> of {tabs.length}
                         </div>
-                    )}
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setActiveTab(t => Math.max(t - 1, 0))}
+                                disabled={activeTab === 0}
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 text-gray-600 text-sm font-semibold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <ChevronLeft className="w-4 h-4" /> Prev
+                            </button>
+                            <button
+                                onClick={() => setActiveTab(t => Math.min(t + 1, tabs.length - 1))}
+                                disabled={activeTab === tabs.length - 1}
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-md shadow-blue-200"
+                            >
+                                Next <ChevronRight className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={onClose}
+                                className="px-5 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 });
 // ---- END DesignableModal ----
@@ -363,7 +577,7 @@ interface ExtendedSurveyData {
     block_id?: number;
     municipality_id?: number;
 }
-// ... all the option and field type defs ... (unmodified)
+
 type MouzaOption = {
     mouza_id: number;
     mouza_name: string;
@@ -424,16 +638,14 @@ const ALL_EDIT_FIELDS: { key: keyof ExtendedSurveyData, label: string, type: str
     { key: "license_expiry_date", label: "License Expiry Date", type: "date" },
     { key: "property_tax_payment_to_year", label: "Property Tax Payment To Year", type: "text" },
     { key: "land_transfer_explanation", label: "Land Transfer Explanation", type: "text" },
-    { key: "occupy", label: "Occupy", type: "text" },
-    { key: "occupy_from_year", label: "Occupy From Year", type: "text" },
+    { key: "occupy", label: "Is Occupied", type: "text" },
+    { key: "occupy_from_year", label: "Occupied From Year", type: "text" },
     { key: "present_occupier_name", label: "Present Occupier Name", type: "text" },
     { key: "occupier_guardian_name", label: "Occupier Guardian Name", type: "text" },
     { key: "adsr_name", label: "ADSR Name", type: "text" },
     { key: "is_same_owner", label: "Is Same Owner", type: "number" },
     { key: "rented_to_whom", label: "Rented To Whom", type: "text" },
-    // { key: "district_id", label: "District ID", type: "number" },
     { key: "is_urban", label: "Block/Municipality Type", type: "number" },
-    // { key: "block_municipality_id", label: "Block/Municipality ID", type: "text" },
     { key: "hat_id", label: "Haat Name", type: "text" },
     { key: "mouza_id", label: "Mouza Name", type: "text" },
     { key: "stall_no", label: "Stall No", type: "text" },
@@ -515,7 +727,6 @@ const DETAILS_FIELDS_TO_SHOW = [
     "stall_image2"
 ];
 
-//Edited modal image view
 const AsyncImagePreview = React.memo(({ path }: { path: string | null | undefined }) => {
     const [imgSrc, setImgSrc] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -525,13 +736,11 @@ const AsyncImagePreview = React.memo(({ path }: { path: string | null | undefine
             setLoading(false);
             return;
         }
-        // If it's already a blob or data URL, use it directly
         if (path.startsWith('blob:') || path.startsWith('data:')) {
             setImgSrc(path);
             setLoading(false);
             return;
         }
-        // Otherwise fetch
         setLoading(true);
         let active = true;
         commonApiImage(path)
@@ -563,6 +772,49 @@ const AsyncImagePreview = React.memo(({ path }: { path: string | null | undefine
     return <FileText className="w-8 h-8 text-gray-400" />;
 });
 
+// ─── EDIT MODAL SECTION COMPONENTS ───────────────────────────────────────────
+
+/** Styled label for edit form fields */
+const EditLabel = ({ children }: { children: React.ReactNode }) => (
+    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+        {children}
+    </label>
+);
+
+/** Shared input class */
+const inputCls =
+    "w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-sm font-medium " +
+    "focus:outline-none focus:ring-2 focus:ring-violet-400/60 focus:border-violet-400 " +
+    "placeholder-slate-300 transition-all shadow-sm hover:border-slate-300";
+
+/** Shared select class */
+const selectCls =
+    "w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-sm font-medium " +
+    "focus:outline-none focus:ring-2 focus:ring-violet-400/60 focus:border-violet-400 " +
+    "transition-all shadow-sm hover:border-slate-300 cursor-pointer";
+
+/** Section divider inside the edit modal */
+const EditSection = ({ icon, title, color = "violet" }: { icon: string; title: string; color?: string }) => {
+    const colorMap: Record<string, string> = {
+        violet: "from-violet-500 to-purple-600",
+        rose: "from-rose-500 to-pink-600",
+        cyan: "from-cyan-500 to-blue-500",
+        amber: "from-amber-400 to-orange-500",
+        emerald: "from-emerald-500 to-teal-600",
+    };
+    return (
+        <div className="flex items-center gap-3 col-span-full mt-2 mb-1">
+            <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${colorMap[color] || colorMap.violet} flex items-center justify-center text-white text-sm shadow-md`}>
+                {icon}
+            </div>
+            <span className="text-xs font-black uppercase tracking-widest text-slate-500">{title}</span>
+            <div className="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent"></div>
+        </div>
+    );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const MakerSurveyTable: React.FC = () => {
     const location = useLocation();
     const state = location.state || {};
@@ -575,10 +827,8 @@ const MakerSurveyTable: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [error, setError] = useState<string | null>(null);
 
-    // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Initialize dates (YYYY-MM-DD for input fields)
     const [startDate, setStartDate] = useState(() => {
         const d = new Date();
         d.setFullYear(d.getFullYear() - 1);
@@ -593,7 +843,6 @@ const MakerSurveyTable: React.FC = () => {
     const [uploadFiles, setUploadFiles] = useState<MakerUploadFiles>({});
     const [isSaving, setIsSaving] = useState(false);
 
-    // Dropdowns states (unmodified)
     const [relationshipOptions, setRelationshipOptions] = useState<RelationshipOption[]>([]);
     const [relationshipLoading, setRelationshipLoading] = useState(false);
     const [relationshipError, setRelationshipError] = useState<string | null>(null);
@@ -634,7 +883,6 @@ const MakerSurveyTable: React.FC = () => {
     const [wardLoading, setWardLoading] = useState(false);
     const [wardError, setWardError] = useState<string | null>(null);
 
-    // --- New Designable Modal State for Details ---
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [isLoadingDetails, setIsLoadingDetails] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState<any>(null);
@@ -655,13 +903,12 @@ const MakerSurveyTable: React.FC = () => {
             .finally(() => setRelationshipLoading(false));
     }, []);
 
-    // Fetch Block or Municipality options when block_municipality_type changes
     useEffect(() => {
         if (editingSurvey && editFields.is_urban !== undefined && editFields.is_urban !== null && editFields.is_urban !== 0) {
             const userDetails = decodeJwtToken();
             const boundaryLevelId = userDetails?.BoundaryLevelID || 2;
             const boundaryId = userDetails?.BoundaryID || 9;
-            const isUrban = editFields.is_urban; // 1 for Block, 2 for Municipality
+            const isUrban = editFields.is_urban;
             const loginUserID = userDetails?.UserID || 0;
 
             if (editFields.is_urban == 1) {
@@ -681,7 +928,6 @@ const MakerSurveyTable: React.FC = () => {
                     .catch(() => setBlockError('Could not load Block list'))
                     .finally(() => setBlockLoading(false));
             } else if (editFields.is_urban === 2) {
-                // Fetch Municipality options (inner_boundary_level_id: 7)
                 setMunicipalityLoading(true);
                 setMunicipalityError(null);
                 setMunicipalityOptions([]);
@@ -704,12 +950,11 @@ const MakerSurveyTable: React.FC = () => {
         }
     }, [editingSurvey, editFields.is_urban]);
 
-    // Fetch Panchayat options when Block is selected
     useEffect(() => {
         if (editingSurvey && editFields.is_urban === 1) {
             const userDetails = decodeJwtToken();
-            const boundaryLevelId = 5; // Block level
-            const boundaryId = editFields.block_id; // Selected Block ID
+            const boundaryLevelId = 5;
+            const boundaryId = editFields.block_id;
             const isUrban = 1;
             const loginUserID = userDetails?.UserID || 0;
 
@@ -733,12 +978,11 @@ const MakerSurveyTable: React.FC = () => {
         }
     }, [editingSurvey, editFields.is_urban, editFields.municipality_id]);
 
-    // Fetch Ward options when Municipality is selected
     useEffect(() => {
         if (editingSurvey && editFields.is_urban === 2) {
             const userDetails = decodeJwtToken();
-            const boundaryLevelId = 7; // Municipality level
-            const boundaryId = editFields.municipality_id; // Selected Municipality ID
+            const boundaryLevelId = 7;
+            const boundaryId = editFields.municipality_id;
             const isUrban = 2;
             const loginUserID = userDetails?.UserID || 0;
 
@@ -762,7 +1006,6 @@ const MakerSurveyTable: React.FC = () => {
         }
     }, [editingSurvey, editFields.is_urban, editFields.municipality_id]);
 
-    // dropdowns for edit (unmodified)
     useEffect(() => {
         if (
             editingSurvey &&
@@ -806,6 +1049,7 @@ const MakerSurveyTable: React.FC = () => {
                 .finally(() => setMouzaLoading(false));
         } else setMouzaOptions([]);
     }, [editingSurvey, editFields.police_station_id]);
+
     useEffect(() => {
         if (
             editingSurvey &&
@@ -825,6 +1069,7 @@ const MakerSurveyTable: React.FC = () => {
                 .finally(() => setJlNoLoading(false));
         } else setJlNoOptions([]);
     }, [editingSurvey, editFields.police_station_id]);
+
     useEffect(() => {
         if (
             editingSurvey &&
@@ -844,6 +1089,7 @@ const MakerSurveyTable: React.FC = () => {
                 .finally(() => setAdsrLoading(false));
         } else setAdsrNameOptions([]);
     }, [editingSurvey, editFields.police_station_id]);
+
     useEffect(() => {
         if (
             editingSurvey &&
@@ -865,7 +1111,6 @@ const MakerSurveyTable: React.FC = () => {
         } else setHaatOptions([]);
     }, [editingSurvey, editFields.district_id]);
 
-    // ---- REWRITE: handleViewClick to fetch details from API and show in new DesignableModal
     const handleViewClick = React.useCallback(async (survey: ExtendedSurveyData) => {
         if (!survey.survey_id) {
             alert('Survey ID not found');
@@ -891,10 +1136,8 @@ const MakerSurveyTable: React.FC = () => {
             if (Array.isArray(data)) {
                 foundSurvey = data.find((item: any) => String(item.survey_id) === String(survey.survey_id));
             }
-            // Fallback to partial local row if API did not return
             foundSurvey = foundSurvey || survey;
 
-            // Fetch images using commonApiImage
             const imageFields = [
                 'document_image', 'pan_image', 'residential_certificate_attached',
                 'trade_license_attached', 'affidavit_attached', 'warision_certificate_attached',
@@ -923,11 +1166,9 @@ const MakerSurveyTable: React.FC = () => {
 
             const imageMap = Object.fromEntries(images);
 
-            // Try to fill in is_with_in_family (or is_within_family), document_number (or document_no), etc.
             const details: Record<string, any> = {};
             for (const f of DETAILS_FIELDS_TO_SHOW) {
                 if (Object.prototype.hasOwnProperty.call(foundSurvey, f)) {
-                    // Use image from imageMap if available
                     details[f] = imageMap[f] || (foundSurvey as any)[f];
                 } else if (
                     f === "document_number" && ("document_no" in foundSurvey)
@@ -949,7 +1190,6 @@ const MakerSurveyTable: React.FC = () => {
         }
     }, []);
 
-    // --- rest of your code (edits, saving, search, pagination, etc) unmodified ---
     const handleEditClick = React.useCallback((survey: ExtendedSurveyData) => {
         setEditingSurvey(survey);
 
@@ -965,7 +1205,6 @@ const MakerSurveyTable: React.FC = () => {
                             if (f.key === 'name' && survey.shop_owner_name) val = survey.shop_owner_name;
                             else if (f.key === 'mobile' && survey.mobile_number) val = survey.mobile_number;
                             else if (f.key === 'document_no' && survey.document_number) val = survey.document_number;
-                            // Handle backend naming differences so values pre-fill correctly
                             else if (f.key === 'is_within_family' && (survey as any).is_with_in_family !== undefined && (survey as any).is_with_in_family !== null) {
                                 val = (survey as any).is_with_in_family;
                             } else if (f.key === 'hat_id' && (survey as any).hat_id !== undefined && (survey as any).hat_id !== null) {
@@ -982,7 +1221,6 @@ const MakerSurveyTable: React.FC = () => {
                     })
                 )
             };
-            // Pre-fill additional fields that are handled separately
             editObj.police_station_id = normalizeId(survey.police_station_id);
             editObj.block_panchayet_status = normalizeId(survey.block_panchayet_status);
             editObj.district_id = normalizeId(survey.district_id);
@@ -994,7 +1232,6 @@ const MakerSurveyTable: React.FC = () => {
             } else if (editObj.is_urban === 2) {
                 editObj.municipality_id = editObj.municipality_id;
             }
-            // Pre-fill village_ward_id for Panchayat dropdown
             editObj.village_ward_id = normalizeId(survey.block_panchayet_status);
             editObj.mouza_name = survey.mouza_name ?? '';
             editObj.municipality_name = survey.municipality_name ?? '';
@@ -1076,7 +1313,6 @@ const MakerSurveyTable: React.FC = () => {
                     text: 'Image size should be less than 2MB',
                     confirmButtonColor: '#f59e0b',
                 });
-                // Reset the input value if possible, but here we just don't set it in state
                 return;
             }
             setUploadFiles(prev => ({ ...prev, [key]: file }));
@@ -1102,9 +1338,7 @@ const MakerSurveyTable: React.FC = () => {
             };
             const response = await updateSurveyDetailsByMaker(uploadFiles, payload);
 
-            // Check if response indicates success
             if (response && (response.status === 0 || response.message?.toLowerCase().includes('success'))) {
-                // Show SweetAlert success message
                 await Swal.fire({
                     icon: 'success',
                     title: 'Success!',
@@ -1116,14 +1350,12 @@ const MakerSurveyTable: React.FC = () => {
                 setEditingSurvey(null);
                 setEditFields({});
                 setUploadFiles({});
-                // Trigger reload
                 setReloadTrigger(prev => prev + 1);
             } else {
                 throw new Error(response?.message || 'Update failed');
             }
         } catch (error) {
             console.error('Error updating survey:', error);
-            // Show SweetAlert error message
             await Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -1134,7 +1366,7 @@ const MakerSurveyTable: React.FC = () => {
         } finally {
             setIsSaving(false);
         }
-    }, [editingSurvey, editFields, uploadFiles]); // Added dependencies
+    }, [editingSurvey, editFields, uploadFiles]);
 
     useEffect(() => {
         fetchSurveyData();
@@ -1195,18 +1427,11 @@ const MakerSurveyTable: React.FC = () => {
         }
     }, [startDate, endDate, statusId]);
 
-    // To handle the dependency issue where handleSave calls fetchSurveyData, we can add an effect or a ref.
-    // For now, let's keep it simple. If we need to reload, we can toggle a state.
-    // To properly fix the "use before declaration" issue in the original code (if it was an issue), we should rely on useEffect.
     const [reloadTrigger, setReloadTrigger] = useState(0);
     useEffect(() => {
         if (reloadTrigger > 0) fetchSurveyData();
     }, [reloadTrigger, fetchSurveyData]);
 
-
-
-
-    // Handlers for inputs and modals
     const handleSearchChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value), []);
     const handleStartDateChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value), []);
     const handleEndDateChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value), []);
@@ -1332,6 +1557,7 @@ const MakerSurveyTable: React.FC = () => {
                         </button>
                     </div>
                 </div>
+
                 {/* Search and Filter Bar */}
                 <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-sky-200/50 p-6">
                     <div className="flex flex-col lg:flex-row gap-4">
@@ -1372,7 +1598,8 @@ const MakerSurveyTable: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                {/* Modern Card-Based Table */}
+
+                {/* Card-Based Table */}
                 <div className="space-y-4">
                     {loading ? (
                         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-sky-200/50 p-24">
@@ -1565,79 +1792,119 @@ const MakerSurveyTable: React.FC = () => {
                                 </div>
                             ))}
                             <Pagination />
-                            {/* REPLACEMENT: New Designable Modal */}
+
+                            {/* View Details Modal (unchanged) */}
                             <DesignableModal
                                 show={showDetailsModal}
                                 onClose={handleCloseDetailsModal}
                                 isLoading={isLoadingDetails}
                                 details={selectedDetails}
                             />
-                            {/* --- End Details Modal --- */}
+
+                            {/* ══════════════════════════════════════════════════════
+                                REDESIGNED EDIT SURVEY MODAL
+                            ══════════════════════════════════════════════════════ */}
                             {editingSurvey && (
-                                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-                                        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                                            <div>
-                                                <h2 className="text-2xl font-bold text-gray-800">Edit Survey Details</h2>
-                                                <p className="text-sm text-gray-500 mt-1">Application No: <span className="font-mono font-medium text-gray-700">{editingSurvey.application_number}</span></p>
+                                <div className="fixed z-[40] flex items-center justify-center bg-slate-950/60 backdrop-blur-sm" style={{ top: 0, bottom: 0, left: '260px', right: 0, padding: '80px 16px 16px 16px' }}>
+                                    {/* Modal shell */}
+                                    <div
+                                        className="relative bg-white w-full max-w-5xl flex flex-col overflow-hidden"
+                                        style={{
+                                            maxHeight: 'calc(100vh - 96px)',
+                                            borderRadius: '24px',
+                                            boxShadow: '0 32px 80px -12px rgba(109,40,217,0.28), 0 0 0 1px rgba(139,92,246,0.15)',
+                                        }}
+                                    >
+                                        {/* ── Decorative top stripe ── */}
+                                        <div className="h-1.5 w-full bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 flex-shrink-0" />
+
+                                        {/* ── Header ── */}
+                                        <div className="flex-shrink-0 flex items-center justify-between px-8 py-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-violet-50/40">
+                                            <div className="flex items-center gap-4">
+                                                {/* Icon badge */}
+                                                <div className="relative">
+                                                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-300/50">
+                                                        <Edit className="w-5 h-5 text-white" />
+                                                    </div>
+                                                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white shadow-sm" />
+                                                </div>
+                                                <div>
+                                                    <h2 className="text-xl font-black text-slate-800 tracking-tight leading-none">
+                                                        Edit Survey Details
+                                                    </h2>
+                                                    <p className="text-[11px] text-slate-400 font-semibold mt-1 tracking-wider uppercase">
+                                                        App No:&nbsp;
+                                                        <span className="font-mono font-bold text-violet-600">
+                                                            {editingSurvey.application_number}
+                                                        </span>
+                                                    </p>
+                                                </div>
                                             </div>
+
                                             <button
                                                 onClick={handleCloseEditModal}
-                                                className="p-2 hover:bg-gray-200/50 rounded-full transition-colors"
+                                                className="w-9 h-9 rounded-full flex items-center justify-center bg-slate-100 hover:bg-rose-50 hover:text-rose-500 text-slate-400 transition-all border border-slate-200 hover:border-rose-200"
+                                                aria-label="Close"
                                             >
-                                                <X className="w-6 h-6 text-gray-500" />
+                                                <X className="w-4.5 h-4.5" />
                                             </button>
                                         </div>
-                                        <div className="p-8 overflow-y-auto custom-scrollbar">
-                                            <form onSubmit={handleEditSubmit}>
-                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                                                    <div className="mb-1">
-                                                        <label className="block text-sm font-bold text-gray-600 mb-2">
-                                                            Police Station
-                                                        </label>
+                                        {/* ── Scrollable body ── */}
+                                        <form onSubmit={handleEditSubmit} className="flex-1 flex flex-col overflow-hidden min-h-0">
+                                        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-2 bg-slate-50/60">
+
+                                                {/* ─── FIELDS GRID ─────────────────────────── */}
+                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
+
+                                                    {/* ── Section: Location ── */}
+                                                    <EditSection icon="📍" title="Location" color="cyan" />
+
+                                                    {/* Police Station */}
+                                                    <div>
+                                                        <EditLabel>Police Station</EditLabel>
                                                         {thanaLoading ? (
-                                                            <div className="text-blue-700 text-xs py-2">Loading Police Station list...</div>
-                                                        ) : thanaError ? (
-                                                            <div className="text-red-600 text-xs py-2">{thanaError}</div>
-                                                        ) : (
-                                                            <select
-                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                value={
-                                                                    editFields.police_station_id === undefined || editFields.police_station_id === null || editFields.police_station_id === 0
-                                                                        ? ""
-                                                                        : String(editFields.police_station_id)
-                                                                }
-                                                                onChange={e =>
-                                                                    handleFieldChange(
-                                                                        'police_station_id',
-                                                                        e.target.value === "" ? undefined : Number(e.target.value)
-                                                                    )
-                                                                }
-                                                                disabled={!(editFields.district_id !== undefined && editFields.district_id !== null && editFields.district_id !== 0)}
-                                                            >
-                                                                <option value="">-- Select Police Station --</option>
-                                                                {thanaOptions.map((thana, index) =>
-                                                                    <option key={`thana-${thana.police_station_id}-${index}`} value={thana.police_station_id}>
-                                                                        {thana.police_station_name}
-                                                                    </option>
-                                                                )}
-                                                            </select>
-                                                        )}
-                                                        {(editFields.district_id === undefined || editFields.district_id === null || editFields.district_id === 0) && (
-                                                            <div className="text-[11px] text-gray-400 mt-1">
-                                                                Please select District ID first (required for Police Station)
+                                                            <div className="flex items-center gap-2 text-violet-600 text-xs py-2.5">
+                                                                <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Loading…
                                                             </div>
+                                                        ) : thanaError ? (
+                                                            <p className="text-rose-500 text-xs py-2">{thanaError}</p>
+                                                        ) : (
+                                                            <>
+                                                                <select
+                                                                    className={selectCls}
+                                                                    value={
+                                                                        editFields.police_station_id === undefined || editFields.police_station_id === null || editFields.police_station_id === 0
+                                                                            ? ""
+                                                                            : String(editFields.police_station_id)
+                                                                    }
+                                                                    onChange={e =>
+                                                                        handleFieldChange(
+                                                                            'police_station_id',
+                                                                            e.target.value === "" ? undefined : Number(e.target.value)
+                                                                        )
+                                                                    }
+                                                                    disabled={!(editFields.district_id !== undefined && editFields.district_id !== null && editFields.district_id !== 0)}
+                                                                >
+                                                                    <option value="">— Select Police Station —</option>
+                                                                    {thanaOptions.map((thana, index) =>
+                                                                        <option key={`thana-${thana.police_station_id}-${index}`} value={thana.police_station_id}>
+                                                                            {thana.police_station_name}
+                                                                        </option>
+                                                                    )}
+                                                                </select>
+                                                                {(editFields.district_id === undefined || editFields.district_id === null || editFields.district_id === 0) && (
+                                                                    <p className="text-[10px] text-amber-500 mt-1 font-medium">⚠ Select District ID first</p>
+                                                                )}
+                                                            </>
                                                         )}
                                                     </div>
 
-                                                    {/* Block/Municipality Type Dropdown */}
-                                                    <div className="mb-1">
-                                                        <label className="block text-sm font-bold text-gray-600 mb-2">
-                                                            Block/Municipality Type
-                                                        </label>
+                                                    {/* Block / Municipality Type */}
+                                                    <div>
+                                                        <EditLabel>Block / Municipality Type</EditLabel>
                                                         <select
-                                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                            className={selectCls}
                                                             value={
                                                                 editFields.is_urban === undefined || editFields.is_urban === null || editFields.is_urban === 0
                                                                     ? ""
@@ -1650,25 +1917,23 @@ const MakerSurveyTable: React.FC = () => {
                                                                 )
                                                             }
                                                         >
-                                                            <option value="">-- Select Type --</option>
+                                                            <option value="">— Select Type —</option>
                                                             <option value="1">Block</option>
                                                             <option value="2">Municipality</option>
                                                         </select>
                                                     </div>
 
-                                                    {/* Conditional Block Dropdown (shows when Block is selected) */}
+                                                    {/* Conditional Block */}
                                                     {editFields.is_urban === 1 && (
-                                                        <div className="mb-1">
-                                                            <label className="block text-sm font-bold text-gray-600 mb-2">
-                                                                Block
-                                                            </label>
+                                                        <div>
+                                                            <EditLabel>Block</EditLabel>
                                                             {blockLoading ? (
-                                                                <div className="text-blue-700 text-xs py-2">Loading Block list...</div>
+                                                                <div className="flex items-center gap-2 text-violet-600 text-xs py-2.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Loading…</div>
                                                             ) : blockError ? (
-                                                                <div className="text-red-600 text-xs py-2">{blockError}</div>
+                                                                <p className="text-rose-500 text-xs py-2">{blockError}</p>
                                                             ) : (
                                                                 <select
-                                                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                    className={selectCls}
                                                                     value={
                                                                         editFields.block_id === undefined || editFields.block_id === null || editFields.block_id === 0
                                                                             ? ""
@@ -1681,7 +1946,7 @@ const MakerSurveyTable: React.FC = () => {
                                                                         );
                                                                     }}
                                                                 >
-                                                                    <option value="">-- Select Block --</option>
+                                                                    <option value="">— Select Block —</option>
                                                                     {blockOptions.map((block, index) =>
                                                                         <option key={`${block.block_id}-${index}`} value={block.block_id}>
                                                                             {block.block_name}
@@ -1691,19 +1956,18 @@ const MakerSurveyTable: React.FC = () => {
                                                             )}
                                                         </div>
                                                     )}
-                                                    {/* Conditional Municipality Dropdown (shows when Municipality is selected) */}
+
+                                                    {/* Conditional Municipality */}
                                                     {editFields.is_urban === 2 && (
-                                                        <div className="mb-1">
-                                                            <label className="block text-sm font-bold text-gray-600 mb-2">
-                                                                Municipality
-                                                            </label>
+                                                        <div>
+                                                            <EditLabel>Municipality</EditLabel>
                                                             {municipalityLoading ? (
-                                                                <div className="text-blue-700 text-xs py-2">Loading Municipality list...</div>
+                                                                <div className="flex items-center gap-2 text-violet-600 text-xs py-2.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Loading…</div>
                                                             ) : municipalityError ? (
-                                                                <div className="text-red-600 text-xs py-2">{municipalityError}</div>
+                                                                <p className="text-rose-500 text-xs py-2">{municipalityError}</p>
                                                             ) : (
                                                                 <select
-                                                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                    className={selectCls}
                                                                     value={
                                                                         editFields.municipality_id === undefined || editFields.municipality_id === null || editFields.municipality_id === 0
                                                                             ? ""
@@ -1714,10 +1978,9 @@ const MakerSurveyTable: React.FC = () => {
                                                                             'municipality_id',
                                                                             e.target.value === "" ? undefined : Number(e.target.value)
                                                                         );
-
                                                                     }}
                                                                 >
-                                                                    <option value="">-- Select Municipality --</option>
+                                                                    <option value="">— Select Municipality —</option>
                                                                     {municipalityOptions.map((municipality, index) =>
                                                                         <option key={`${municipality.municipality_id}-${index}`} value={municipality.municipality_id}>
                                                                             {municipality.municipality_name}
@@ -1727,19 +1990,18 @@ const MakerSurveyTable: React.FC = () => {
                                                             )}
                                                         </div>
                                                     )}
-                                                    {/* Conditional Panchayat Dropdown (shows after Block selection) */}
+
+                                                    {/* Conditional Panchayat */}
                                                     {editFields.is_urban === 1 && (
-                                                        <div className="mb-1">
-                                                            <label className="block text-sm font-bold text-gray-600 mb-2">
-                                                                Panchayat
-                                                            </label>
+                                                        <div>
+                                                            <EditLabel>Panchayat</EditLabel>
                                                             {panchayatLoading ? (
-                                                                <div className="text-blue-700 text-xs py-2">Loading Panchayat list...</div>
+                                                                <div className="flex items-center gap-2 text-violet-600 text-xs py-2.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Loading…</div>
                                                             ) : panchayatError ? (
-                                                                <div className="text-red-600 text-xs py-2">{panchayatError}</div>
+                                                                <p className="text-rose-500 text-xs py-2">{panchayatError}</p>
                                                             ) : (
                                                                 <select
-                                                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                    className={selectCls}
                                                                     value={
                                                                         editFields.village_ward_id === undefined || editFields.village_ward_id === null || editFields.village_ward_id === 0
                                                                             ? ""
@@ -1752,7 +2014,7 @@ const MakerSurveyTable: React.FC = () => {
                                                                         )
                                                                     }
                                                                 >
-                                                                    <option value="">-- Select Panchayat --</option>
+                                                                    <option value="">— Select Panchayat —</option>
                                                                     {panchayatOptions.map((panchayat, index) =>
                                                                         <option key={`${panchayat.panchayat_id}-${index}`} value={panchayat.panchayat_id}>
                                                                             {panchayat.panchayat_name}
@@ -1763,19 +2025,17 @@ const MakerSurveyTable: React.FC = () => {
                                                         </div>
                                                     )}
 
-                                                    {/* Conditional Ward Dropdown (shows after Municipality selection) */}
+                                                    {/* Conditional Ward */}
                                                     {editFields.is_urban == 2 && (
-                                                        <div className="mb-1">
-                                                            <label className="block text-sm font-bold text-gray-600 mb-2">
-                                                                Ward
-                                                            </label>
+                                                        <div>
+                                                            <EditLabel>Ward</EditLabel>
                                                             {wardLoading ? (
-                                                                <div className="text-blue-700 text-xs py-2">Loading Ward list...</div>
+                                                                <div className="flex items-center gap-2 text-violet-600 text-xs py-2.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Loading…</div>
                                                             ) : wardError ? (
-                                                                <div className="text-red-600 text-xs py-2">{wardError}</div>
+                                                                <p className="text-rose-500 text-xs py-2">{wardError}</p>
                                                             ) : (
                                                                 <select
-                                                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
+                                                                    className={selectCls}
                                                                     value={
                                                                         editFields.ward_id === undefined || editFields.ward_id === null || editFields.ward_id === 0
                                                                             ? ""
@@ -1788,7 +2048,7 @@ const MakerSurveyTable: React.FC = () => {
                                                                         )
                                                                     }
                                                                 >
-                                                                    <option value="">-- Select Ward --</option>
+                                                                    <option value="">— Select Ward —</option>
                                                                     {wardOptions.map((ward, index) =>
                                                                         <option key={`${ward.ward_id}-${index}`} value={ward.ward_id}>
                                                                             {ward.ward_name}
@@ -1799,432 +2059,538 @@ const MakerSurveyTable: React.FC = () => {
                                                         </div>
                                                     )}
 
+                                                    {/* ── Dynamic fields ── */}
                                                     {ALL_EDIT_FIELDS
                                                         .filter(field => field.key !== 'police_station_name')
                                                         .filter(field => field.key !== 'police_station_id')
                                                         .filter(field => field.key !== 'is_urban')
                                                         .filter(field => field.key !== 'block_municipality_id')
-                                                        .map(field => (
-                                                            <div key={String(field.key)} className="mb-1">
-                                                                <label className="block text-sm font-bold text-gray-600 mb-2">
-                                                                    {field.label}
-                                                                </label>
-                                                                {field.key === 'is_within_family' ? (
-                                                                    <select
-                                                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                        value={
-                                                                            editFields.is_within_family === undefined || editFields.is_within_family === null
-                                                                                ? ""
-                                                                                : String(editFields.is_within_family)
-                                                                        }
-                                                                        onChange={e =>
-                                                                            handleFieldChange(
-                                                                                field.key,
-                                                                                e.target.value === "" ? undefined : Number(e.target.value)
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <option value="">-- Select --</option>
-                                                                        {IS_WITHIN_FAMILY_OPTIONS.map(opt => (
-                                                                            <option key={String(opt.value)} value={opt.value}>
-                                                                                {opt.label}
-                                                                            </option>
-                                                                        ))}
-                                                                    </select>
-                                                                ) : field.key === 'transfer_relationship' ? (
-                                                                    <>
-                                                                        {relationshipLoading ? (
-                                                                            <div className="text-blue-700 text-xs py-2">Loading transfer relationships...</div>
-                                                                        ) : relationshipError ? (
-                                                                            <div className="text-red-600 text-xs py-2">{relationshipError}</div>
-                                                                        ) : (
-                                                                            <select
-                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                                value={
-                                                                                    editFields.transfer_relationship === 0 || editFields.transfer_relationship === undefined || editFields.transfer_relationship === null
-                                                                                        ? ""
-                                                                                        : editFields.transfer_relationship
-                                                                                }
-                                                                                onChange={e =>
-                                                                                    handleFieldChange(
-                                                                                        field.key,
-                                                                                        e.target.value === '' ? 0 : Number(e.target.value)
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                <option value="">-- Select Relationship --</option>
-                                                                                {relationshipOptions.map((opt, index) => (
-                                                                                    <option key={`${opt.relationship_id}-${index}`} value={opt.relationship_id}>{opt.relationship_name}</option>
-                                                                                ))}
-                                                                            </select>
-                                                                        )}
-                                                                    </>
-                                                                ) : field.key === 'hat_id' ? (
-                                                                    <>
-                                                                        {haatLoading ? (
-                                                                            <div className="text-blue-700 text-xs py-2">Loading Haat List...</div>
-                                                                        ) : haatError ? (
-                                                                            <div className="text-red-600 text-xs py-2">{haatError}</div>
-                                                                        ) : (
-                                                                            <select
-                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                                value={
-                                                                                    editFields.hat_id === undefined || editFields.hat_id === null || editFields.hat_id === 0
-                                                                                        ? ""
-                                                                                        : String(editFields.hat_id)
-                                                                                }
-                                                                                onChange={e =>
-                                                                                    handleFieldChange(
-                                                                                        field.key,
-                                                                                        e.target.value === "" ? undefined : Number(e.target.value)
-                                                                                    )
-                                                                                }
-                                                                                disabled={!(editFields.district_id !== undefined && editFields.district_id !== null)}
-                                                                            >
-                                                                                <option value="">-- Select Haat --</option>
-                                                                                {haatOptions.map((haat, index) =>
-                                                                                    <option key={`${haat.hat_id}-${index}`} value={haat.hat_id}>
-                                                                                        {haat.haat_name}
-                                                                                    </option>
-                                                                                )}
-                                                                            </select>
-                                                                        )}
-                                                                        {(editFields.district_id === undefined ||
-                                                                            editFields.district_id === null) && (
-                                                                                <div className="text-[11px] text-gray-400 mt-1">
-                                                                                    District selection required for dropdown
-                                                                                </div>
-                                                                            )}
-                                                                    </>
-                                                                ) : field.key === 'mouza_id' ? (
-                                                                    <>
-                                                                        {mouzaLoading ? (
-                                                                            <div className="text-blue-700 text-xs py-2">Loading Mouza List...</div>
-                                                                        ) : mouzaError ? (
-                                                                            <div className="text-red-600 text-xs py-2">{mouzaError}</div>
-                                                                        ) : (
-                                                                            <select
-                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                                value={
-                                                                                    editFields.mouza_id === undefined || editFields.mouza_id === null || editFields.mouza_id === 0
-                                                                                        ? ""
-                                                                                        : String(editFields.mouza_id)
-                                                                                }
-                                                                                onChange={e =>
-                                                                                    handleFieldChange(
-                                                                                        field.key,
-                                                                                        e.target.value === "" ? undefined : Number(e.target.value)
-                                                                                    )
-                                                                                }
-                                                                                disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
-                                                                            >
-                                                                                <option value="">-- Select Mouza --</option>
-                                                                                {mouzaOptions.map((mouza, index) =>
-                                                                                    <option key={`${mouza.mouza_id}-${index}`} value={mouza.mouza_id}>
-                                                                                        {mouza.mouza_name} {mouza.jl_no ? `(${mouza.jl_no})` : ""}
-                                                                                    </option>
-                                                                                )}
-                                                                            </select>
-                                                                        )}
-                                                                        {(editFields.police_station_id === undefined ||
-                                                                            editFields.police_station_id === null) && (
-                                                                                <div className="text-[11px] text-gray-400 mt-1">
-                                                                                    Police Station selection required for dropdown
-                                                                                </div>
-                                                                            )}
-                                                                    </>
-                                                                ) : field.key === 'jl_no' ? (
-                                                                    <>
-                                                                        {jlNoLoading ? (
-                                                                            <div className="text-blue-700 text-xs py-2">Loading JL No list...</div>
-                                                                        ) : jlNoError ? (
-                                                                            <div className="text-red-600 text-xs py-2">{jlNoError}</div>
-                                                                        ) : (
-                                                                            <select
-                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                                value={editFields.jl_no || ""}
-                                                                                onChange={e =>
-                                                                                    handleFieldChange(
-                                                                                        field.key,
-                                                                                        e.target.value
-                                                                                    )
-                                                                                }
-                                                                                disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
-                                                                            >
-                                                                                <option value="">-- Select JL No --</option>
-                                                                                {jlNoOptions.map((jl, idx) => (
-                                                                                    <option key={`${jl.jl_no}-${idx}`} value={jl.jl_no}>{jl.jl_no}</option>
-                                                                                ))}
-                                                                            </select>
-                                                                        )}
-                                                                        {(editFields.police_station_id === undefined ||
-                                                                            editFields.police_station_id === null) && (
-                                                                                <div className="text-[11px] text-gray-400 mt-1">
-                                                                                    Police Station selection required for dropdown
-                                                                                </div>
-                                                                            )}
-                                                                    </>
-                                                                ) : field.key === 'adsr_name' ? (
-                                                                    <>
-                                                                        {adsrLoading ? (
-                                                                            <div className="text-blue-700 text-xs py-2">Loading ADSR Name list...</div>
-                                                                        ) : adsrError ? (
-                                                                            <div className="text-red-600 text-xs py-2">{adsrError}</div>
-                                                                        ) : (
-                                                                            <select
-                                                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                                value={editFields.adsr_name || ""}
-                                                                                onChange={e =>
-                                                                                    handleFieldChange(
-                                                                                        field.key,
-                                                                                        e.target.value
-                                                                                    )
-                                                                                }
-                                                                                disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
-                                                                            >
-                                                                                <option value="">-- Select ADSR Name --</option>
-                                                                                {adsrNameOptions.map((adsr, idx) => (
-                                                                                    <option key={`${adsr.adsr_name}-${idx}`} value={adsr.adsr_name}>
-                                                                                        {adsr.adsr_name}
-                                                                                    </option>
-                                                                                ))}
-                                                                            </select>
-                                                                        )}
-                                                                        {(editFields.police_station_id === undefined ||
-                                                                            editFields.police_station_id === null) && (
-                                                                                <div className="text-[11px] text-gray-400 mt-1">
-                                                                                    Police Station selection required for dropdown
-                                                                                </div>
-                                                                            )}
-                                                                    </>
-                                                                ) : field.key === "district_id" ? (
-                                                                    <input
-                                                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                        type="number"
-                                                                        value={
-                                                                            (editFields.district_id !== undefined && editFields.district_id !== null)
-                                                                                ? editFields.district_id
-                                                                                : ""
-                                                                        }
-                                                                        min="1"
-                                                                        step="1"
-                                                                        onChange={e =>
-                                                                            handleFieldChange(
-                                                                                field.key,
-                                                                                e.target.value === ""
-                                                                                    ? undefined
-                                                                                    : Number(e.target.value)
-                                                                            )
-                                                                        }
-                                                                    />
-                                                                ) : field.key === "document_type" ? (
-                                                                    <select
-                                                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                        value={
-                                                                            editFields.document_type !== undefined &&
-                                                                                editFields.document_type !== null
-                                                                                ? String(editFields.document_type)
-                                                                                : ""
-                                                                        }
-                                                                        onChange={e =>
-                                                                            handleFieldChange(
-                                                                                field.key,
-                                                                                e.target.value
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <option value="">-- Select Document Type --</option>
-                                                                        {DOCUMENT_TYPE_OPTIONS.map(opt => (
-                                                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                                                        ))}
-                                                                    </select>
-                                                                ) : field.type === "date" ? (
-                                                                    <input
-                                                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                        type="date"
-                                                                        value={editFields[field.key] ? String(editFields[field.key]).slice(0, 10) : ""}
-                                                                        onChange={e =>
-                                                                            handleFieldChange(
-                                                                                field.key,
-                                                                                e.target.value === "" ? null : e.target.value
-                                                                            )
-                                                                        }
-                                                                    />
-                                                                ) : (
-                                                                    <input
-                                                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:ring-sky-400 focus:border-sky-400"
-                                                                        type={field.type}
-                                                                        value={
-                                                                            (editFields[field.key] !== undefined && editFields[field.key] !== null)
-                                                                                ? (editFields[field.key] as string | number)
-                                                                                : (field.type === "number" ? 0 : "")
-                                                                        }
-                                                                        onChange={e =>
-                                                                            handleFieldChange(
-                                                                                field.key,
-                                                                                field.type === "number"
-                                                                                    ? (e.target.value === ""
-                                                                                        ? 0
-                                                                                        : Number(e.target.value))
-                                                                                    : e.target.value
-                                                                            )
-                                                                        }
-                                                                    />
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                </div>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-                                                    {[
-                                                        { key: 'documentImage', label: 'Document Image' },
-                                                        { key: 'panImage', label: 'PAN Card Image' },
-                                                        { key: 'residentialCertificateAttached', label: 'Residential Certificate' },
-                                                        { key: 'tradeLicenseAttached', label: 'Trade License' },
-                                                        { key: 'affidavitAttached', label: 'Affidavit' },
-                                                        { key: 'warisionCertificateAttached', label: 'Warision Certificate' },
-                                                        { key: 'deathCertificateAttached', label: 'Death Certificate' },
-                                                        { key: 'nocLegalHeirsAttached', label: 'NOC Legal Heirs' },
-                                                        { key: 'landValuationDoc', label: 'Land Valuation Doc' },
-                                                        { key: 'sketchMapAttached', label: 'Sketch Map' },
-                                                        { key: 'stallImage1', label: 'Stall Image 1' },
-                                                        { key: 'stallImage2', label: 'Stall Image 2' },
-                                                    ].map((field) => {
-                                                        const camelToSnakeMap: Record<string, string> = {
-                                                            documentImage: 'document_image',
-                                                            panImage: 'pan_image',
-                                                            residentialCertificateAttached: 'residential_certificate_attached',
-                                                            tradeLicenseAttached: 'trade_license_attached',
-                                                            affidavitAttached: 'affidavit_attached',
-                                                            warisionCertificateAttached: 'warision_certificate_attached',
-                                                            deathCertificateAttached: 'death_certificate_attached',
-                                                            nocLegalHeirsAttached: 'noc_legal_heirs_attached',
-                                                            landValuationDoc: 'land_valuation_doc',
-                                                            sketchMapAttached: 'sketch_map_attached',
-                                                            stallImage1: 'stall_image1',
-                                                            stallImage2: 'stall_image2',
-                                                        };
-                                                        const existingFile = editingSurvey ? (editingSurvey as any)[camelToSnakeMap[field.key]] : null;
+                                                        .filter(field => {
+                                                            if (editFields.occupy === 0 || String(editFields.occupy) === '0') {
+                                                                if (['occupy_from_year', 'present_occupier_name', 'occupier_guardian_name'].includes(field.key as string)) {
+                                                                    return false;
+                                                                }
+                                                            }
+                                                            if (editFields.is_same_owner === 1 || String(editFields.is_same_owner) === '1') {
+                                                                if (['rented_to_whom'].includes(field.key as string)) {
+                                                                    return false;
+                                                                }
+                                                            }
+                                                            return true;
+                                                        })
+                                                        .map((field, fieldIdx) => {
+                                                            // ── Insert section dividers at key boundaries ──
+                                                            const sectionBreaks: Record<string, { icon: string; title: string; color: string }> = {
+                                                                name: { icon: '👤', title: 'Personal Details', color: 'violet' },
+                                                                occupy: { icon: '🏠', title: 'Occupancy', color: 'amber' },
+                                                                adsr_name: { icon: '🗺', title: 'Survey & Property', color: 'emerald' },
+                                                                stall_no: { icon: '🏪', title: 'Stall Information', color: 'rose' },
+                                                                latitude: { icon: '📡', title: 'GPS Coordinates', color: 'cyan' },
+                                                                land_valuation_amount: { icon: '💰', title: 'Valuation & Notes', color: 'amber' },
+                                                            };
 
-                                                        return (
-                                                            <div key={field.key} className="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-blue-300 transition-colors group">
-                                                                <div className="flex justify-between items-center mb-3">
-                                                                    <label className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
-                                                                        {field.label}
-                                                                    </label>
-                                                                    <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-                                                                        Max 2MB
-                                                                    </span>
-                                                                </div>
-                                                                <div className="relative">
+                                                            const sectionBreak = sectionBreaks[field.key as string];
+
+                                                            return (
+                                                                <React.Fragment key={String(field.key)}>
+                                                                    {sectionBreak && (
+                                                                        <EditSection
+                                                                            icon={sectionBreak.icon}
+                                                                            title={sectionBreak.title}
+                                                                            color={sectionBreak.color}
+                                                                        />
+                                                                    )}
+                                                                    <div>
+                                                                        <EditLabel>{field.label}</EditLabel>
+
+                                                                        {/* ── Select / Input logic (identical to original) ── */}
+                                                                        {field.key === 'occupy' ? (
+                                                                            <select
+                                                                                className={selectCls}
+                                                                                value={
+                                                                                    editFields.occupy === undefined || editFields.occupy === null
+                                                                                        ? ""
+                                                                                        : String(editFields.occupy)
+                                                                                }
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value === "" ? undefined : Number(e.target.value)
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <option value="">— Select —</option>
+                                                                                <option value="1">Yes</option>
+                                                                                <option value="0">No</option>
+                                                                            </select>
+                                                                        ) : field.key === 'is_same_owner' ? (
+                                                                            <select
+                                                                                className={selectCls}
+                                                                                value={
+                                                                                    editFields.is_same_owner === undefined || editFields.is_same_owner === null
+                                                                                        ? ""
+                                                                                        : String(editFields.is_same_owner)
+                                                                                }
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value === "" ? undefined : Number(e.target.value)
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <option value="">— Select —</option>
+                                                                                <option value="1">Yes</option>
+                                                                                <option value="0">No</option>
+                                                                            </select>
+                                                                        ) : field.key === 'is_within_family' ? (
+                                                                            <select
+                                                                                className={selectCls}
+                                                                                value={
+                                                                                    editFields.is_within_family === undefined || editFields.is_within_family === null
+                                                                                        ? ""
+                                                                                        : String(editFields.is_within_family)
+                                                                                }
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value === "" ? undefined : Number(e.target.value)
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <option value="">— Select —</option>
+                                                                                {IS_WITHIN_FAMILY_OPTIONS.map(opt => (
+                                                                                    <option key={String(opt.value)} value={opt.value}>
+                                                                                        {opt.label}
+                                                                                    </option>
+                                                                                ))}
+                                                                            </select>
+                                                                        ) : field.key === 'transfer_relationship' ? (
+                                                                            <>
+                                                                                {relationshipLoading ? (
+                                                                                    <div className="flex items-center gap-2 text-violet-600 text-xs py-2.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Loading…</div>
+                                                                                ) : relationshipError ? (
+                                                                                    <p className="text-rose-500 text-xs py-2">{relationshipError}</p>
+                                                                                ) : (
+                                                                                    <select
+                                                                                        className={selectCls}
+                                                                                        value={
+                                                                                            editFields.transfer_relationship === 0 || editFields.transfer_relationship === undefined || editFields.transfer_relationship === null
+                                                                                                ? ""
+                                                                                                : editFields.transfer_relationship
+                                                                                        }
+                                                                                        onChange={e =>
+                                                                                            handleFieldChange(
+                                                                                                field.key,
+                                                                                                e.target.value === '' ? 0 : Number(e.target.value)
+                                                                                            )
+                                                                                        }
+                                                                                    >
+                                                                                        <option value="">— Select Relationship —</option>
+                                                                                        {relationshipOptions.map((opt, index) => (
+                                                                                            <option key={`${opt.relationship_id}-${index}`} value={opt.relationship_id}>{opt.relationship_name}</option>
+                                                                                        ))}
+                                                                                    </select>
+                                                                                )}
+                                                                            </>
+                                                                        ) : field.key === 'hat_id' ? (
+                                                                            <>
+                                                                                {haatLoading ? (
+                                                                                    <div className="flex items-center gap-2 text-violet-600 text-xs py-2.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Loading…</div>
+                                                                                ) : haatError ? (
+                                                                                    <p className="text-rose-500 text-xs py-2">{haatError}</p>
+                                                                                ) : (
+                                                                                    <select
+                                                                                        className={selectCls}
+                                                                                        value={
+                                                                                            editFields.hat_id === undefined || editFields.hat_id === null || editFields.hat_id === 0
+                                                                                                ? ""
+                                                                                                : String(editFields.hat_id)
+                                                                                        }
+                                                                                        onChange={e =>
+                                                                                            handleFieldChange(
+                                                                                                field.key,
+                                                                                                e.target.value === "" ? undefined : Number(e.target.value)
+                                                                                            )
+                                                                                        }
+                                                                                        disabled={!(editFields.district_id !== undefined && editFields.district_id !== null)}
+                                                                                    >
+                                                                                        <option value="">— Select Haat —</option>
+                                                                                        {haatOptions.map((haat, index) =>
+                                                                                            <option key={`${haat.hat_id}-${index}`} value={haat.hat_id}>
+                                                                                                {haat.haat_name}
+                                                                                            </option>
+                                                                                        )}
+                                                                                    </select>
+                                                                                )}
+                                                                                {(editFields.district_id === undefined || editFields.district_id === null) && (
+                                                                                    <p className="text-[10px] text-amber-500 mt-1 font-medium">⚠ District required</p>
+                                                                                )}
+                                                                            </>
+                                                                        ) : field.key === 'mouza_id' ? (
+                                                                            <>
+                                                                                {mouzaLoading ? (
+                                                                                    <div className="flex items-center gap-2 text-violet-600 text-xs py-2.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Loading…</div>
+                                                                                ) : mouzaError ? (
+                                                                                    <p className="text-rose-500 text-xs py-2">{mouzaError}</p>
+                                                                                ) : (
+                                                                                    <select
+                                                                                        className={selectCls}
+                                                                                        value={
+                                                                                            editFields.mouza_id === undefined || editFields.mouza_id === null || editFields.mouza_id === 0
+                                                                                                ? ""
+                                                                                                : String(editFields.mouza_id)
+                                                                                        }
+                                                                                        onChange={e =>
+                                                                                            handleFieldChange(
+                                                                                                field.key,
+                                                                                                e.target.value === "" ? undefined : Number(e.target.value)
+                                                                                            )
+                                                                                        }
+                                                                                        disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
+                                                                                    >
+                                                                                        <option value="">— Select Mouza —</option>
+                                                                                        {mouzaOptions.map((mouza, index) =>
+                                                                                            <option key={`${mouza.mouza_id}-${index}`} value={mouza.mouza_id}>
+                                                                                                {mouza.mouza_name} {mouza.jl_no ? `(${mouza.jl_no})` : ""}
+                                                                                            </option>
+                                                                                        )}
+                                                                                    </select>
+                                                                                )}
+                                                                                {(editFields.police_station_id === undefined || editFields.police_station_id === null) && (
+                                                                                    <p className="text-[10px] text-amber-500 mt-1 font-medium">⚠ Police Station required</p>
+                                                                                )}
+                                                                            </>
+                                                                        ) : field.key === 'jl_no' ? (
+                                                                            <>
+                                                                                {jlNoLoading ? (
+                                                                                    <div className="flex items-center gap-2 text-violet-600 text-xs py-2.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Loading…</div>
+                                                                                ) : jlNoError ? (
+                                                                                    <p className="text-rose-500 text-xs py-2">{jlNoError}</p>
+                                                                                ) : (
+                                                                                    <select
+                                                                                        className={selectCls}
+                                                                                        value={editFields.jl_no || ""}
+                                                                                        onChange={e =>
+                                                                                            handleFieldChange(
+                                                                                                field.key,
+                                                                                                e.target.value
+                                                                                            )
+                                                                                        }
+                                                                                        disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
+                                                                                    >
+                                                                                        <option value="">— Select JL No —</option>
+                                                                                        {jlNoOptions.map((jl, idx) => (
+                                                                                            <option key={`${jl.jl_no}-${idx}`} value={jl.jl_no}>{jl.jl_no}</option>
+                                                                                        ))}
+                                                                                    </select>
+                                                                                )}
+                                                                                {(editFields.police_station_id === undefined || editFields.police_station_id === null) && (
+                                                                                    <p className="text-[10px] text-amber-500 mt-1 font-medium">⚠ Police Station required</p>
+                                                                                )}
+                                                                            </>
+                                                                        ) : field.key === 'adsr_name' ? (
+                                                                            <>
+                                                                                {adsrLoading ? (
+                                                                                    <div className="flex items-center gap-2 text-violet-600 text-xs py-2.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Loading…</div>
+                                                                                ) : adsrError ? (
+                                                                                    <p className="text-rose-500 text-xs py-2">{adsrError}</p>
+                                                                                ) : (
+                                                                                    <select
+                                                                                        className={selectCls}
+                                                                                        value={editFields.adsr_name || ""}
+                                                                                        onChange={e =>
+                                                                                            handleFieldChange(
+                                                                                                field.key,
+                                                                                                e.target.value
+                                                                                            )
+                                                                                        }
+                                                                                        disabled={!(editFields.police_station_id !== undefined && editFields.police_station_id !== null)}
+                                                                                    >
+                                                                                        <option value="">— Select ADSR Name —</option>
+                                                                                        {adsrNameOptions.map((adsr, idx) => (
+                                                                                            <option key={`${adsr.adsr_name}-${idx}`} value={adsr.adsr_name}>
+                                                                                                {adsr.adsr_name}
+                                                                                            </option>
+                                                                                        ))}
+                                                                                    </select>
+                                                                                )}
+                                                                                {(editFields.police_station_id === undefined || editFields.police_station_id === null) && (
+                                                                                    <p className="text-[10px] text-amber-500 mt-1 font-medium">⚠ Police Station required</p>
+                                                                                )}
+                                                                            </>
+                                                                        ) : field.key === "district_id" ? (
+                                                                            <input
+                                                                                className={inputCls}
+                                                                                type="number"
+                                                                                value={
+                                                                                    (editFields.district_id !== undefined && editFields.district_id !== null)
+                                                                                        ? editFields.district_id
+                                                                                        : ""
+                                                                                }
+                                                                                min="1"
+                                                                                step="1"
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value === ""
+                                                                                            ? undefined
+                                                                                            : Number(e.target.value)
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                        ) : field.key === "document_type" ? (
+                                                                            <select
+                                                                                className={selectCls}
+                                                                                value={
+                                                                                    editFields.document_type !== undefined &&
+                                                                                        editFields.document_type !== null
+                                                                                        ? String(editFields.document_type)
+                                                                                        : ""
+                                                                                }
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <option value="">— Select Document Type —</option>
+                                                                                {DOCUMENT_TYPE_OPTIONS.map(opt => (
+                                                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                                                ))}
+                                                                            </select>
+                                                                        ) : field.type === "date" ? (
+                                                                            <input
+                                                                                className={inputCls}
+                                                                                type="date"
+                                                                                value={editFields[field.key] ? String(editFields[field.key]).slice(0, 10) : ""}
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        e.target.value === "" ? null : e.target.value
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                        ) : (
+                                                                            <input
+                                                                                className={inputCls}
+                                                                                type={field.type}
+                                                                                value={
+                                                                                    (editFields[field.key] !== undefined && editFields[field.key] !== null)
+                                                                                        ? (editFields[field.key] as string | number)
+                                                                                        : (field.type === "number" ? 0 : "")
+                                                                                }
+                                                                                onChange={e =>
+                                                                                    handleFieldChange(
+                                                                                        field.key,
+                                                                                        field.type === "number"
+                                                                                            ? (e.target.value === ""
+                                                                                                ? 0
+                                                                                                : Number(e.target.value))
+                                                                                            : e.target.value
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                        )}
+                                                                    </div>
+                                                                </React.Fragment>
+                                                            );
+                                                        })}
+                                                </div>
+
+                                                {/* ─── DOCUMENT UPLOADS ────────────────────── */}
+                                                <div className="mt-8">
+                                                    <div className="flex items-center gap-3 mb-5">
+                                                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white text-sm shadow-md">
+                                                            📎
+                                                        </div>
+                                                        <span className="text-xs font-black uppercase tracking-widest text-slate-500">Documents & Attachments</span>
+                                                        <div className="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent"></div>
+                                                        <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full">
+                                                            Max 2 MB per file
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                                        {[
+                                                            { key: 'documentImage', label: 'Document Image', emoji: '🪪' },
+                                                            { key: 'panImage', label: 'PAN Card', emoji: '💳' },
+                                                            { key: 'residentialCertificateAttached', label: 'Residential Cert.', emoji: '🏡' },
+                                                            { key: 'tradeLicenseAttached', label: 'Trade License', emoji: '📜' },
+                                                            { key: 'affidavitAttached', label: 'Affidavit', emoji: '⚖️' },
+                                                            { key: 'warisionCertificateAttached', label: 'Warision Cert.', emoji: '📋' },
+                                                            { key: 'deathCertificateAttached', label: 'Death Certificate', emoji: '📄' },
+                                                            { key: 'nocLegalHeirsAttached', label: 'NOC Legal Heirs', emoji: '📃' },
+                                                            { key: 'landValuationDoc', label: 'Land Valuation Doc', emoji: '🏷️' },
+                                                            { key: 'sketchMapAttached', label: 'Sketch Map', emoji: '🗺️' },
+                                                            { key: 'stallImage1', label: 'Stall Image 1', emoji: '🖼️' },
+                                                            { key: 'stallImage2', label: 'Stall Image 2', emoji: '🖼️' },
+                                                        ].map((field) => {
+                                                            const camelToSnakeMap: Record<string, string> = {
+                                                                documentImage: 'document_image',
+                                                                panImage: 'pan_image',
+                                                                residentialCertificateAttached: 'residential_certificate_attached',
+                                                                tradeLicenseAttached: 'trade_license_attached',
+                                                                affidavitAttached: 'affidavit_attached',
+                                                                warisionCertificateAttached: 'warision_certificate_attached',
+                                                                deathCertificateAttached: 'death_certificate_attached',
+                                                                nocLegalHeirsAttached: 'noc_legal_heirs_attached',
+                                                                landValuationDoc: 'land_valuation_doc',
+                                                                sketchMapAttached: 'sketch_map_attached',
+                                                                stallImage1: 'stall_image1',
+                                                                stallImage2: 'stall_image2',
+                                                            };
+                                                            const existingFile = editingSurvey ? (editingSurvey as any)[camelToSnakeMap[field.key]] : null;
+                                                            const hasNew = !!uploadFiles[field.key as keyof MakerUploadFiles];
+                                                            const hasExisting = !!existingFile;
+
+                                                            return (
+                                                                <div key={field.key}>
                                                                     <input
                                                                         type="file"
-                                                                        id={field.key}
+                                                                        id={`upload-${field.key}`}
                                                                         className="hidden"
                                                                         onChange={(e) => handleFileChange(field.key as keyof MakerUploadFiles, e.target.files ? e.target.files[0] : null)}
                                                                         accept="image/*,.pdf"
                                                                     />
                                                                     <label
-                                                                        htmlFor={field.key}
-                                                                        className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300 ${uploadFiles[field.key as keyof MakerUploadFiles]
-                                                                            ? 'border-emerald-400 bg-emerald-50'
-                                                                            : existingFile
-                                                                                ? 'border-blue-400 bg-blue-50'
-                                                                                : 'border-gray-300 bg-white hover:bg-sky-50 hover:border-sky-400'
-                                                                            }`}
+                                                                        htmlFor={`upload-${field.key}`}
+                                                                        className={`
+                                                                            flex flex-col items-center justify-center gap-2 w-full h-32 rounded-2xl border-2 cursor-pointer
+                                                                            transition-all duration-200 group relative overflow-hidden
+                                                                            ${hasNew
+                                                                                ? 'border-emerald-400 bg-emerald-50 shadow-md shadow-emerald-100'
+                                                                                : hasExisting
+                                                                                    ? 'border-violet-300 bg-violet-50 shadow-sm shadow-violet-100'
+                                                                                    : 'border-dashed border-slate-200 bg-white hover:border-violet-300 hover:bg-violet-50/50 hover:shadow-md'
+                                                                            }
+                                                                        `}
                                                                     >
-                                                                        {uploadFiles[field.key as keyof MakerUploadFiles] ? (
-                                                                            <div className="flex flex-col items-center text-emerald-600">
-                                                                                <CheckCircle className="w-8 h-8 mb-2" />
-                                                                                <span className="text-xs font-semibold text-center px-2 truncate w-full max-w-[180px]">
+                                                                        {/* Status glow */}
+                                                                        {hasNew && (
+                                                                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/10 to-transparent pointer-events-none" />
+                                                                        )}
+                                                                        {hasExisting && !hasNew && (
+                                                                            <div className="absolute inset-0 bg-gradient-to-br from-violet-400/10 to-transparent pointer-events-none" />
+                                                                        )}
+
+                                                                        {hasNew ? (
+                                                                            <>
+                                                                                <div className="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center shadow-md">
+                                                                                    <CheckCircle className="w-5 h-5 text-white" />
+                                                                                </div>
+                                                                                <p className="text-[10px] font-bold text-emerald-700 text-center px-2 leading-tight line-clamp-2">
                                                                                     {(uploadFiles[field.key as keyof MakerUploadFiles] as File).name}
-                                                                                </span>
-                                                                                <span className="text-[10px] opacity-70 mt-1">Click to change</span>
-                                                                            </div>
-                                                                        ) : existingFile ? (
-                                                                            <div className="flex flex-col items-center text-blue-600">
-                                                                                <div className="relative mb-2 group-preview">
+                                                                                </p>
+                                                                                <span className="text-[9px] text-emerald-500 font-semibold">Click to change</span>
+                                                                            </>
+                                                                        ) : hasExisting ? (
+                                                                            <>
+                                                                                <div className="relative mb-0.5">
                                                                                     <AsyncImagePreview path={existingFile as string} />
                                                                                 </div>
-                                                                                <span className="text-xs font-semibold text-center px-2 truncate w-full max-w-[180px]">
-                                                                                    {typeof existingFile === 'string' ? existingFile.split('/').pop() : "File Exists"}
-                                                                                </span>
-                                                                                <span className="text-[10px] opacity-70 mt-1">Click to Replace</span>
-                                                                            </div>
+                                                                                <p className="text-[10px] font-bold text-violet-700 text-center px-2 leading-tight truncate w-full max-w-[110px]">
+                                                                                    {typeof existingFile === 'string' ? existingFile.split('/').pop() : 'File Exists'}
+                                                                                </p>
+                                                                                <span className="text-[9px] text-violet-400 font-semibold">Click to replace</span>
+                                                                            </>
                                                                         ) : (
-                                                                            <div className="flex flex-col items-center text-gray-500 group-hover:text-sky-500">
-                                                                                <Upload className="w-8 h-8 mb-2 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                                                                <span className="text-xs font-semibold">Click to upload</span>
-                                                                            </div>
+                                                                            <>
+                                                                                <span className="text-2xl leading-none group-hover:scale-110 transition-transform">
+                                                                                    {field.emoji}
+                                                                                </span>
+                                                                                <p className="text-[10px] font-bold text-slate-500 text-center px-2 leading-tight group-hover:text-violet-600 transition-colors">
+                                                                                    {field.label}
+                                                                                </p>
+                                                                                <div className="flex items-center gap-1 text-slate-300 group-hover:text-violet-400 transition-colors">
+                                                                                    <Upload className="w-3 h-3" />
+                                                                                    <span className="text-[9px] font-semibold">Upload</span>
+                                                                                </div>
+                                                                            </>
                                                                         )}
                                                                     </label>
                                                                 </div>
-                                                            </div>
-                                                        );
-                                                    })}
+                                                            );
+                                                        })}
+                                                    </div>
                                                 </div>
-                                                <div className="flex justify-end gap-3 mt-8">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setEditingSurvey(null)}
-                                                        className="px-6 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition-colors"
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                    <button
-                                                        type="submit"
-                                                        disabled={isSaving}
-                                                        className="px-8 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg hover:shadow-blue-500/30 hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
-                                                    >
-                                                        {isSaving ? (
-                                                            <>
-                                                                <RefreshCw className="w-4 h-4 animate-spin" />
-                                                                Saving...
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Save className="w-4 h-4" />
-                                                                Save Changes
-                                                            </>
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            </form>
+
+                                        </div>{/* end scrollable body */}
+
+                                        {/* ── Fixed Footer (outside scroll, always visible) ── */}
+                                        <div className="flex-shrink-0 px-8 py-4 bg-white border-t border-slate-100 flex items-center justify-between gap-4">
+                                            <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
+                                                All changes will be saved immediately after confirmation.
+                                            </p>
+                                            <div className="flex items-center gap-3 ml-auto">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setEditingSurvey(null)}
+                                                    className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    disabled={isSaving}
+                                                    className="flex items-center gap-2 px-7 py-2.5 rounded-xl text-sm font-bold text-white
+                                                        bg-gradient-to-r from-violet-600 to-purple-600
+                                                        hover:from-violet-700 hover:to-purple-700
+                                                        shadow-lg shadow-violet-300/40
+                                                        disabled:opacity-60 disabled:cursor-not-allowed
+                                                        transition-all active:scale-[0.98]"
+                                                >
+                                                    {isSaving ? (
+                                                        <>
+                                                            <RefreshCw className="w-4 h-4 animate-spin" />
+                                                            Saving…
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Save className="w-4 h-4" />
+                                                            Save Changes
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+
+                                        </form>{/* end form wrapping scrollable + footer */}
+                                    </div>{/* end modal shell */}
                                 </div>
                             )}
+                            {/* ══ END REDESIGNED EDIT MODAL ══ */}
                         </>
                     )}
                 </div>
-                {
-                    !loading && !error && filteredData.length > 0 && (
-                        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-sky-200/50 px-6 py-4">
-                            <div className="flex items-center justify-between text-sm">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 bg-sky-500 rounded-full animate-pulse"></div>
-                                    <span className="text-gray-600">
-                                        Displaying{' '}
-                                        <span className="font-bold text-gray-800">
-                                            {(currentPage - 1) * PAGE_SIZE + 1}
-                                        </span>
-                                        {' - '}
-                                        <span className="font-bold text-gray-800">
-                                            {Math.min(currentPage * PAGE_SIZE, filteredData.length)}
-                                        </span>{' '}
-                                        of{' '}
-                                        <span className="font-bold text-gray-800">
-                                            {surveyData.length}
-                                        </span>{' '}
-                                        applications
+
+                {!loading && !error && filteredData.length > 0 && (
+                    <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-sky-200/50 px-6 py-4">
+                        <div className="flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-sky-500 rounded-full animate-pulse"></div>
+                                <span className="text-gray-600">
+                                    Displaying{' '}
+                                    <span className="font-bold text-gray-800">
+                                        {(currentPage - 1) * PAGE_SIZE + 1}
                                     </span>
-                                </div>
-                                <span className="text-xs text-gray-500">
-                                    Last updated: {new Date().toLocaleString()}
+                                    {' - '}
+                                    <span className="font-bold text-gray-800">
+                                        {Math.min(currentPage * PAGE_SIZE, filteredData.length)}
+                                    </span>{' '}
+                                    of{' '}
+                                    <span className="font-bold text-gray-800">
+                                        {surveyData.length}
+                                    </span>{' '}
+                                    applications
                                 </span>
                             </div>
+                            <span className="text-xs text-gray-500">
+                                Last updated: {new Date().toLocaleString()}
+                            </span>
                         </div>
-                    )
-                }
+                    </div>
+                )}
             </div>
         </div>
     );

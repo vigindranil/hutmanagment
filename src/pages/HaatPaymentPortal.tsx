@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { User, Phone, Mail, MapPin, IndianRupee, AlertCircle, Loader2, ChevronLeft, AlertTriangle, Shield } from 'lucide-react';
-import { savePaymentInfo, SavePaymentInfoPayload, getPaymentDetailsByTxnRefID } from '../Service/surveyAPI';
+import { savePaymentInfo, SavePaymentInfoPayload, getPaymentDetilsByTxnRefID } from '../Service/surveyAPI';
 import { decodeJwtToken } from '../utils/decodeToken';
 import biswaBanglaLogo from '../assets/biswaBangla.png';
 
@@ -139,7 +139,7 @@ const HaatPaymentPortal: React.FC = () => {
             }
 
             // Step 2: Call getPaymentDetailsByTxnRefID API
-            const paymentDetailsResponse = await getPaymentDetailsByTxnRefID(txnRefId);
+            const paymentDetailsResponse = await getPaymentDetilsByTxnRefID(txnRefId);
 
             if (!paymentDetailsResponse || (paymentDetailsResponse.status !== 0 && paymentDetailsResponse.status !== 1)) {
                 alert('Failed to get payment details. Please try again.');
@@ -160,7 +160,6 @@ const HaatPaymentPortal: React.FC = () => {
             const form = document.createElement('form');
             form.method = 'post';
             form.action = 'https://test.epay.sbiuat.bank.in/secure/AggregatorHostedListener';
-            form.target = '_blank';
 
             // Create hidden input for encryptTrans
             const encryptTransInput = document.createElement('input');
@@ -431,6 +430,18 @@ const HaatPaymentPortal: React.FC = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Go to Dashboard Button (Below Card) */}
+                <div className="mt-6 flex justify-center">
+                    <button
+                        type="button"
+                        onClick={() => navigate('/user-dashboard')}
+                        className="bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-8 rounded-lg text-sm transition-all shadow-md border border-slate-300 flex items-center justify-center gap-2 max-w-sm w-full"
+                    >
+                        Go to Dashboard
+                    </button>
+                </div>
+
                 {/* Footer */}
                 <div className="mt-4 text-center">
                     <p className="text-xs text-slate-600">

@@ -902,8 +902,7 @@ export interface SavePaymentInfoPayload {
   entry_user_id: number;
 }
 
-
-export const getPaymentDetailsByTxnRefID = async (txnRefID: number | string) => {
+export const getPaymentDetilsByTxnRefID = async (txnRefID: number | string) => {
   return await commonApi(
     `user/getPaymentDetilsByTxnRefID?TxnRefID=${txnRefID}`,
     {},
