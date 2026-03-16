@@ -30,9 +30,13 @@ const Login: React.FC = () => {
     myHeaders.append("accept", "*/*");
     myHeaders.append("Content-Type", "application/json");
 
+    // Encode username and password using btoa (Base64 encoding)
+    const encodedUsername = btoa(email);
+    const encodedPassword = btoa(password);
+
     const raw = JSON.stringify({
-      "username": email,
-      "password": password
+      "username": encodedUsername,
+      "password": encodedPassword
     });
 
     const requestOptions = {

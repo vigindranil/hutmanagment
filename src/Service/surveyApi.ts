@@ -886,7 +886,7 @@ export const saveFinalApprovalByApprovalOfficerApi = async (
 
 
 
-//----------Payment API-------------------
+//----------Payment API-----------------
 
 export const savePaymentInfo = async (payload: SavePaymentInfoPayload) => {
   return await commonApi("user/savePaymentInfo", payload);

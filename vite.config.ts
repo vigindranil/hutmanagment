@@ -8,8 +8,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/HMSRestAPI': {
-        // target: 'https://vigpl.com',
-        target: 'https://haatmgmtjpgzp.wb.gov.in',
+         target: 'https://vigpl.com',
+        // target: 'https://haatmgmtjpgzp.wb.gov.in',
         changeOrigin: true,
         secure: false,
       },
